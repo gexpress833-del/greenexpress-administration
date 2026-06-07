@@ -1,0 +1,71 @@
+<x-app-layout>
+    <div class="mb-6 flex items-center justify-between">
+        <h1 class="text-base sm:text-2xl font-bold text-gray-800 dark:text-gray-100">Commande <span class="break-all">{{ $order->code }}</span></h1>
+        <x-back-button :href="route('admin.orders.index')" />
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Informations</h2>
+            <div class="space-y-3 text-sm">
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Code</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->code }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Agent</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->agent->name }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Client</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->client_name }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Téléphone</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->client_phone }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Adresse</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->delivery_address }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Date livraison</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->delivery_date?->format('d/m/Y') }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Total</span><span class="font-bold text-green-700 dark:text-green-400">$ {{ number_format($order->total_amount, 2) }}<br><span class="text-xs text-gray-500 dark:text-gray-400">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</span></span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Statut</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ ucfirst($order->status) }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Code validation client</span><span class="font-mono font-bold text-orange-600 dark:text-orange-400 tracking-wider">{{ $order->client_validation_code }}</span></div>
+            </div>
+
+            <div class="mt-6 space-y-2">
+                <a href="{{ route('admin.orders.print', $order) }}" target="_blank" class="block w-full text-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 font-semibold py-2 px-4 rounded-lg transition">
+                    � Exporter le bon en PDF
+                </a>
+
+                @if($order->status === 'pending')
+                    <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="inline w-full">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="status" value="confirmed">
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+                            Valider la commande
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="inline w-full">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="status" value="cancelled">
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+                            Rejeter / Annuler
+                        </button>
+                    </form>
+                @elseif($order->status === 'confirmed')
+                    <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="inline w-full">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="status" value="cancelled">
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+                            Annuler la commande
+                        </button>
+                    </form>
+                @endif
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Repas</h2>
+            @foreach($order->items as $item)
+                <div class="flex justify-between items-center py-2 border-b border-gray-50 dark:border-gray-700 text-sm">
+                    <div>
+                        <p class="font-medium text-gray-800 dark:text-gray-100">{{ $item->meal->name }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Qté: {{ $item->quantity }} x $ {{ number_format($item->unit_price, 2) }} ({{ number_format($item->unit_price_fc, 0, ',', '.') }} FC)</p>
+                    </div>
+                    <p class="font-semibold text-gray-800 dark:text-gray-100">$ {{ number_format($item->total_price, 2) }}<br><span class="text-xs text-gray-500 dark:text-gray-400">{{ number_format($item->total_price_fc, 0, ',', '.') }} FC</span></p>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</x-app-layout>
+

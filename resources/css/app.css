@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Responsive global fixes */
+@layer base {
+    /* Force all tables to be horizontally scrollable on small screens */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+
+    /* But inside .overflow-x-auto wrappers, let them behave normally */
+    .overflow-x-auto table {
+        display: table;
+    }
+
+    /* Prevent text overflow everywhere */
+    body {
+        overflow-x: hidden;
+        word-wrap: break-word;
+    }
+
+    /* Ensure images never overflow */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Minimum touch target size for mobile */
+    button, a, input, select, textarea {
+        min-height: 2.5rem;
+    }
+
+    /* Reduce minimum touch target for very small inline elements */
+    a.text-sm, button.text-xs {
+        min-height: 1.5rem;
+    }
+
+    /* Global text scale reduction on small screens */
+    @media (max-width: 640px) {
+        html {
+            font-size: 14px;
+        }
+
+        h1, .text-2xl, .text-3xl {
+            font-size: 1.25rem !important;
+            line-height: 1.4 !important;
+        }
+
+        h2, .text-xl {
+            font-size: 1.125rem !important;
+            line-height: 1.4 !important;
+        }
+
+        h3, .text-lg {
+            font-size: 1rem !important;
+            line-height: 1.4 !important;
+        }
+
+        p, span, a, label, td, th, button, input, textarea, select, li {
+            font-size: 0.8125rem !important;
+            line-height: 1.4 !important;
+        }
+
+        .text-xs {
+            font-size: 0.6875rem !important;
+        }
+
+        .text-sm {
+            font-size: 0.75rem !important;
+        }
+
+        /* But preserve icon sizes */
+        svg, .icon {
+            font-size: inherit !important;
+        }
+    }
+}
+
+@layer utilities {
+    /* Hide scrollbar but keep functionality */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+}
