@@ -11,26 +11,6 @@ sed -i "s/:80/:${PORT}/g" /etc/apache2/sites-available/laravel.conf
 chown -R www-data:www-data /var/www/html/public /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 755 /var/www/html/public
 
-# Verify build assets exist
-if [ ! -d "/var/www/html/public/build" ]; then
-    echo "WARNING: public/build directory not found!"
-else
-    echo "public/build contents:"
-    ls -laR /var/www/html/public/build/
-    if [ -f "/var/www/html/public/build/manifest.json" ]; then
-        cat /var/www/html/public/build/manifest.json
-        # Verify each referenced file actually exists
-        for file in $(cat /var/www/html/public/build/manifest.json | grep '"file":' | sed 's/.*"file": "\([^"]*\)".*/\1/'); do
-            path="/var/www/html/public/build/$file"
-            if [ -f "$path" ]; then
-                echo "OK: $path exists ($(stat -c%s "$path") bytes)"
-            else
-                echo "MISSING: $path not found!"
-            fi
-        done
-    fi
-fi
-
 # Generate APP_KEY if not set
 if [ -z "$APP_KEY" ]; then
     export APP_KEY=$(php /var/www/html/artisan key:generate --show)
