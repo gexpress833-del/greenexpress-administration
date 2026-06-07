@@ -8,10 +8,20 @@
     </div>
 
     {{-- En-tête profil utilisateur --}}
+    @if (session('error') === 'avatar-upload-failed')
+        <div class="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300">
+            <strong>Erreur :</strong> L'upload de la photo de profil a échoué. Veuillez vérifier que Cloudinary est correctement configuré.
+        </div>
+    @endif
+
     <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-xl shadow-lg p-6 mb-6 text-white">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl font-bold shrink-0">
-                {{ strtoupper(substr($user->name, 0, 1)) }}
+            <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl font-bold shrink-0 overflow-hidden">
+                @if ($user->avatar)
+                    <img src="{{ $user->avatar }}" alt="Avatar" class="w-full h-full object-cover">
+                @else
+                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                @endif
             </div>
             <div class="text-center sm:text-left">
                 <h2 class="text-xl font-bold">{{ $user->name }}</h2>

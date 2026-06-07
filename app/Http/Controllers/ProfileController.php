@@ -45,6 +45,8 @@ class ProfileController extends Controller
 
             if ($avatarUrl !== null) {
                 $user->avatar = $avatarUrl;
+            } else {
+                return Redirect::route('profile.edit')->with('error', 'avatar-upload-failed');
             }
         }
 
