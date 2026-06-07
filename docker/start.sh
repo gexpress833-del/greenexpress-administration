@@ -7,8 +7,20 @@ sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf
 sed -i "s/:80/:${PORT}/g" /etc/apache2/sites-available/000-default.conf
 sed -i "s/:80/:${PORT}/g" /etc/apache2/sites-available/laravel.conf
 
-# Set permissions
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Set permissions (include public for static assets)
+chown -R www-data:www-data /var/www/html/public /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 755 /var/www/html/public
+
+# Verify build assets exist
+if [ ! -d "/var/www/html/public/build" ]; then
+    echo "WARNING: public/build directory not found!"
+else
+    echo "public/build contents:"
+    ls -la /var/www/html/public/build/
+    if [ -f "/var/www/html/public/build/manifest.json" ]; then
+        cat /var/www/html/public/build/manifest.json
+    fi
+fi
 
 # Generate APP_KEY if not set
 if [ -z "$APP_KEY" ]; then

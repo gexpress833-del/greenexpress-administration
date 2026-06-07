@@ -13,7 +13,9 @@ services:
       - key: APP_KEY
         value: base64:5Wt5BM9uMS5hC1qRyT55hZIp+A0/FsTlmUG/Qo+//0E=
       - key: APP_URL
-        value: https://greenexpress.onrender.com
+        value: https://greenexpress-administration.onrender.com
+      - key: ASSET_URL
+        value: https://greenexpress-administration.onrender.com
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
