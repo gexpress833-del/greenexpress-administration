@@ -25,7 +25,7 @@ services:
       - key: DB_USERNAME
         value: greenexpress_db_user
       - key: DB_PASSWORD
-        value: ZQP1zYk3V51B0CecC6ogyPTpGRc0ss0V
+        value: PASTE_YOUR_PASSWORD_HERE
       - key: DB_SSLMODE
         value: require
       - key: SESSION_DRIVER
