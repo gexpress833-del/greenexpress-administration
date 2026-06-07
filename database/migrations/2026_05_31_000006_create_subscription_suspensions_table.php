@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('subscription_suspensions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('subscription_id')->constrained('subscriptions')->cascadeOnDelete();
-            $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
+            $table->string('status', 50)->default('pending');
             $table->text('reason');
             $table->integer('duration_days');
             $table->date('suspension_start')->nullable();

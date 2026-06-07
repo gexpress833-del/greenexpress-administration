@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('delivery_address');
             $table->date('delivery_date');
             $table->decimal('total_amount', 12, 2)->default(0);
-            $table->enum('status', ['pending', 'confirmed', 'preparing', 'delivering', 'delivered', 'cancelled'])->default('pending');
+            $table->string('status', 50)->default('pending');
             $table->text('notes')->nullable();
             $table->timestamp('confirmed_at')->nullable();
             $table->timestamp('delivered_at')->nullable();

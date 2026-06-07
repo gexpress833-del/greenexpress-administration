@@ -13,7 +13,7 @@ return new class extends Migration
         });
 
         Schema::table('orders', function (Blueprint $table) {
-            $table->enum('currency', ['usd', 'fc'])->default('usd')->after('total_amount');
+            $table->string('currency', 10)->default('usd')->after('total_amount');
             $table->decimal('total_amount_fc', 12, 2)->default(0)->after('currency');
         });
 
@@ -23,7 +23,7 @@ return new class extends Migration
         });
 
         Schema::table('subscriptions', function (Blueprint $table) {
-            $table->enum('currency', ['usd', 'fc'])->default('usd')->after('price');
+            $table->string('currency', 10)->default('usd')->after('price');
             $table->decimal('price_fc', 12, 2)->default(0)->after('currency');
         });
     }

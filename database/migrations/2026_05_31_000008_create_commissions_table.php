@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('agent_id')->constrained('users');
             $table->foreignId('order_id')->constrained('orders');
-            $table->enum('type', ['points', 'bonus_meal', 'commission_5', 'commission_10']);
+            $table->string('type', 50);
             $table->integer('points')->default(0);
             $table->decimal('amount_usd', 10, 2)->default(0);
             $table->decimal('amount_fc', 10, 2)->default(0);

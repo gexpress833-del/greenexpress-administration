@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('agent_id')->constrained('users');
             $table->decimal('amount_usd', 10, 2);
             $table->decimal('amount_fc', 10, 2);
-            $table->enum('status', ['pending', 'approved', 'rejected', 'paid'])->default('pending');
+            $table->string('status', 50)->default('pending');
             $table->text('notes')->nullable();
             $table->foreignId('processed_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('processed_at')->nullable();

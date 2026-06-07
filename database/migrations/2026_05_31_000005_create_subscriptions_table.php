@@ -12,13 +12,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('client_id')->constrained('users');
             $table->foreignId('agent_id')->constrained('users');
-            $table->enum('type', ['weekly', 'monthly']);
+            $table->string('type', 50);
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('total_days');
             $table->integer('remaining_days')->default(0);
             $table->decimal('price', 12, 2);
-            $table->enum('status', ['pending', 'active', 'suspended', 'expired', 'cancelled'])->default('pending');
+            $table->string('status', 50)->default('pending');
             $table->timestamp('admin_validated_at')->nullable();
             $table->foreignId('validated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

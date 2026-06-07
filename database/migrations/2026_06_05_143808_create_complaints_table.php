@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
-            $table->enum('type', ['missing_item', 'wrong_item', 'late_delivery', 'quality_issue', 'other']);
+            $table->string('type', 50);
             $table->text('description');
-            $table->enum('status', ['open', 'in_progress', 'resolved', 'rejected'])->default('open');
+            $table->string('status', 50)->default('open');
             $table->text('admin_response')->nullable();
             $table->foreignId('resolved_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('resolved_at')->nullable();
