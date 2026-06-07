@@ -16,9 +16,18 @@ if [ ! -d "/var/www/html/public/build" ]; then
     echo "WARNING: public/build directory not found!"
 else
     echo "public/build contents:"
-    ls -la /var/www/html/public/build/
+    ls -laR /var/www/html/public/build/
     if [ -f "/var/www/html/public/build/manifest.json" ]; then
         cat /var/www/html/public/build/manifest.json
+        # Verify each referenced file actually exists
+        for file in $(cat /var/www/html/public/build/manifest.json | grep '"file":' | sed 's/.*"file": "\([^"]*\)".*/\1/'); do
+            path="/var/www/html/public/build/$file"
+            if [ -f "$path" ]; then
+                echo "OK: $path exists ($(stat -c%s "$path") bytes)"
+            else
+                echo "MISSING: $path not found!"
+            fi
+        done
     fi
 fi
 
