@@ -46,3 +46,9 @@ services:
         value: stderr
       - key: LOG_LEVEL
         value: info
+      - key: CLOUDINARY_CLOUD_NAME
+        value: YOUR_CLOUD_NAME
+      - key: CLOUDINARY_API_KEY
+        value: YOUR_API_KEY
+      - key: CLOUDINARY_API_SECRET
+        value: YOUR_API_SECRET

@@ -8,9 +8,29 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="space-y-5">
+    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-5">
         @csrf
         @method('patch')
+
+        <div class="flex items-center gap-4">
+            <div class="relative">
+                @if ($user->avatar)
+                    <img src="{{ $user->avatar }}" alt="Avatar" class="h-20 w-20 rounded-full object-cover border-2 border-green-500">
+                @else
+                    <div class="h-20 w-20 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center border-2 border-green-500">
+                        <span class="text-2xl font-bold text-green-600 dark:text-green-400">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                    </div>
+                @endif
+            </div>
+            <div class="flex-1">
+                <label for="avatar" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Photo de profil</label>
+                <input id="avatar" name="avatar" type="file" accept="image/*"
+                       class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900 dark:file:text-green-300">
+                @error('avatar')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
 
         <div>
             <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom complet</label>

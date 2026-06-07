@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\CloudinaryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -23,7 +24,7 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request, CloudinaryService $cloudinary): RedirectResponse
     {
         $user = $request->user();
         $validated = $request->validated();
@@ -34,6 +35,14 @@ class ProfileController extends Controller
             'phone' => $validated['phone'] ?? null,
             'address' => $validated['address'] ?? null,
         ]);
+
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                $cloudinary->delete($user->avatar);
+            }
+
+            $user->avatar = $cloudinary->upload($request->file('avatar'), 'avatars');
+        }
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
