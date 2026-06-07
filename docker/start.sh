@@ -15,6 +15,9 @@ if [ -z "$APP_KEY" ]; then
     export APP_KEY=$(php /var/www/html/artisan key:generate --show)
 fi
 
+# Run package discover (skipped during build with --no-scripts)
+cd /var/www/html && php artisan package:discover --no-interaction || true
+
 # Wait for PostgreSQL to be ready (Render internal)
 if [ "$DB_CONNECTION" = "pgsql" ]; then
     echo "Waiting for PostgreSQL..."
