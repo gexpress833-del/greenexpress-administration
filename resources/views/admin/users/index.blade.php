@@ -21,6 +21,7 @@
             <table class="min-w-full text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-700/50">
                     <tr>
+                        <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Avatar</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Nom</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Email</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Téléphone</th>
@@ -32,6 +33,15 @@
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                     @forelse($users as $user)
                         <tr>
+                            <td class="px-6 py-3">
+                                @if ($user->avatar)
+                                    <img src="{{ $user->avatar }}" alt="Avatar" class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600">
+                                @else
+                                    <div class="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-sm font-bold text-green-600 dark:text-green-400 border border-gray-200 dark:border-gray-600">
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                            </td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $user->name }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $user->email }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $user->phone }}</td>

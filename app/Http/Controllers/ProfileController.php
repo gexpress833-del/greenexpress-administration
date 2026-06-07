@@ -6,6 +6,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use App\Services\CloudinaryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -36,17 +37,23 @@ class ProfileController extends Controller
             'address' => $validated['address'] ?? null,
         ]);
 
-        if ($request->hasFile('avatar')) {
+        $avatarData = $request->input('avatar');
+
+        if ($avatarData) {
             if ($user->avatar) {
                 $cloudinary->delete($user->avatar);
             }
 
-            $avatarUrl = $cloudinary->upload($request->file('avatar'), 'avatars');
+            $file = $this->base64ToFile($avatarData);
 
-            if ($avatarUrl !== null) {
-                $user->avatar = $avatarUrl;
-            } else {
-                return Redirect::route('profile.edit')->with('error', 'avatar-upload-failed');
+            if ($file) {
+                $avatarUrl = $cloudinary->upload($file, 'avatars');
+
+                if ($avatarUrl !== null) {
+                    $user->avatar = $avatarUrl;
+                } else {
+                    return Redirect::route('profile.edit')->with('error', 'avatar-upload-failed');
+                }
             }
         }
 
@@ -57,5 +64,26 @@ class ProfileController extends Controller
         $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    private function base64ToFile(string $base64): ?UploadedFile
+    {
+        if (! str_starts_with($base64, 'data:image')) {
+            return null;
+        }
+
+        [$type, $data] = explode(';', $base64);
+        [, $data] = explode(',', $data);
+
+        $decoded = base64_decode($data);
+        if ($decoded === false) {
+            return null;
+        }
+
+        $extension = str_contains($type, 'image/png') ? 'png' : 'jpg';
+        $tmpPath = tempnam(sys_get_temp_dir(), 'avatar_').'.'.$extension;
+        file_put_contents($tmpPath, $decoded);
+
+        return new UploadedFile($tmpPath, 'avatar.'.$extension, mime_content_type($tmpPath), null, true);
     }
 }

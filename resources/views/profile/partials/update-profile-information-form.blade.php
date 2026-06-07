@@ -12,7 +12,7 @@
         @csrf
         @method('patch')
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4" x-data="avatarCropper()">
             <div class="relative">
                 @if ($user->avatar)
                     <img src="{{ $user->avatar }}" alt="Avatar" class="h-20 w-20 rounded-full object-cover border-2 border-green-500">
@@ -23,12 +23,31 @@
                 @endif
             </div>
             <div class="flex-1">
-                <label for="avatar" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Photo de profil</label>
-                <input id="avatar" name="avatar" type="file" accept="image/*"
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Photo de profil</label>
+                <input type="file" accept="image/*" @change="openCropper($event)"
                        class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900 dark:file:text-green-300">
+                <input type="hidden" name="avatar" id="cropped-avatar" x-ref="croppedInput">
                 @error('avatar')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
+            </div>
+
+            {{-- Modal de cadrage --}}
+            <div x-show="showModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" @keydown.escape.window="closeModal()">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 max-w-lg w-full mx-4" @click.away="closeModal()">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Recadrer la photo</h3>
+                    <div class="max-h-80 overflow-hidden">
+                        <img x-ref="cropperImage" class="max-w-full">
+                    </div>
+                    <div class="flex justify-end gap-3 mt-4">
+                        <button type="button" @click="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600">
+                            Annuler
+                        </button>
+                        <button type="button" @click="saveCrop()" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">
+                            Appliquer
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -98,3 +117,58 @@
         </div>
     </form>
 </section>
+
+@push('scripts')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script>
+    function avatarCropper() {
+        return {
+            showModal: false,
+            cropper: null,
+            openCropper(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.$refs.cropperImage.src = e.target.result;
+                    this.showModal = true;
+                    this.$nextTick(() => {
+                        this.cropper = new Cropper(this.$refs.cropperImage, {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            autoCropArea: 1,
+                        });
+                    });
+                };
+                reader.readAsDataURL(file);
+            },
+            closeModal() {
+                this.showModal = false;
+                if (this.cropper) {
+                    this.cropper.destroy();
+                    this.cropper = null;
+                }
+            },
+            saveCrop() {
+                if (!this.cropper) return;
+
+                const canvas = this.cropper.getCroppedCanvas({
+                    width: 400,
+                    height: 400,
+                });
+
+                canvas.toBlob((blob) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        this.$refs.croppedInput.value = reader.result;
+                        this.closeModal();
+                    };
+                    reader.readAsDataURL(blob);
+                }, 'image/jpeg', 0.9);
+            }
+        }
+    }
+</script>
+@endpush
