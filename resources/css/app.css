@@ -90,3 +90,60 @@
         display: none;
     }
 }
+
+/* Performance & Smoothness Optimizations */
+@layer base {
+    /* GPU acceleration for animated elements */
+    .transition,
+    .transition-all,
+    .transition-colors,
+    .transition-opacity,
+    .transition-transform,
+    [x-show],
+    [x-cloak] {
+        will-change: auto;
+    }
+
+    /* Smoother scrolling on mobile */
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Reduce motion for users who prefer it */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+
+    /* Contain layout for heavy components */
+    .overflow-x-auto,
+    table,
+    .rounded-2xl,
+    .shadow-xl,
+    .shadow-2xl {
+        contain: layout style;
+    }
+
+    /* Optimize paint for fixed elements */
+    .fixed, .sticky {
+        contain: layout style paint;
+    }
+
+    /* Prevent layout shift on images */
+    img {
+        content-visibility: auto;
+    }
+
+    /* Faster taps on mobile */
+    a, button, [role="button"] {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+}

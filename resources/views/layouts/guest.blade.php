@@ -36,6 +36,7 @@
                 {{ $slot }}
             </div>
         </div>
+        <x-pwa-install />
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {

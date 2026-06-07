@@ -96,6 +96,7 @@
                 </main>
             </div>
         </div>
+        <x-pwa-install />
         @stack('scripts')
         <script>
             if ('serviceWorker' in navigator) {
