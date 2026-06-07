@@ -53,7 +53,7 @@
                 <form method="POST" action="{{ route('client.orders.review', $order) }}">
                     @csrf
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Note</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Note</label>
                         <div class="flex gap-2">
                             @for($i = 1; $i <= 5; $i++)
                                 <label class="cursor-pointer">
@@ -65,8 +65,8 @@
                         @error('rating')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
                     <div class="mb-4">
-                        <label for="comment" class="block text-sm font-medium text-gray-700 mb-1">Commentaire (optionnel)</label>
-                        <textarea name="comment" id="comment" rows="3" maxlength="500" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                        <label for="comment" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Commentaire (optionnel)</label>
+                        <textarea name="comment" id="comment" rows="3" maxlength="500" class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
                     </div>
                     <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition">Envoyer l'évaluation</button>
                 </form>

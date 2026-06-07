@@ -4,7 +4,7 @@
         <div class="flex gap-2">
             <form method="GET" action="{{ route('admin.deliveries.index') }}" class="flex gap-2">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Code livraison, commande, livreur..."
-                       class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64">
+                       class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition">Rechercher</button>
                 @if(request('search'))
                     <a href="{{ route('admin.deliveries.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium py-2 px-4 rounded-lg transition">Réinitialiser</a>

@@ -80,8 +80,8 @@ class ProfileController extends Controller
             return null;
         }
 
-        // Limite de taille : 2 Mo
-        if (strlen($decoded) > 2 * 1024 * 1024) {
+        // Limite de taille : 5 Mo
+        if (strlen($decoded) > 5 * 1024 * 1024) {
             return null;
         }
 
