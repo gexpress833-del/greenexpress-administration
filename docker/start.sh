@@ -7,18 +7,22 @@ sed -i "s/Listen 80/Listen ${PORT}/g" /etc/apache2/ports.conf
 sed -i "s/:80/:${PORT}/g" /etc/apache2/sites-available/000-default.conf
 sed -i "s/:80/:${PORT}/g" /etc/apache2/sites-available/laravel.conf
 
-# Create SQLite database if it does not exist
-if [ ! -f /var/www/html/database/database.sqlite ]; then
-    touch /var/www/html/database/database.sqlite
-    chown www-data:www-data /var/www/html/database/database.sqlite
-fi
-
 # Set permissions
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Generate APP_KEY if not set
 if [ -z "$APP_KEY" ]; then
     export APP_KEY=$(php /var/www/html/artisan key:generate --show)
+fi
+
+# Wait for PostgreSQL to be ready (Render internal)
+if [ "$DB_CONNECTION" = "pgsql" ]; then
+    echo "Waiting for PostgreSQL..."
+    until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USERNAME" -d "$DB_DATABASE" > /dev/null 2>&1; do
+        echo "PostgreSQL is unavailable - sleeping 1s"
+        sleep 1
+    done
+    echo "PostgreSQL is ready!"
 fi
 
 # Run migrations

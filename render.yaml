@@ -13,9 +13,19 @@ services:
       - key: APP_URL
         value: https://greenexpress-administration.onrender.com
       - key: DB_CONNECTION
-        value: sqlite
+        value: pgsql
+      - key: DB_HOST
+        value: dpg-XXXXXXXXXXXXXXXXXXX-a.oregon-postgres.render.com
+      - key: DB_PORT
+        value: 5432
       - key: DB_DATABASE
-        value: /var/www/html/database/database.sqlite
+        value: greenexpress
+      - key: DB_USERNAME
+        value: greenexpress
+      - key: DB_PASSWORD
+        value: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      - key: DB_SSLMODE
+        value: require
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_STORE
