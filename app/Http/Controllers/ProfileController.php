@@ -41,7 +41,11 @@ class ProfileController extends Controller
                 $cloudinary->delete($user->avatar);
             }
 
-            $user->avatar = $cloudinary->upload($request->file('avatar'), 'avatars');
+            $avatarUrl = $cloudinary->upload($request->file('avatar'), 'avatars');
+
+            if ($avatarUrl !== null) {
+                $user->avatar = $avatarUrl;
+            }
         }
 
         if ($user->isDirty('email')) {
@@ -52,5 +56,4 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
-
 }
