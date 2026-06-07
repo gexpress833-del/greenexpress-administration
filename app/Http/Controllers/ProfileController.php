@@ -80,10 +80,34 @@ class ProfileController extends Controller
             return null;
         }
 
-        $extension = str_contains($type, 'image/png') ? 'png' : 'jpg';
+        // Limite de taille : 2 Mo
+        if (strlen($decoded) > 2 * 1024 * 1024) {
+            return null;
+        }
+
+        // Vérifier que c'est bien une image valide
+        $imageInfo = getimagesizefromstring($decoded);
+        if ($imageInfo === false) {
+            return null;
+        }
+
+        $mime = $imageInfo['mime'];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        if (! in_array($mime, $allowedTypes, true)) {
+            return null;
+        }
+
+        $extension = match ($mime) {
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp',
+            default => 'jpg',
+        };
+
         $tmpPath = tempnam(sys_get_temp_dir(), 'avatar_').'.'.$extension;
         file_put_contents($tmpPath, $decoded);
 
-        return new UploadedFile($tmpPath, 'avatar.'.$extension, mime_content_type($tmpPath), null, true);
+        return new UploadedFile($tmpPath, 'avatar.'.$extension, $mime, null, true);
     }
 }
