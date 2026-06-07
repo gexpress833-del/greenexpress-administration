@@ -47,8 +47,8 @@ services:
       - key: LOG_LEVEL
         value: info
       - key: CLOUDINARY_CLOUD_NAME
-        value: YOUR_CLOUD_NAME
+        value: dd74zepgt
       - key: CLOUDINARY_API_KEY
-        value: YOUR_API_KEY
+        value: 277927317916575
       - key: CLOUDINARY_API_SECRET
-        value: YOUR_API_SECRET
+        value: e4RqcMwafizoUCXsqO2MrdwWccM
