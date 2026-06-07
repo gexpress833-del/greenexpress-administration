@@ -10,20 +10,22 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      - key: APP_KEY
+        value: base64:5Wt5BM9uMS5hC1qRyT55hZIp+A0/FsTlmUG/Qo+//0E=
       - key: APP_URL
-        value: https://greenexpress-administration.onrender.com
+        value: https://greenexpress.onrender.com
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
-        value: dpg-XXXXXXXXXXXXXXXXXXX-a.oregon-postgres.render.com
+        value: dpg-d8iog6rtqb8s73bd94tg-a.oregon-postgres.render.com
       - key: DB_PORT
         value: 5432
       - key: DB_DATABASE
-        value: greenexpress
+        value: greenexpress_db
       - key: DB_USERNAME
-        value: greenexpress
+        value: greenexpress_db_user
       - key: DB_PASSWORD
-        value: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        value: ZQP1zYk3V51B0CecC6ogyPTpGRc0ss0V
       - key: DB_SSLMODE
         value: require
       - key: SESSION_DRIVER
