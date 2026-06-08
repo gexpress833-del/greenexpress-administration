@@ -108,8 +108,8 @@
 
                 this.platform = isIOS ? 'ios' : (isAndroid ? 'android' : 'desktop');
 
-                if (isIOS || isAndroid) {
-                    this.bannerTitle = isIOS ? 'Ajouter à l\'écran d\'accueil' : 'Installer sur Android';
+                if (isIOS) {
+                    this.bannerTitle = 'Ajouter à l\'écran d\'accueil';
                     this.installButtonText = 'Voir comment';
                     setTimeout(() => {
                         if (!localStorage.getItem('pwa-dismissed')) this.showBanner = true;
@@ -120,18 +120,16 @@
                 window.addEventListener('beforeinstallprompt', (e) => {
                     e.preventDefault();
                     this.deferredPrompt = e;
-                    if (!isIOS && !isAndroid) {
-                        this.installButtonText = 'Installer';
-                    }
-                    if (!isIOS && !isAndroid && !localStorage.getItem('pwa-dismissed')) {
-                        setTimeout(() => { this.showBanner = true; }, 2000);
+                    this.installButtonText = 'Installer';
+                    if (!isIOS && !localStorage.getItem('pwa-dismissed')) {
+                        this.showBanner = true;
                     }
                 });
 
-                // Si pas de beforeinstallprompt après 4s, on montre quand même avec instructions manuelles
+                // Android sans beforeinstallprompt: invitation simple
                 setTimeout(() => {
-                    if (!this.deferredPrompt && !localStorage.getItem('pwa-dismissed') && !this.showBanner) {
-                        this.installButtonText = isAndroid ? 'Voir comment' : 'Installer';
+                    if (isAndroid && !this.deferredPrompt && !localStorage.getItem('pwa-dismissed') && !this.showBanner) {
+                        this.installButtonText = 'Installer';
                         this.showBanner = true;
                     }
                 }, 4000);
@@ -142,8 +140,17 @@
                     this.showBanner = false;
                     alert('Appuyez sur le bouton Partager \u25B2 puis sur "Ajouter \u00e0 l\'\u00e9cran d\'accueil" pour installer Green Express.');
                 } else if (this.platform === 'android') {
-                    // Android: même processus guidé qu'iOS
-                    window.dispatchEvent(new CustomEvent('pwa-instructions', { detail: { platform: 'android' } }));
+                    // Android: installation native directe sans instructions
+                    if (this.deferredPrompt) {
+                        this.deferredPrompt.prompt();
+                        const { outcome } = await this.deferredPrompt.userChoice;
+                        if (outcome === 'accepted') {
+                            this.showBanner = false;
+                        }
+                        this.deferredPrompt = null;
+                    } else {
+                        alert('Dans Chrome, touchez le menu (3 points) puis "Ajouter à l\'écran d\'accueil".');
+                    }
                 } else if (this.deferredPrompt) {
                     // Installation native directe (Android ancien / Desktop)
                     this.deferredPrompt.prompt();
