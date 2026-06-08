@@ -1,4 +1,4 @@
-<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-green-900 dark:bg-green-950 text-white transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto">
+<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-green-900 dark:bg-green-950 text-white transform transition-transform duration-200 ease-in-out lg:translate-x-0">
     <div class="flex items-center justify-between h-16 px-6 bg-green-950 dark:bg-black/20">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
             <img src="/logo.png" alt="Green Express" class="h-8 w-auto" onerror="this.style.display='none'; document.getElementById('nav-title').style.display='block';">

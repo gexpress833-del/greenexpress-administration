@@ -36,7 +36,7 @@
                 @include('layouts.sidebar')
             @endauth
 
-            <div class="flex-1 flex flex-col min-w-0">
+            <div class="flex-1 flex flex-col min-w-0 @auth lg:ml-64 @endauth">
                 @auth
                     @include('layouts.topbar')
                 @endauth

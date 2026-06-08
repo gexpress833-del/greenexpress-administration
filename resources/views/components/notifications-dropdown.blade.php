@@ -1,5 +1,5 @@
-<div x-data="notifications()" x-init="initNotifications()" class="relative">
-    <button @click="open = !open" @click.outside="open = false" class="relative p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition" title="Notifications">
+<div x-data="notifications()" x-init="initNotifications()" @click.outside="open = false" class="relative">
+    <button type="button" @click.stop="open = !open" class="relative p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition" title="Notifications">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
         </svg>
@@ -8,7 +8,7 @@
         </template>
     </button>
 
-    <div x-show="open" x-transition class="fixed sm:absolute inset-x-2 sm:inset-x-auto sm:right-0 top-16 sm:top-auto sm:mt-2 w-auto sm:w-80 max-w-none sm:max-w-[20rem] bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 z-50 overflow-hidden">
+    <div x-show="open" x-cloak x-transition style="display: none;" class="fixed sm:absolute inset-x-2 sm:inset-x-auto sm:right-0 top-20 sm:top-full sm:mt-2 w-auto sm:w-80 max-w-none sm:max-w-[20rem] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 z-[100] overflow-hidden">
         <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
             <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-100">Notifications</h3>
             <button x-show="unreadCount > 0" @click="markAllAsRead()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">Tout marquer comme lu</button>
