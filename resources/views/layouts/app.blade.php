@@ -2,18 +2,20 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="theme-color" content="#16a34a">
         <meta name="background-color" content="#ffffff">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="apple-mobile-web-app-title" content="Green Express">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="description" content="Application de gestion Green Express - Livraison de repas et administration">
 
         <link rel="manifest" href="/manifest.json">
         <link rel="apple-touch-icon" href="/logo.png">
+        <link rel="apple-touch-icon" sizes="192x192" href="/logo-192.png">
+        <link rel="icon" type="image/png" sizes="192x192" href="/logo-192.png">
 
         <title>@yield('title', 'Green Express')</title>
 
@@ -28,7 +30,7 @@
             })();
         </script>
     </head>
-    <body class="font-sans antialiased bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
+    <body class="font-sans antialiased bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200 overscroll-none">
         <div x-data="{ sidebarOpen: false }" class="min-h-screen flex flex-col lg:flex-row">
             @auth
                 @include('layouts.sidebar')
@@ -39,7 +41,7 @@
                     @include('layouts.topbar')
                 @endauth
 
-                <main class="flex-1 p-4 lg:p-8">
+                <main class="flex-1 p-4 lg:p-8 @auth pt-20 lg:pt-24 @endauth">
                     @if(session('success'))
                         <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900 shadow-sm dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100">
                             <div class="flex items-start gap-3">
@@ -101,9 +103,22 @@
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js')
+                    navigator.serviceWorker.register('/sw.js', { scope: '/' })
                         .then((registration) => {
                             console.log('SW registered:', registration.scope);
+                            if (registration.waiting) {
+                                registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                            }
+                            registration.addEventListener('updatefound', () => {
+                                const worker = registration.installing;
+                                if (worker) {
+                                    worker.addEventListener('statechange', () => {
+                                        if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                                            worker.postMessage({ type: 'SKIP_WAITING' });
+                                        }
+                                    });
+                                }
+                            });
                         })
                         .catch((error) => {
                             console.log('SW registration failed:', error);

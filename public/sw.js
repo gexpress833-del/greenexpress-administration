@@ -1,6 +1,6 @@
-const CACHE_NAME = 'green-express-v2';
-const STATIC_CACHE = 'green-express-static-v2';
-const DYNAMIC_CACHE = 'green-express-dynamic-v2';
+const CACHE_NAME = 'green-express-v3';
+const STATIC_CACHE = 'green-express-static-v3';
+const DYNAMIC_CACHE = 'green-express-dynamic-v3';
 
 const STATIC_ASSETS = [
     '/',
@@ -18,7 +18,15 @@ async function precacheStaticAssets() {
     if (cached.length > 0) return; // déjà precached
 
     // Assets de base toujours présents
-    await cache.addAll(STATIC_ASSETS);
+    await Promise.allSettled(
+        STATIC_ASSETS.map((asset) =>
+            fetch(asset, { cache: 'reload' }).then((response) => {
+                if (response && response.ok) {
+                    return cache.put(asset, response);
+                }
+            })
+        )
+    );
 
     // Découverte des assets buildés par Vite
     try {
@@ -47,20 +55,25 @@ self.addEventListener('install', (event) => {
 // Activation
 self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then((cacheNames) =>
-            Promise.all(
-                cacheNames
-                    .filter((name) => ![STATIC_CACHE, DYNAMIC_CACHE].includes(name))
-                    .map((name) => caches.delete(name))
+        caches.keys()
+            .then((cacheNames) =>
+                Promise.all(
+                    cacheNames
+                        .filter((name) => name.startsWith('green-express-') && ![CACHE_NAME, STATIC_CACHE, DYNAMIC_CACHE].includes(name))
+                        .map((name) => caches.delete(name))
+                )
             )
-        )
+            .then(() => self.clients.claim())
     );
-    self.clients.claim();
 });
 
 // Helpers
 function isStaticAsset(url) {
     return url.pathname.startsWith('/build/') ||
+           url.pathname === '/manifest.json' ||
+           url.pathname === '/logo.png' ||
+           url.pathname === '/logo-192.png' ||
+           url.pathname === '/favicon.ico' ||
            url.pathname === '/' ||
            url.pathname === '/login';
 }
@@ -149,5 +162,11 @@ self.addEventListener('fetch', (event) => {
         }
     } else if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
         event.respondWith(networkFirst(request));
+    }
+});
+
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
     }
 });
