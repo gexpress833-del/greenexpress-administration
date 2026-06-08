@@ -137,10 +137,8 @@
         contain: layout style;
     }
 
-    /* Optimize paint for fixed elements */
-    .fixed, .sticky {
-        contain: layout style paint;
-    }
+    /* Optimize paint for fixed elements - removed contain to allow global z-index */
+    /* .fixed, .sticky { contain: layout style paint; } */
 
     /* Prevent layout shift on images */
     img {
