@@ -55,35 +55,10 @@
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white" x-text="platform === 'ios' ? 'Installer sur iPhone/iPad' : 'Installer sur Android'">Installer</h3>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white" x-text="'Installer sur Android'">Installer</h3>
             <button @click="open = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
-        </div>
-
-        {{-- Instructions iOS --}}
-        <div x-show="platform === 'ios'" class="space-y-4">
-            <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0 text-sm font-bold text-blue-600">1</div>
-                <div>
-                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Appuyez sur le bouton Partager</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">En bas de Safari, c'est l'icône <strong>carre avec une flèche</strong> <span class="inline-block w-4 h-4 align-middle text-blue-500">&#9654;</span></p>
-                </div>
-            </div>
-            <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0 text-sm font-bold text-blue-600">2</div>
-                <div>
-                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Faites défiler vers le bas</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Dans le menu qui s'ouvre, cherchez <strong>"Sur l'écran d'accueil"</strong></p>
-                </div>
-            </div>
-            <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0 text-sm font-bold text-blue-600">3</div>
-                <div>
-                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Touchez "Ajouter"</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">L'application apparaîtra sur votre écran d'accueil</p>
-                </div>
-            </div>
         </div>
 
         {{-- Instructions Android manuel --}}
@@ -133,21 +108,22 @@
 
                 this.platform = isIOS ? 'ios' : (isAndroid ? 'android' : 'desktop');
 
-                if (isIOS) {
-                    this.bannerTitle = 'Ajouter à l\'écran d\'accueil';
+                if (isIOS || isAndroid) {
+                    this.bannerTitle = isIOS ? 'Ajouter à l\'écran d\'accueil' : 'Installer sur Android';
                     this.installButtonText = 'Voir comment';
                     setTimeout(() => {
                         if (!localStorage.getItem('pwa-dismissed')) this.showBanner = true;
                     }, 3000);
-                    return;
                 }
 
                 // Android & Desktop: listen for beforeinstallprompt
                 window.addEventListener('beforeinstallprompt', (e) => {
                     e.preventDefault();
                     this.deferredPrompt = e;
-                    this.installButtonText = 'Installer';
-                    if (!localStorage.getItem('pwa-dismissed')) {
+                    if (!isIOS && !isAndroid) {
+                        this.installButtonText = 'Installer';
+                    }
+                    if (!isIOS && !isAndroid && !localStorage.getItem('pwa-dismissed')) {
                         setTimeout(() => { this.showBanner = true; }, 2000);
                     }
                 });
@@ -161,7 +137,14 @@
                 }, 4000);
             },
             async installPWA() {
-                if (this.deferredPrompt) {
+                if (this.platform === 'ios') {
+                    // iOS: invitation directe
+                    this.showBanner = false;
+                    alert('Appuyez sur le bouton Partager \u25B2 puis sur "Ajouter \u00e0 l\'\u00e9cran d\'accueil" pour installer Green Express.');
+                } else if (this.platform === 'android') {
+                    // Android: même processus guidé qu'iOS
+                    window.dispatchEvent(new CustomEvent('pwa-instructions', { detail: { platform: 'android' } }));
+                } else if (this.deferredPrompt) {
                     // Installation native directe (Android ancien / Desktop)
                     this.deferredPrompt.prompt();
                     const { outcome } = await this.deferredPrompt.userChoice;
@@ -169,12 +152,6 @@
                         this.showBanner = false;
                     }
                     this.deferredPrompt = null;
-                } else if (this.platform === 'ios') {
-                    // iOS: montrer les instructions étape par étape
-                    window.dispatchEvent(new CustomEvent('pwa-instructions', { detail: { platform: 'ios' } }));
-                } else if (this.platform === 'android') {
-                    // Android sans beforeinstallprompt: instructions manuelles
-                    window.dispatchEvent(new CustomEvent('pwa-instructions', { detail: { platform: 'android' } }));
                 } else {
                     // Desktop: essayer chrome app install ou donner des instructions
                     if (window.chrome && window.chrome.app && window.chrome.app.isInstalled) {
