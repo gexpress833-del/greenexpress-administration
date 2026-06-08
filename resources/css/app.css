@@ -80,6 +80,12 @@
     }
 }
 
+@layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
 @layer utilities {
     /* Hide scrollbar but keep functionality */
     .scrollbar-hide {

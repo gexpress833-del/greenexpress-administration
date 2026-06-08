@@ -9,9 +9,9 @@
     </button>
 
     <!-- Overlay transparent pour fermer au clic extérieur -->
-    <div x-show="open" x-cloak @click="open = false" class="fixed inset-0 z-[9998]" style="display: none;"></div>
+    <div x-show="open" x-cloak @click="open = false" class="fixed inset-0 z-[9998]"></div>
 
-    <div x-show="open" x-cloak x-transition style="display: none;" class="fixed right-2 sm:right-4 top-20 w-[calc(100%-1rem)] sm:w-80 max-w-[20rem] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 z-[9999] overflow-hidden">
+    <div x-show="open" x-cloak x-transition class="fixed right-2 sm:right-4 top-20 w-[calc(100%-1rem)] sm:w-80 max-w-[20rem] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 z-[9999] overflow-hidden">
         <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
             <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-100">Notifications</h3>
             <button x-show="unreadCount > 0" @click="markAllAsRead()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">Tout marquer comme lu</button>
