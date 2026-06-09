@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $foreignKeys = DB::select('SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_NAME = "subscriptions" AND CONSTRAINT_TYPE = "FOREIGN KEY"');
+        $foreignKeys = DB::select("SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_NAME = 'subscriptions' AND CONSTRAINT_TYPE = 'FOREIGN KEY'");
         $hasFk = collect($foreignKeys)->contains(fn ($fk) => str_contains($fk->CONSTRAINT_NAME, 'client_id'));
 
         Schema::table('subscriptions', function (Blueprint $table) use ($hasFk) {

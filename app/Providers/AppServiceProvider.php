@@ -4,6 +4,12 @@ namespace App\Providers;
 
 use App\Events\OrderValidatedByClient;
 use App\Listeners\CreditAgentOnOrderValidation;
+use App\Models\ExchangeRate;
+use App\Models\Meal;
+use App\Models\SubscriptionType;
+use App\Observers\ExchangeRateObserver;
+use App\Observers\MealObserver;
+use App\Observers\SubscriptionTypeObserver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -31,5 +37,10 @@ class AppServiceProvider extends ServiceProvider
             OrderValidatedByClient::class,
             CreditAgentOnOrderValidation::class,
         );
+
+        // Register observers for automatic notifications
+        Meal::observe(MealObserver::class);
+        SubscriptionType::observe(SubscriptionTypeObserver::class);
+        ExchangeRate::observe(ExchangeRateObserver::class);
     }
 }

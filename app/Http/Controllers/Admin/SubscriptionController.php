@@ -13,7 +13,7 @@ class SubscriptionController extends Controller
 {
     public function index(Request $request)
     {
-        $subscriptions = Subscription::with(['client', 'agent'])
+        $subscriptions = Subscription::with(['client', 'agent', 'subscriptionType'])
             ->when($request->filled('search'), function ($q) use ($request) {
                 $term = '%'.$request->search.'%';
                 $q->whereHas('client', fn ($c) => $c->where('name', 'like', $term))
@@ -28,7 +28,7 @@ class SubscriptionController extends Controller
 
     public function show(Subscription $subscription)
     {
-        $subscription->load(['client', 'agent', 'validator', 'suspensions']);
+        $subscription->load(['client', 'agent', 'validator', 'suspensions', 'subscriptionType']);
 
         return view('admin.subscriptions.show', compact('subscription'));
     }

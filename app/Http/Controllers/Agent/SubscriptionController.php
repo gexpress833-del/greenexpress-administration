@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
+use App\Models\SubscriptionType;
 use App\Models\User;
 use App\Notifications\CredentialsGenerated;
 use App\Notifications\SubscriptionPending;
@@ -27,7 +28,8 @@ class SubscriptionController extends Controller
 
     public function create()
     {
-        return view('agent.subscriptions.create');
+        $subscriptionTypes = SubscriptionType::where('is_active', true)->orderBy('display_order')->get();
+        return view('agent.subscriptions.create', compact('subscriptionTypes'));
     }
 
     public function store(Request $request)
@@ -36,13 +38,14 @@ class SubscriptionController extends Controller
             'client_name' => ['required', 'string', 'max:255'],
             'client_phone' => ['required', 'string', 'max:50'],
             'client_email' => ['required', 'email'],
-            'type' => ['required', 'in:weekly,monthly'],
+            'subscription_type_id' => ['required', 'exists:subscription_types,id'],
             'start_date' => ['required', 'date'],
             'currency' => ['required', 'in:usd,fc'],
             'price' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $totalDays = $data['type'] === 'weekly' ? 7 : 30;
+        $subscriptionType = SubscriptionType::findOrFail($data['subscription_type_id']);
+        $totalDays = $subscriptionType->duration_days;
         $price = (float) $data['price'];
         $currencyService = app(CurrencyService::class);
         $priceFc = $data['currency'] === 'fc' ? $price : $currencyService->usdToFc($price);
@@ -53,7 +56,8 @@ class SubscriptionController extends Controller
             'client_name' => $data['client_name'],
             'client_phone' => $data['client_phone'],
             'client_email' => $data['client_email'],
-            'type' => $data['type'],
+            'subscription_type_id' => $subscriptionType->id,
+            'type' => $subscriptionType->slug,
             'start_date' => $data['start_date'],
             'end_date' => now()->parse($data['start_date'])->addDays($totalDays),
             'total_days' => $totalDays,

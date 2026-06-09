@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['client_id', 'agent_id', 'type', 'start_date', 'end_date', 'total_days', 'remaining_days', 'price', 'currency', 'price_fc', 'status', 'admin_validated_at', 'validated_by', 'client_name', 'client_phone', 'client_email', 'credentials_generated_at'])]
+#[Fillable(['client_id', 'agent_id', 'subscription_type_id', 'type', 'start_date', 'end_date', 'total_days', 'remaining_days', 'price', 'currency', 'price_fc', 'status', 'admin_validated_at', 'validated_by', 'client_name', 'client_phone', 'client_email', 'credentials_generated_at'])]
 class Subscription extends Model
 {
     use HasFactory, SoftDeletes;
@@ -41,6 +41,11 @@ class Subscription extends Model
     public function validator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'validated_by');
+    }
+
+    public function subscriptionType(): BelongsTo
+    {
+        return $this->belongsTo(SubscriptionType::class);
     }
 
     public function suspensions(): HasMany
@@ -81,6 +86,21 @@ class Subscription extends Model
             'suspended' => 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200',
             'expired' => 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200',
             default => 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
+        };
+    }
+
+    public function getTypeLabelAttribute(): string
+    {
+        if ($this->subscriptionType) {
+            return $this->subscriptionType->name;
+        }
+
+        return match ($this->type) {
+            'weekly' => 'Hebdomadaire',
+            'monthly' => 'Mensuel',
+            'bi_weekly' => 'Bi-mensuel',
+            'quarterly' => 'Trimestriel',
+            default => ucfirst($this->type),
         };
     }
 }

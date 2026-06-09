@@ -1,35 +1,49 @@
 <x-app-layout>
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Historique des notifications</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Toutes vos notifications reçues sur Green Express</p>
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Notifications</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Toutes vos notifications sur Green Express</p>
+        </div>
+        <form method="POST" action="{{ route('notifications.read-all') }}" class="inline">
+            @csrf
+            <button type="submit" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Tout marquer comme lu</button>
+        </form>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         @if($notifications->count() > 0)
             <div class="divide-y divide-gray-100 dark:divide-gray-700">
                 @foreach($notifications as $notification)
-                    <div class="px-4 py-4 sm:px-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                    <div class="px-4 py-4 sm:px-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition {{ $notification->is_read ? '' : 'bg-blue-50/50 dark:bg-blue-900/10' }}">
                         <div class="flex items-start gap-3">
-                            <div class="mt-1 w-2 h-2 rounded-full shrink-0 {{ $notification->read_at ? 'bg-gray-300 dark:bg-gray-600' : 'bg-blue-500' }}"></div>
+                            <div class="mt-1 w-10 h-10 rounded-lg flex items-center justify-center shrink-0 {{ $notification->type_color }}">
+                                <span class="text-lg">{{ $notification->icon }}</span>
+                            </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between">
                                     <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
-                                        {{ $notification->data['title'] ?? 'Notification' }}
+                                        {{ $notification->title }}
+                                        @if(!$notification->is_read)
+                                            <span class="ml-2 inline-flex w-2 h-2 rounded-full bg-blue-500"></span>
+                                        @endif
                                     </p>
                                     <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap ml-2">
-                                        {{ $notification->created_at->format('d/m/Y H:i') }}
+                                        {{ $notification->created_at->diffForHumans() }}
                                     </span>
                                 </div>
                                 <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                                    {{ $notification->data['message'] ?? '' }}
+                                    {{ $notification->message }}
                                 </p>
-                                @if(!empty($notification->data['url']))
-                                    <div class="mt-2">
-                                        <a href="{{ $notification->data['url'] }}" class="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium">
-                                            Voir les détails →
-                                        </a>
-                                    </div>
-                                @endif
+                                <div class="mt-2 flex items-center gap-3">
+                                    @if(!$notification->is_read)
+                                        <form method="POST" action="{{ route('notifications.read', $notification->id) }}" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="source" value="app">
+                                            <button type="submit" class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">Marquer comme lu</button>
+                                        </form>
+                                    @endif
+                                    <span class="text-xs text-gray-400 dark:text-gray-500">{{ $notification->created_at->format('d/m/Y H:i') }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>

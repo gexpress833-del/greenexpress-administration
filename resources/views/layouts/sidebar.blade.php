@@ -26,6 +26,9 @@
             <a href="{{ route('admin.subscriptions.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-800 transition {{ request()->routeIs('admin.subscriptions.*') ? 'bg-green-800' : '' }}">
                 <span class="ml-2">Abonnements</span>
             </a>
+            <a href="{{ route('admin.subscription-types.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-800 transition {{ request()->routeIs('admin.subscription-types.*') ? 'bg-green-800' : '' }}">
+                <span class="ml-2">Types d'abonnement</span>
+            </a>
             <a href="{{ route('admin.deliveries.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-green-800 transition {{ request()->routeIs('admin.deliveries.*') ? 'bg-green-800' : '' }}">
                 <span class="ml-2">Livraisons</span>
             </a>

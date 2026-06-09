@@ -25,10 +25,15 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Type</label>
-                    <select name="type" required class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">
-                        <option value="weekly">Hebdomadaire (7 jours)</option>
-                        <option value="monthly">Mensuel (30 jours)</option>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Type d'abonnement</label>
+                    <select name="subscription_type_id" required class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        @forelse($subscriptionTypes as $type)
+                            <option value="{{ $type->id }}" {{ old('subscription_type_id') == $type->id ? 'selected' : '' }}>
+                                {{ $type->name }} ({{ $type->duration_days }} jours) - ${{ number_format($type->price, 2) }}
+                            </option>
+                        @empty
+                            <option disabled>Aucun type disponible</option>
+                        @endforelse
                     </select>
                 </div>
                 <div>

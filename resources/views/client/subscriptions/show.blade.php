@@ -8,7 +8,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Détails</h2>
             <div class="space-y-3 text-sm">
-                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Type</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->type === 'weekly' ? 'Hebdomadaire' : 'Mensuel' }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Type</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->type_label }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Date début</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->start_date?->format('d/m/Y') }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Date fin</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->end_date?->format('d/m/Y') }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Jours restants</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->remaining_days }}</span></div>

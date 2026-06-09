@@ -31,7 +31,7 @@
                         <tr>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $sub->client?->name ?? $sub->client_name }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $sub->agent->name }}</td>
-                            <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $sub->type === 'weekly' ? 'Hebdo' : 'Mensuel' }}</td>
+                            <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $sub->type_label }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $sub->end_date?->format('d/m/Y') }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">$ {{ number_format($sub->price, 2) }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ number_format($sub->price_fc, 0, ',', '.') }} FC</td>

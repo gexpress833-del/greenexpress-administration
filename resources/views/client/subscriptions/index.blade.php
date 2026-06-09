@@ -19,7 +19,7 @@
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                     @forelse($subscriptions as $sub)
                         <tr>
-                            <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $sub->type === 'weekly' ? 'Hebdomadaire' : 'Mensuel' }}</td>
+                            <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $sub->type_label }}</td>
                             <td class="px-6 py-3 text-gray-600 dark:text-gray-300">{{ $sub->start_date?->format('d/m/Y') }}</td>
                             <td class="px-6 py-3 text-gray-600 dark:text-gray-300">{{ $sub->end_date?->format('d/m/Y') }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $sub->remaining_days }}</td>

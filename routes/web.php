@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\MealController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\SubscriptionSuspensionController;
+use App\Http\Controllers\Admin\SubscriptionTypeController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WithdrawalController;
 use App\Http\Controllers\Agent\PointsController;
@@ -50,6 +51,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::get('/orders/{order}/print', [OrderController::class, 'print'])->name('orders.print');
         Route::resource('subscriptions', SubscriptionController::class)->only(['index', 'show', 'update']);
+        Route::resource('subscription-types', SubscriptionTypeController::class)->except(['show']);
         Route::resource('deliveries', DeliveryController::class)->only(['index', 'create', 'store']);
         Route::resource('exchange-rates', ExchangeRateController::class)->only(['index', 'store']);
         Route::resource('commissions', CommissionController::class)->only(['index']);

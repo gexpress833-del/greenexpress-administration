@@ -87,7 +87,9 @@
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
                             'Accept': 'application/json',
-                        }
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ source: notif.source })
                     });
                     notif.read_at = new Date().toISOString();
                     this.unreadCount = Math.max(0, this.unreadCount - 1);

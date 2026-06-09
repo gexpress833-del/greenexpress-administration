@@ -62,6 +62,9 @@ class DatabaseSeeder extends Seeder
             'password_changed_at' => now(),
         ]);
 
+        // Subscription Types
+        $this->call(SubscriptionTypeSeeder::class);
+
         // Categories
         $categories = [
             ['name' => 'Plats Principaux', 'slug' => 'plats-principaux'],

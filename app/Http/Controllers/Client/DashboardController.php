@@ -14,8 +14,25 @@ class DashboardController extends Controller
         $user = $request->user();
         $activeSubscription = Subscription::where('client_id', $user->id)
             ->whereIn('status', ['active', 'pending'])
+            ->with('subscriptionType')
             ->latest()
             ->first();
+
+        // Historique des abonnements
+        $subscriptionHistory = Subscription::where('client_id', $user->id)
+            ->with('subscriptionType')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        // Total payé pour les abonnements
+        $totalSubscriptionSpent = Subscription::where('client_id', $user->id)
+            ->whereIn('status', ['active', 'expired'])
+            ->sum('price');
+        $totalSubscriptionSpentFc = Subscription::where('client_id', $user->id)
+            ->whereIn('status', ['active', 'expired'])
+            ->sum('price_fc');
+
         $totalOrders = Order::where('client_id', $user->id)->count();
         $totalSpent = Order::where('client_id', $user->id)->whereIn('status', ['delivered', 'confirmed'])->sum('total_amount');
         $totalSpentFc = Order::where('client_id', $user->id)->whereIn('status', ['delivered', 'confirmed'])->sum('total_amount_fc');
@@ -30,7 +47,8 @@ class DashboardController extends Controller
         $recentOrders = Order::where('client_id', $user->id)->latest()->take(5)->get();
 
         return view('client.dashboard', compact(
-            'activeSubscription', 'totalOrders', 'totalSpent', 'totalSpentFc',
+            'activeSubscription', 'subscriptionHistory', 'totalSubscriptionSpent', 'totalSubscriptionSpentFc',
+            'totalOrders', 'totalSpent', 'totalSpentFc',
             'pendingOrders', 'deliveredOrders', 'upcomingDeliveries', 'recentOrders'
         ));
     }

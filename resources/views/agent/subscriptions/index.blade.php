@@ -32,7 +32,7 @@
                                     <span class="block text-xs text-gray-400">{{ $sub->client_email }}</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-3">{{ $sub->type === 'weekly' ? 'Hebdo' : 'Mensuel' }}</td>
+                            <td class="px-6 py-3">{{ $sub->type_label }}</td>
                             <td class="px-6 py-3">{{ $sub->start_date?->format('d/m/Y') }}</td>
                             <td class="px-6 py-3">{{ $sub->end_date?->format('d/m/Y') }}</td>
                             <td class="px-6 py-3">$ {{ number_format($sub->price, 2) }}</td>
