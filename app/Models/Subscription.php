@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['client_id', 'agent_id', 'type', 'start_date', 'end_date', 'total_days', 'remaining_days', 'price', 'currency', 'price_fc', 'status', 'admin_validated_at', 'validated_by'])]
+#[Fillable(['client_id', 'agent_id', 'type', 'start_date', 'end_date', 'total_days', 'remaining_days', 'price', 'currency', 'price_fc', 'status', 'admin_validated_at', 'validated_by', 'client_name', 'client_phone', 'client_email', 'credentials_generated_at'])]
 class Subscription extends Model
 {
     use HasFactory, SoftDeletes;
@@ -24,6 +24,7 @@ class Subscription extends Model
             'price' => 'decimal:2',
             'price_fc' => 'decimal:2',
             'admin_validated_at' => 'datetime',
+            'credentials_generated_at' => 'datetime',
         ];
     }
 
@@ -65,6 +66,11 @@ class Subscription extends Model
     public function isExpired(): bool
     {
         return $this->end_date !== null && $this->end_date->isPast();
+    }
+
+    public function hasCredentialsGenerated(): bool
+    {
+        return $this->client_id !== null;
     }
 
     public function getStatusColorClassAttribute(): string

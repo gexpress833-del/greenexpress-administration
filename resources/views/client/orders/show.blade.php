@@ -1,31 +1,31 @@
 <x-app-layout>
     <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-base sm:text-2xl font-bold text-gray-800">Commande <span class="break-all">{{ $order->code }}</span></h1>
+        <h1 class="text-base sm:text-2xl font-bold text-gray-800 dark:text-gray-100">Commande <span class="break-all">{{ $order->code }}</span></h1>
         <x-back-button :href="route('client.orders.index')" />
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Informations</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Informations</h2>
             <div class="space-y-3 text-sm">
-                <div class="flex justify-between"><span class="text-gray-500">Code</span><span class="font-medium">{{ $order->code }}</span></div>
-                <div class="flex justify-between"><span class="text-gray-500">Adresse</span><span class="font-medium">{{ $order->delivery_address }}</span></div>
-                <div class="flex justify-between"><span class="text-gray-500">Date livraison</span><span class="font-medium">{{ $order->delivery_date?->format('d/m/Y') }}</span></div>
-                <div class="flex justify-between"><span class="text-gray-500">Total USD</span><span class="font-bold text-green-700">$ {{ number_format($order->total_amount, 2) }}</span></div>
-                <div class="flex justify-between"><span class="text-gray-500">Total FC</span><span class="font-bold text-green-700">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</span></div>
-                <div class="flex justify-between"><span class="text-gray-500">Statut</span><span class="font-medium">{{ ucfirst($order->status) }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Code</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->code }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Adresse</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->delivery_address }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Date livraison</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->delivery_date?->format('d/m/Y') }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Total USD</span><span class="font-bold text-green-700 dark:text-green-400">$ {{ number_format($order->total_amount, 2) }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Total FC</span><span class="font-bold text-green-700 dark:text-green-400">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Statut</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ ucfirst($order->status) }}</span></div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Repas</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Repas</h2>
             @foreach($order->items as $item)
-                <div class="flex justify-between items-center py-2 border-b border-gray-50 text-sm">
+                <div class="flex justify-between items-center py-2 border-b border-gray-50 dark:border-gray-700 text-sm">
                     <div>
-                        <p class="font-medium">{{ $item->meal->name }}</p>
-                        <p class="text-xs text-gray-500">Qté: {{ $item->quantity }} x $ {{ number_format($item->unit_price, 2) }}</p>
+                        <p class="font-medium text-gray-800 dark:text-gray-100">{{ $item->meal->name }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Qté: {{ $item->quantity }} x $ {{ number_format($item->unit_price, 2) }}</p>
                     </div>
-                    <p class="font-semibold">$ {{ number_format($item->total_price, 2) }}</p>
+                    <p class="font-semibold text-gray-800 dark:text-gray-100">$ {{ number_format($item->total_price, 2) }}</p>
                 </div>
             @endforeach
         </div>
@@ -33,23 +33,23 @@
 
     @if($order->status === 'delivered')
         <div class="mt-4">
-            <a href="{{ route('client.complaints.create', $order) }}" class="text-sm text-red-600 hover:text-red-800 font-medium underline">Déposer une réclamation sur cette commande</a>
+            <a href="{{ route('client.complaints.create', $order) }}" class="text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-medium underline">Déposer une réclamation sur cette commande</a>
         </div>
         @if($order->review)
-            <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Votre évaluation</h2>
+            <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Votre évaluation</h2>
                 <div class="flex items-center gap-1 mb-2">
                     @for($i = 1; $i <= 5; $i++)
                         <svg class="w-5 h-5 {{ $i <= $order->review->rating ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                     @endfor
                 </div>
                 @if($order->review->comment)
-                    <p class="text-sm text-gray-600 italic">"{{ $order->review->comment }}"</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 italic">"{{ $order->review->comment }}"</p>
                 @endif
             </div>
         @else
-            <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Évaluer la livraison</h2>
+            <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Évaluer la livraison</h2>
                 <form method="POST" action="{{ route('client.orders.review', $order) }}">
                     @csrf
                     <div class="mb-4">

@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionSuspension;
+use App\Models\User;
+use App\Notifications\SubscriptionReactivated;
+use App\Notifications\SubscriptionRenewed;
+use App\Notifications\SubscriptionSuspended;
 use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
@@ -15,6 +19,7 @@ class SubscriptionController extends Controller
             ->with('agent')
             ->latest()
             ->paginate(15);
+
         return view('client.subscriptions.index', compact('subscriptions'));
     }
 
@@ -23,6 +28,7 @@ class SubscriptionController extends Controller
         abort_unless($subscription->client_id === $request->user()->id, 403);
 
         $subscription->load(['agent', 'suspensions']);
+
         return view('client.subscriptions.show', compact('subscription'));
     }
 
@@ -43,6 +49,10 @@ class SubscriptionController extends Controller
         $subscription->status = 'active';
         $subscription->save();
 
+        $subscription->client->notify(new SubscriptionRenewed($subscription));
+        $subscription->agent?->notify(new SubscriptionRenewed($subscription));
+        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionRenewed($subscription)));
+
         return redirect()->route('client.subscriptions.index')->with('success', 'Abonnement renouvelé.');
     }
 
@@ -55,12 +65,17 @@ class SubscriptionController extends Controller
             'duration_days' => ['required', 'integer', 'min:1'],
         ]);
 
-        SubscriptionSuspension::create([
+        $suspension = SubscriptionSuspension::create([
             'subscription_id' => $subscription->id,
             'reason' => $data['reason'],
             'duration_days' => $data['duration_days'],
             'status' => 'pending',
         ]);
+
+        $suspension->load('subscription.client', 'subscription.agent');
+        $suspension->subscription->client->notify(new SubscriptionSuspended($suspension));
+        $suspension->subscription->agent?->notify(new SubscriptionSuspended($suspension));
+        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionSuspended($suspension)));
 
         return redirect()->route('client.subscriptions.index')->with('success', 'Demande de suspension envoyée.');
     }
@@ -71,6 +86,10 @@ class SubscriptionController extends Controller
 
         $subscription->status = 'active';
         $subscription->save();
+
+        $subscription->client->notify(new SubscriptionReactivated($subscription));
+        $subscription->agent?->notify(new SubscriptionReactivated($subscription));
+        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionReactivated($subscription)));
 
         return redirect()->route('client.subscriptions.index')->with('success', 'Abonnement réactivé.');
     }

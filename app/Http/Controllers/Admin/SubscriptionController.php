@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
-use App\Models\User;
+use App\Notifications\SubscriptionActivated;
 use App\Services\ActivityLogService;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
@@ -15,19 +15,21 @@ class SubscriptionController extends Controller
     {
         $subscriptions = Subscription::with(['client', 'agent'])
             ->when($request->filled('search'), function ($q) use ($request) {
-                $term = '%' . $request->search . '%';
+                $term = '%'.$request->search.'%';
                 $q->whereHas('client', fn ($c) => $c->where('name', 'like', $term))
-                  ->orWhereHas('agent', fn ($a) => $a->where('name', 'like', $term));
+                    ->orWhereHas('agent', fn ($a) => $a->where('name', 'like', $term));
             })
             ->latest()
             ->paginate(20)
             ->withQueryString();
+
         return view('admin.subscriptions.index', compact('subscriptions'));
     }
 
     public function show(Subscription $subscription)
     {
         $subscription->load(['client', 'agent', 'validator', 'suspensions']);
+
         return view('admin.subscriptions.show', compact('subscription'));
     }
 
@@ -38,15 +40,20 @@ class SubscriptionController extends Controller
         $subscription->validated_by = $request->user()->id;
         $subscription->save();
 
-        app(ActivityLogService::class)->logFromRequest($request, 'subscription_validated', Subscription::class, $subscription->id, 'Admin validated subscription for client ' . $subscription->client->name);
+        if ($subscription->agent) {
+            $subscription->agent->notify(new SubscriptionActivated($subscription));
+        }
+
+        app(ActivityLogService::class)->logFromRequest($request, 'subscription_validated', Subscription::class, $subscription->id, 'Admin validated subscription for client '.($subscription->client?->name ?? $subscription->client_name));
 
         $redirect = redirect()->route('admin.subscriptions.show', $subscription)
             ->with('success', 'Abonnement validé.');
 
-        if ($subscription->client->phone) {
+        $clientPhone = $subscription->client?->phone ?? $subscription->client_phone;
+        if ($clientPhone) {
             $whatsappLink = app(WhatsAppService::class)->subscriptionActivatedLink(
-                $subscription->client->phone,
-                $subscription->client->name,
+                $clientPhone,
+                $subscription->client?->name ?? $subscription->client_name,
                 $subscription->type,
                 $subscription->end_date->format('d/m/Y')
             );

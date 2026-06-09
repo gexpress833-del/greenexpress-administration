@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $weeklyDeliveries = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
-            $weeklyDeliveries[$date->format('D')] = Delivery::where('livreur_id', $user->id)->whereDate('delivered_at', $date)->count();
+            $weeklyDeliveries[$date->locale('fr')->isoFormat('ddd')] = Delivery::where('livreur_id', $user->id)->whereDate('delivered_at', $date)->count();
         }
 
         $recentDeliveries = Delivery::where('livreur_id', $user->id)->with('order')->latest()->take(5)->get();

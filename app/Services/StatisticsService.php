@@ -106,7 +106,7 @@ class StatisticsService
         $dailyTrend = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
-            $dailyTrend[$date->format('D')] = Order::where('agent_id', $agentId)
+            $dailyTrend[$date->locale('fr')->isoFormat('ddd')] = Order::where('agent_id', $agentId)
                 ->where('status', 'delivered')
                 ->whereNotNull('client_validated_at')
                 ->whereDate('client_validated_at', $date)

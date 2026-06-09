@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -34,7 +35,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse|Response
     {
         Auth::guard('web')->logout();
 
@@ -42,6 +43,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        // Windows php -S crashes on POST redirect; use HTML redirect instead
+        $loginUrl = route('login');
+
+        return response("<html><head><meta http-equiv=\"refresh\" content=\"0;url={$loginUrl}\"></head><body><p>Déconnexion...</p></body></html>");
     }
 }

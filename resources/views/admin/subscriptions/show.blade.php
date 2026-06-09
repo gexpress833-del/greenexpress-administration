@@ -8,7 +8,9 @@
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Détails</h2>
             <div class="space-y-3 text-sm">
-                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Client</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->client->name }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Client</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->client?->name ?? $subscription->client_name }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Email client</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->client?->email ?? $subscription->client_email }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Tél. client</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->client?->phone ?? $subscription->client_phone }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Agent</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->agent->name }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Type</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->type === 'weekly' ? 'Hebdomadaire' : 'Mensuel' }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Date début</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->start_date?->format('d/m/Y') }}</span></div>
@@ -16,6 +18,7 @@
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Jours restants</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $subscription->remaining_days }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Prix</span><span class="font-medium text-gray-800 dark:text-gray-100">$ {{ number_format($subscription->price, 2) }}<br><span class="text-xs text-gray-500 dark:text-gray-400">{{ number_format($subscription->price_fc, 0, ',', '.') }} FC</span></span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Statut</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ ucfirst($subscription->status) }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Identifiants</span><span class="font-medium {{ $subscription->hasCredentialsGenerated() ? 'text-green-600' : 'text-amber-600' }}">{{ $subscription->hasCredentialsGenerated() ? 'Générés' : 'Non générés' }}</span></div>
             </div>
 
             @if($subscription->status === 'pending')

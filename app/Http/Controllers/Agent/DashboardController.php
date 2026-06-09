@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Agent;
 use App\Http\Controllers\Controller;
 use App\Models\Commission;
 use App\Models\Order;
+use App\Models\Withdrawal;
 use App\Services\CommissionService;
 use App\Services\PointService;
 use App\Services\RewardService;
@@ -28,7 +29,7 @@ class DashboardController extends Controller
         $todayPoints = $pointService->getTodayPoints($user->id);
         $totalCommissions = Commission::where('agent_id', $user->id)->where('type', 'daily_commission')->sum('amount_usd');
         $availableBalance = $commissionService->getAvailableBalance($user->id);
-        $pendingWithdrawals = \App\Models\Withdrawal::where('agent_id', $user->id)->where('status', 'pending')->count();
+        $pendingWithdrawals = Withdrawal::where('agent_id', $user->id)->where('status', 'pending')->count();
 
         $todayCommissionUsd = (float) Commission::where('agent_id', $user->id)
             ->where('type', 'daily_commission')
@@ -46,7 +47,7 @@ class DashboardController extends Controller
         $weeklyOrders = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
-            $weeklyOrders[$date->format('D')] = Order::where('agent_id', $user->id)
+            $weeklyOrders[$date->locale('fr')->isoFormat('ddd')] = Order::where('agent_id', $user->id)
                 ->where('status', 'delivered')
                 ->whereNotNull('client_validated_at')
                 ->whereDate('client_validated_at', $date)

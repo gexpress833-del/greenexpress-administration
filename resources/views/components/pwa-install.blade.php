@@ -1,5 +1,5 @@
 <div x-data="pwaInstall()" x-init="init()" x-show="showBanner" x-cloak
-     class="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6"
+     class="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
      style="display: none;">
     <div class="mx-auto max-w-lg transform transition-all duration-500"
          x-transition:enter="transition ease-out duration-300"
@@ -55,10 +55,35 @@
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white" x-text="'Installer sur Android'">Installer</h3>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white" x-text="platform === 'ios' ? 'Ajouter sur iOS' : 'Installer sur Android'">Installer</h3>
             <button @click="open = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
+        </div>
+
+        {{-- Instructions iOS --}}
+        <div x-show="platform === 'ios'" class="space-y-4">
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0 text-sm font-bold text-green-600">1</div>
+                <div>
+                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Touchez le bouton Partager</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Le bouton <strong>Partager</strong> en bas de Safari</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0 text-sm font-bold text-green-600">2</div>
+                <div>
+                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Faites défiler et touchez "Ajouter à l'écran d'accueil"</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Ou "Add to Home Screen"</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0 text-sm font-bold text-green-600">3</div>
+                <div>
+                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Touchez "Ajouter" en haut à droite</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">L'icône apparaît sur votre écran d'accueil</p>
+                </div>
+            </div>
         </div>
 
         {{-- Instructions Android manuel --}}
@@ -136,9 +161,9 @@
             },
             async installPWA() {
                 if (this.platform === 'ios') {
-                    // iOS: invitation directe
+                    // iOS: open instructions modal
                     this.showBanner = false;
-                    alert('Appuyez sur le bouton Partager \u25B2 puis sur "Ajouter \u00e0 l\'\u00e9cran d\'accueil" pour installer Green Express.');
+                    window.dispatchEvent(new CustomEvent('pwa-instructions', { detail: { platform: 'ios' } }));
                 } else if (this.platform === 'android') {
                     // Android: installation native directe sans instructions
                     if (this.deferredPrompt) {

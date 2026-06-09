@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Livreur;
 
+use App\Events\OrderValidatedByClient;
 use App\Http\Controllers\Controller;
 use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\User;
-use App\Events\OrderValidatedByClient;
 use App\Notifications\DeliveryAssigned;
+use App\Notifications\DeliveryTaken;
 use App\Notifications\DeliveryValidated;
 use App\Services\ActivityLogService;
 use App\Services\DeliveryService;
@@ -21,16 +22,16 @@ class DeliveryController extends Controller
         $userId = $request->user()->id;
 
         $deliveries = Delivery::where(function ($q) use ($userId) {
-                $q->where('livreur_id', $userId)
-                  ->orWhereNull('livreur_id');
-            })
+            $q->where('livreur_id', $userId)
+                ->orWhereNull('livreur_id');
+        })
             // Ne voir que les commandes validées par l'admin (confirmed et plus)
             ->whereHas('order', function ($oq) {
                 $oq->whereIn('status', ['confirmed', 'preparing', 'delivering', 'delivered']);
             })
             ->with('order')
             ->when($request->filled('search'), function ($query) use ($request) {
-                $search = '%' . $request->search . '%';
+                $search = '%'.$request->search.'%';
                 $query->where(function ($q) use ($search) {
                     $q->where('delivery_code', 'like', $search)
                         ->orWhereHas('order', function ($oq) use ($search) {
@@ -43,6 +44,7 @@ class DeliveryController extends Controller
             ->latest()
             ->paginate(15)
             ->withQueryString();
+
         return view('livreur.deliveries.index', compact('deliveries'));
     }
 
@@ -71,10 +73,11 @@ class DeliveryController extends Controller
 
         $deliveryService->assign($delivery, $request->user()->id);
 
-        // Notifier l'agent que la livraison a été prise en charge
+        // Notifier l'agent et les admins que la livraison a été prise en charge
         if ($delivery->order->agent) {
             $delivery->order->agent->notify(new DeliveryAssigned($delivery));
         }
+        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new DeliveryTaken($delivery)));
 
         return redirect()->route('livreur.deliveries.index')
             ->with('success', 'Livraison prise en charge.');
@@ -135,7 +138,7 @@ class DeliveryController extends Controller
             // Notifier admin et agent
             $this->notifyDeliveryValidated($order, 'QR scan');
 
-            app(ActivityLogService::class)->logFromRequest($request, 'delivery_validated_by_qr', Order::class, $order->id, 'Livreur validated delivery by QR scan for order ' . $order->code);
+            app(ActivityLogService::class)->logFromRequest($request, 'delivery_validated_by_qr', Order::class, $order->id, 'Livreur validated delivery by QR scan for order '.$order->code);
         }
 
         if ($order->agent?->phone) {
@@ -145,6 +148,7 @@ class DeliveryController extends Controller
                 0.00,
                 'daily_commission'
             );
+
             return redirect()->route('livreur.deliveries.show', $delivery)
                 ->with('success', 'Livraison validée par QR. Points et badges crédités pour l\'agent. Commission calculée ce soir.')
                 ->with('whatsapp_link', $whatsappLink);
@@ -189,7 +193,7 @@ class DeliveryController extends Controller
         // Notifier admin et agent
         $this->notifyDeliveryValidated($order, 'code client');
 
-        app(ActivityLogService::class)->logFromRequest($request, 'delivery_validated_by_client', Order::class, $order->id, 'Livreur validated delivery by client code for order ' . $order->code);
+        app(ActivityLogService::class)->logFromRequest($request, 'delivery_validated_by_client', Order::class, $order->id, 'Livreur validated delivery by client code for order '.$order->code);
 
         if ($order->agent?->phone) {
             $whatsappLink = app(WhatsAppService::class)->commissionCreditedLink(
@@ -198,6 +202,7 @@ class DeliveryController extends Controller
                 0.00,
                 'daily_commission'
             );
+
             return redirect()->route('livreur.deliveries.show', $delivery)
                 ->with('success', 'Livraison validée par le client. Points et badges crédités pour l\'agent. Commission calculée ce soir.')
                 ->with('whatsapp_link', $whatsappLink);

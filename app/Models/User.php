@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\AgentLevel;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'phone', 'address', 'role', 'password', 'password_changed_at', 'is_active'])]
+#[Fillable(['name', 'email', 'phone', 'address', 'role', 'password', 'password_changed_at', 'is_active', 'avatar'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -31,7 +32,7 @@ class User extends Authenticatable
             'password_changed_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
-            'agent_level' => \App\Enums\AgentLevel::class,
+            'agent_level' => AgentLevel::class,
         ];
     }
 

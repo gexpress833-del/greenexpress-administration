@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Agent;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Notifications\CredentialsGenerated;
+use App\Notifications\SubscriptionPending;
 use App\Services\CurrencyService;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
@@ -19,6 +21,7 @@ class SubscriptionController extends Controller
             ->with('client')
             ->latest()
             ->paginate(15);
+
         return view('agent.subscriptions.index', compact('subscriptions'));
     }
 
@@ -27,25 +30,16 @@ class SubscriptionController extends Controller
         return view('agent.subscriptions.create');
     }
 
-    public function store(Request $request, WhatsAppService $whatsapp)
+    public function store(Request $request)
     {
         $data = $request->validate([
             'client_name' => ['required', 'string', 'max:255'],
             'client_phone' => ['required', 'string', 'max:50'],
-            'client_email' => ['required', 'email', 'unique:users,email'],
+            'client_email' => ['required', 'email'],
             'type' => ['required', 'in:weekly,monthly'],
             'start_date' => ['required', 'date'],
             'currency' => ['required', 'in:usd,fc'],
             'price' => ['required', 'numeric', 'min:0'],
-        ]);
-
-        $tempPassword = Str::random(10);
-        $client = User::create([
-            'name' => $data['client_name'],
-            'email' => $data['client_email'],
-            'phone' => $data['client_phone'],
-            'role' => 'client',
-            'password' => Hash::make($tempPassword),
         ]);
 
         $totalDays = $data['type'] === 'weekly' ? 7 : 30;
@@ -55,8 +49,10 @@ class SubscriptionController extends Controller
         $priceUsd = $data['currency'] === 'usd' ? $price : $currencyService->fcToUsd($price);
 
         $subscription = Subscription::create([
-            'client_id' => $client->id,
             'agent_id' => $request->user()->id,
+            'client_name' => $data['client_name'],
+            'client_phone' => $data['client_phone'],
+            'client_email' => $data['client_email'],
             'type' => $data['type'],
             'start_date' => $data['start_date'],
             'end_date' => now()->parse($data['start_date'])->addDays($totalDays),
@@ -68,10 +64,89 @@ class SubscriptionController extends Controller
             'status' => 'pending',
         ]);
 
-        $whatsappLink = $whatsapp->credentialsLink($data['client_phone'], $client->email, $tempPassword);
+        $subscription->load('agent');
+        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionPending($subscription)));
 
         return redirect()->route('agent.subscriptions.index')
-            ->with('success', 'Abonnement créé. Identifiant: ' . $client->email . ' | Mot de passe temporaire: ' . $tempPassword)
+            ->with('success', 'Abonnement créé avec succès. En attente de validation par l\'administrateur.');
+    }
+
+    public function generateCredentials(Request $request, Subscription $subscription, WhatsAppService $whatsapp)
+    {
+        if ($subscription->agent_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        if ($subscription->status !== 'active') {
+            return redirect()->route('agent.subscriptions.index')
+                ->with('error', 'L\'abonnement doit être validé par l\'administrateur avant de générer les identifiants.');
+        }
+
+        if ($subscription->hasCredentialsGenerated()) {
+            return redirect()->route('agent.subscriptions.index')
+                ->with('error', 'Les identifiants ont déjà été générés pour cet abonnement.');
+        }
+
+        if ($subscription->client_id !== null) {
+            return redirect()->route('agent.subscriptions.index')
+                ->with('error', 'Ce client possède déjà un compte.');
+        }
+
+        $existingUser = User::where('email', $subscription->client_email)->first();
+        if ($existingUser) {
+            return redirect()->route('agent.subscriptions.index')
+                ->with('error', 'Un utilisateur avec cet email existe déjà. Modifiez l\'email via le lien "Modifier email/tél.".');
+        }
+
+        $existingPhone = User::where('phone', $subscription->client_phone)->first();
+        if ($existingPhone) {
+            return redirect()->route('agent.subscriptions.index')
+                ->with('error', 'Un utilisateur avec ce numéro de téléphone existe déjà. Modifiez le téléphone via le lien "Modifier email/tél.".');
+        }
+
+        $tempPassword = Str::random(10);
+        $client = User::create([
+            'name' => $subscription->client_name,
+            'email' => $subscription->client_email,
+            'phone' => $subscription->client_phone,
+            'role' => 'client',
+            'password' => Hash::make($tempPassword),
+            'password_changed_at' => null,
+            'is_active' => true,
+        ]);
+
+        $subscription->update([
+            'client_id' => $client->id,
+            'credentials_generated_at' => now(),
+        ]);
+
+        $client->notify(new CredentialsGenerated($subscription));
+        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new CredentialsGenerated($subscription)));
+
+        $whatsappLink = $whatsapp->credentialsLink($subscription->client_phone, $client->email, $tempPassword);
+
+        return redirect()->route('agent.subscriptions.index')
+            ->with('success', 'Identifiants générés. Email: '.$client->email.' | Mot de passe temporaire: '.$tempPassword)
             ->with('whatsapp_link', $whatsappLink);
+    }
+
+    public function updateClientInfo(Request $request, Subscription $subscription)
+    {
+        if ($subscription->agent_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $data = $request->validate([
+            'client_email' => ['required', 'email', 'unique:users,email'],
+            'client_phone' => ['required', 'string', 'max:50'],
+        ]);
+
+        $subscription->update([
+            'client_email' => $data['client_email'],
+            'client_phone' => $data['client_phone'],
+        ]);
+
+        return redirect()->route('agent.subscriptions.index')
+            ->with('success', 'Informations client mises à jour. Vous pouvez maintenant générer les identifiants.');
     }
 }

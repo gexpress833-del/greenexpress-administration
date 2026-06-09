@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SubscriptionSuspension;
+use App\Notifications\SubscriptionSuspensionProcessed;
 use Illuminate\Http\Request;
 
 class SubscriptionSuspensionController extends Controller
@@ -11,6 +12,7 @@ class SubscriptionSuspensionController extends Controller
     public function index()
     {
         $suspensions = SubscriptionSuspension::with(['subscription.client'])->latest()->paginate(20);
+
         return view('admin.suspensions.index', compact('suspensions'));
     }
 
@@ -27,6 +29,8 @@ class SubscriptionSuspensionController extends Controller
         $subscription->status = 'suspended';
         $subscription->save();
 
+        $subscription->client->notify(new SubscriptionSuspensionProcessed($suspension));
+
         return redirect()->route('admin.suspensions.index')->with('success', 'Suspension acceptée.');
     }
 
@@ -36,6 +40,8 @@ class SubscriptionSuspensionController extends Controller
         $suspension->processed_by = $request->user()->id;
         $suspension->processed_at = now();
         $suspension->save();
+
+        $suspension->subscription->client->notify(new SubscriptionSuspensionProcessed($suspension));
 
         return redirect()->route('admin.suspensions.index')->with('success', 'Suspension rejetée.');
     }

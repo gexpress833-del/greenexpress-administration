@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use App\Models\ExchangeRate;
+use App\Models\User;
 use App\Models\Withdrawal;
+use App\Notifications\WithdrawalRequested;
 use App\Services\CommissionService;
 use Illuminate\Http\Request;
 
@@ -29,12 +31,16 @@ class WithdrawalController extends Controller
             'amount_usd' => ['required', 'numeric', "min:{$minWithdrawal}", "max:{$available}"],
         ]);
 
-        Withdrawal::create([
+        $withdrawal = Withdrawal::create([
             'agent_id' => $user->id,
             'amount_usd' => $data['amount_usd'],
             'amount_fc' => $data['amount_usd'] * ExchangeRate::current(),
             'status' => 'pending',
         ]);
+
+        $withdrawal->load('agent');
+        $user->notify(new WithdrawalRequested($withdrawal));
+        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new WithdrawalRequested($withdrawal)));
 
         return redirect()->route('agent.withdrawals.index')->with('success', 'Demande de retrait envoyée.');
     }
