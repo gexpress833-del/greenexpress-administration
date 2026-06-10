@@ -20,6 +20,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordChangeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DocumentVerificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -123,3 +124,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Public document/receipt verification page
+Route::get('/verify', [DocumentVerificationController::class, 'show'])->name('verify.show');
