@@ -62,6 +62,8 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::post('/suspensions/{suspension}/reject', [SubscriptionSuspensionController::class, 'reject'])->name('suspensions.reject');
         Route::resource('complaints', ComplaintController::class)->only(['index', 'show', 'update']);
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity_logs.index');
+        // Reports
+        Route::get('/reports/sales', [App\Http\Controllers\Admin\ReportController::class, 'exportSales'])->name('reports.sales');
     });
 
     // Agent routes
