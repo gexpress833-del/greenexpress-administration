@@ -17,12 +17,8 @@
     @elseif($order)
         <div class="p-4 bg-green-50 border border-green-200 text-green-800 rounded">
             <h2 class="text-lg font-semibold">Document authentique</h2>
-            <p>Commande: <strong>{{ $order->code }}</strong></p>
-            <p>Date: <strong>{{ $order->created_at->toDayDateTimeString() }}</strong></p>
-            <p>Montant: <strong>{{ number_format($order->total ?? 0, 2) }}</strong></p>
-            <p>Agent: <strong>{{ $order->agent?->name ?? '—' }}</strong></p>
-            <p>Status: <strong>{{ $order->status }}</strong></p>
-            <p class="mt-2">Ce document correspond bien à une commande enregistrée chez Green Express.</p>
+            <p class="mt-2">Document authentique — commande <strong>#{{ $order->code }}</strong></p>
+            <p class="text-sm text-gray-700">Date de passation : <strong>{{ $order->created_at->toDayDateTimeString() }}</strong></p>
         </div>
     @endif
 </div>
