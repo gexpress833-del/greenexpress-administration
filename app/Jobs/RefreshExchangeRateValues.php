@@ -36,47 +36,51 @@ class RefreshExchangeRateValues implements ShouldQueue
     public function handle(): void
     {
         $newRate = (float) $this->rate;
-
         Log::info('RefreshExchangeRateValues job started, rate=' . $newRate);
 
-        DB::transaction(function () use ($newRate) {
-            Meal::chunkById(100, function ($meals) use ($newRate) {
-                foreach ($meals as $meal) {
-                    $meal->price_fc = round((float) $meal->price * $newRate, 2);
-                    $meal->save();
-                }
+        try {
+            DB::transaction(function () use ($newRate) {
+                Meal::chunkById(100, function ($meals) use ($newRate) {
+                    foreach ($meals as $meal) {
+                        $meal->price_fc = round((float) $meal->price * $newRate, 2);
+                        $meal->save();
+                    }
+                });
+
+                SubscriptionType::chunkById(100, function ($types) use ($newRate) {
+                    foreach ($types as $type) {
+                        $type->price_fc = round((float) $type->price * $newRate, 2);
+                        $type->save();
+                    }
+                });
+
+                OrderItem::chunkById(200, function ($items) use ($newRate) {
+                    foreach ($items as $item) {
+                        $item->unit_price_fc = round((float) $item->unit_price * $newRate, 2);
+                        $item->total_price_fc = round((float) $item->total_price * $newRate, 2);
+                        $item->save();
+                    }
+                });
+
+                Order::chunkById(200, function ($orders) use ($newRate) {
+                    foreach ($orders as $order) {
+                        $order->total_amount_fc = round((float) $order->total_amount * $newRate, 2);
+                        $order->save();
+                    }
+                });
+
+                Withdrawal::chunkById(200, function ($withs) use ($newRate) {
+                    foreach ($withs as $w) {
+                        $w->amount_fc = round((float) $w->amount_usd * $newRate, 2);
+                        $w->save();
+                    }
+                });
             });
 
-            SubscriptionType::chunkById(100, function ($types) use ($newRate) {
-                foreach ($types as $type) {
-                    $type->price_fc = round((float) $type->price * $newRate, 2);
-                    $type->save();
-                }
-            });
-
-            OrderItem::chunkById(200, function ($items) use ($newRate) {
-                foreach ($items as $item) {
-                    $item->unit_price_fc = round((float) $item->unit_price * $newRate, 2);
-                    $item->total_price_fc = round((float) $item->total_price * $newRate, 2);
-                    $item->save();
-                }
-            });
-
-            Order::chunkById(200, function ($orders) use ($newRate) {
-                foreach ($orders as $order) {
-                    $order->total_amount_fc = round((float) $order->total_amount * $newRate, 2);
-                    $order->save();
-                }
-            });
-
-            Withdrawal::chunkById(200, function ($withs) use ($newRate) {
-                foreach ($withs as $w) {
-                    $w->amount_fc = round((float) $w->amount_usd * $newRate, 2);
-                    $w->save();
-                }
-            });
-        });
-
-        Log::info('RefreshExchangeRateValues job finished');
+            Log::info('RefreshExchangeRateValues job finished');
+        } catch (\Throwable $e) {
+            Log::error('RefreshExchangeRateValues job failed: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }

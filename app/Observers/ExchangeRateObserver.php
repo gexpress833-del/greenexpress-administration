@@ -12,7 +12,8 @@ class ExchangeRateObserver
     {
         // Dispatch async job (or sync if env requests immediate execution without worker)
         $rateValue = (float) $rate->rate;
-        if (env('EXCHANGE_RATE_REFRESH_SYNC', false)) {
+        $useSync = env('EXCHANGE_RATE_REFRESH_SYNC', false) || config('queue.default') === 'sync';
+        if ($useSync) {
             RefreshExchangeRateValues::dispatchSync($rateValue);
         } else {
             RefreshExchangeRateValues::dispatch($rateValue);
@@ -31,7 +32,8 @@ class ExchangeRateObserver
         if ($rate->wasChanged('rate')) {
             // Dispatch async recomputation job (or sync if configured)
             $rateValue = (float) $rate->rate;
-            if (env('EXCHANGE_RATE_REFRESH_SYNC', false)) {
+            $useSync = env('EXCHANGE_RATE_REFRESH_SYNC', false) || config('queue.default') === 'sync';
+            if ($useSync) {
                 RefreshExchangeRateValues::dispatchSync($rateValue);
             } else {
                 RefreshExchangeRateValues::dispatch($rateValue);
