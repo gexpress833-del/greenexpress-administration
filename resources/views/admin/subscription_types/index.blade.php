@@ -11,6 +11,9 @@
             <table class="min-w-full text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-700/50">
                     <tr>
+                        <th class="px-3 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Ordre
+                            <span class="ml-1 text-xs text-gray-400" title="Généré automatiquement à la création">&#9432;</span>
+                        </th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Nom</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Description</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Prix (USD)</th>
@@ -23,6 +26,7 @@
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                     @forelse($types as $type)
                         <tr>
+                            <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ $type->display_order }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100 font-medium">{{ $type->name }}</td>
                             <td class="px-6 py-3 text-gray-600 dark:text-gray-300 max-w-xs truncate">{{ $type->description ?? '-' }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">$ {{ number_format($type->price, 2) }}</td>
@@ -44,7 +48,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td class="px-6 py-3 text-gray-500 dark:text-gray-400" colspan="7">Aucun type d'abonnement</td>
+                            <td class="px-6 py-3 text-gray-500 dark:text-gray-400" colspan="8">Aucun type d'abonnement</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -9,8 +9,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $foreignKeys = DB::select("SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_NAME = 'subscriptions' AND CONSTRAINT_TYPE = 'FOREIGN KEY'");
-        $hasFk = collect($foreignKeys)->contains(fn ($fk) => str_contains(strtolower($fk->constraint_name ?? $fk->CONSTRAINT_NAME ?? ''), 'client_id'));
+        // Avoid querying information_schema on SQLite (used for in-memory tests)
+        $driver = null;
+        try {
+            $driver = DB::getPdo() ? DB::getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME) : null;
+        } catch (\Throwable $e) {
+            $driver = null;
+        }
+
+        if ($driver && $driver !== 'sqlite') {
+            $foreignKeys = DB::select("SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_NAME = 'subscriptions' AND CONSTRAINT_TYPE = 'FOREIGN KEY'");
+            $hasFk = collect($foreignKeys)->contains(fn ($fk) => str_contains(strtolower($fk->constraint_name ?? $fk->CONSTRAINT_NAME ?? ''), 'client_id'));
+        } else {
+            $hasFk = false;
+        }
 
         Schema::table('subscriptions', function (Blueprint $table) use ($hasFk) {
             if ($hasFk) {

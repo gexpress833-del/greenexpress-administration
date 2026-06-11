@@ -161,3 +161,34 @@
         padding-bottom: env(safe-area-inset-bottom);
     }
 }
+
+/* Safe-area helpers for notch / cutout devices (iOS + Android webviews)
+   - Uses modern `env()` but falls back to `constant()` for older iOS
+   - Apply `.safe-area` to the page wrapper or `body` to respect insets
+*/
+@layer utilities {
+    :root {
+        --safe-top: env(safe-area-inset-top, 0px);
+        --safe-right: env(safe-area-inset-right, 0px);
+        --safe-bottom: env(safe-area-inset-bottom, 0px);
+        --safe-left: env(safe-area-inset-left, 0px);
+    }
+
+    .safe-area {
+        padding-top: var(--safe-top);
+        padding-right: var(--safe-right);
+        padding-bottom: var(--safe-bottom);
+        padding-left: var(--safe-left);
+        box-sizing: border-box;
+    }
+
+    /* Fallback for very old iOS versions that support constant() */
+    @supports not (padding: env(safe-area-inset-top)) {
+        .safe-area {
+            padding-top: constant(safe-area-inset-top);
+            padding-right: constant(safe-area-inset-right);
+            padding-bottom: constant(safe-area-inset-bottom);
+            padding-left: constant(safe-area-inset-left);
+        }
+    }
+}

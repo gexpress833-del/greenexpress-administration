@@ -37,14 +37,19 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Devise</label>
-                    <input type="text" name="currency" value="{{ old('currency', 'USD') }}" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">
+                    <select name="currency" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        <option value="usd" {{ strtolower(old('currency', 'USD')) === 'usd' ? 'selected' : '' }}>USD ($)</option>
+                        <option value="fc" {{ strtolower(old('currency', 'USD')) === 'fc' ? 'selected' : '' }}>Francs congolais (FC)</option>
+                    </select>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Ordre d'affichage</label>
-                    <input type="number" name="display_order" value="{{ old('display_order', 0) }}" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">
+                    {{-- display_order is assigned automatically --}}
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-3">Ordre d'affichage : automatique 
+                        <span class="ml-1 text-xs text-gray-400" title="L'ordre est généré automatiquement à la création">&#9432;</span>
+                    </p>
                 </div>
                 <div class="flex items-center mt-6">
                     <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500">

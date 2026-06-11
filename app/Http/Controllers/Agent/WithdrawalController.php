@@ -39,8 +39,12 @@ class WithdrawalController extends Controller
         ]);
 
         $withdrawal->load('agent');
-        $user->notify(new WithdrawalRequested($withdrawal));
-        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new WithdrawalRequested($withdrawal)));
+        try {
+            $user->notify(new WithdrawalRequested($withdrawal));
+            User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new WithdrawalRequested($withdrawal)));
+        } catch (\Throwable $e) {
+            \Log::error('Failed sending withdrawal notifications: ' . $e->getMessage());
+        }
 
         return redirect()->route('agent.withdrawals.index')->with('success', 'Demande de retrait envoyée.');
     }

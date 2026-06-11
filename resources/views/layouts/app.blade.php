@@ -30,7 +30,7 @@
             })();
         </script>
     </head>
-    <body class="font-sans antialiased bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200 overscroll-none">
+    <body class="font-sans antialiased bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200 overscroll-none safe-area">
         <div x-data="{ sidebarOpen: false }" class="min-h-screen flex flex-col lg:flex-row">
             @auth
                 @include('layouts.sidebar')
@@ -100,6 +100,7 @@
         </div>
         <x-pwa-install />
         @stack('scripts')
+        @include('components.currency-converter')
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {

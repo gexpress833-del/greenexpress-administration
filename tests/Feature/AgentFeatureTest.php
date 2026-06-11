@@ -142,11 +142,18 @@ class AgentFeatureTest extends TestCase
     public function test_agent_can_request_withdrawal_within_balance(): void
     {
         $agent = $this->agent();
-        Commission::factory()->create(['agent_id' => $agent->id, 'amount_usd' => 20]);
+        Commission::factory()->create([
+            'agent_id' => $agent->id,
+            'amount_usd' => 20,
+            'type' => 'daily_commission',  // Must match getAvailableBalance() filter
+        ]);
 
-        $this->actingAs($agent)->post(route('agent.withdrawals.store'), [
-            'amount_usd' => 10,
-        ])->assertRedirect(route('agent.withdrawals.index'));
+        $response = $this->actingAs($agent)->post(route('agent.withdrawals.store'), ['amount_usd' => 10]);
+        $response->assertStatus(302);
+        
+        // Manually check the location header
+        $location = $response->headers->get('Location');
+        $this->assertEquals(route('agent.withdrawals.index'), $location, "Expected redirect to {$location}");
 
         $this->assertDatabaseHas('withdrawals', ['agent_id' => $agent->id, 'amount_usd' => 10]);
     }
@@ -154,7 +161,11 @@ class AgentFeatureTest extends TestCase
     public function test_agent_cannot_withdraw_more_than_balance(): void
     {
         $agent = $this->agent();
-        Commission::factory()->create(['agent_id' => $agent->id, 'amount_usd' => 5]);
+        Commission::factory()->create([
+            'agent_id' => $agent->id,
+            'amount_usd' => 5,
+            'type' => 'daily_commission',  // Must match getAvailableBalance() filter
+        ]);
 
         $this->actingAs($agent)->post(route('agent.withdrawals.store'), [
             'amount_usd' => 100,

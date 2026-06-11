@@ -28,6 +28,7 @@ class MealController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
+            'currency' => ['required', 'in:usd,fc'],
             'price_fc' => ['nullable', 'numeric', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'status' => ['required', 'in:available,unavailable'],
@@ -41,8 +42,16 @@ class MealController extends Controller
 
         $data['is_active'] = $request->boolean('is_active', true);
 
-        if (empty($data['price_fc'])) {
-            $data['price_fc'] = app(\App\Services\CurrencyService::class)->usdToFc((float) $data['price']);
+        $currencyService = app(\App\Services\CurrencyService::class);
+        $entered = (float) $data['price'];
+        if (($data['currency'] ?? 'usd') === 'fc') {
+            // entered price is in FC
+            $data['price_fc'] = $entered;
+            $data['price'] = $currencyService->fcToUsd($entered);
+        } else {
+            // entered price is in USD
+            $data['price'] = $entered;
+            $data['price_fc'] = $data['price_fc'] ?? $currencyService->usdToFc($entered);
         }
 
         Meal::create($data);
@@ -62,6 +71,7 @@ class MealController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
+            'currency' => ['required', 'in:usd,fc'],
             'price_fc' => ['nullable', 'numeric', 'min:0'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'status' => ['required', 'in:available,unavailable'],
@@ -78,8 +88,14 @@ class MealController extends Controller
 
         $data['is_active'] = $request->boolean('is_active', true);
 
-        if (empty($data['price_fc'])) {
-            $data['price_fc'] = app(\App\Services\CurrencyService::class)->usdToFc((float) $data['price']);
+        $currencyService = app(\App\Services\CurrencyService::class);
+        $entered = (float) $data['price'];
+        if (($data['currency'] ?? 'usd') === 'fc') {
+            $data['price_fc'] = $entered;
+            $data['price'] = $currencyService->fcToUsd($entered);
+        } else {
+            $data['price'] = $entered;
+            $data['price_fc'] = $data['price_fc'] ?? $currencyService->usdToFc($entered);
         }
 
         $meal->update($data);
