@@ -97,6 +97,19 @@
     }
 }
 
+/* Content spacing to account for fixed header + safe-area inset on iOS/Android */
+@layer base {
+    .content-with-header {
+        padding-top: calc(5rem + env(safe-area-inset-top, 0px));
+    }
+
+    @media (min-width: 1024px) {
+        .content-with-header {
+            padding-top: calc(6rem + env(safe-area-inset-top, 0px));
+        }
+    }
+}
+
 /* Performance & Smoothness Optimizations */
 @layer base {
     /* GPU acceleration for animated elements */
