@@ -175,7 +175,7 @@
     }
 
     .safe-area {
-        padding-top: var(--safe-top);
+        /* Do not apply top inset globally — header already handles safe top padding. */
         padding-right: var(--safe-right);
         padding-bottom: var(--safe-bottom);
         padding-left: var(--safe-left);
