@@ -55,9 +55,9 @@
         </div>
 
         {{-- Cercle doré animé --}}
-        <div class="relative w-64 h-64 mb-10 mx-auto">
-            {{-- Anneau extérieur tournant --}}
-            <div class="absolute inset-0 gold-ring">
+        <div class="relative w-64 h-64 mb-10 mx-auto flex items-center justify-center">
+            {{-- Anneau extérieur tournant (arrière-plan) --}}
+            <div class="absolute inset-0 gold-ring pointer-events-none">
                 <div class="absolute inset-0 rounded-full border-[3px] border-yellow-400/40"
                      style="background: conic-gradient(from 0deg, rgba(251,191,36,0.08), rgba(251,191,36,0.25), rgba(217,119,6,0.15), rgba(251,191,36,0.08));
                             box-shadow: 0 0 30px rgba(251,191,36,0.15), inset 0 0 30px rgba(251,191,36,0.05);">
@@ -69,17 +69,15 @@
                 <div class="absolute right-0 top-1/2 translate-x-1.5 -translate-y-1/2 w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"></div>
             </div>
 
-            {{-- Contenu statique au centre --}}
-            <div class="absolute inset-0 flex items-center justify-center z-10">
-                <div class="w-[13.5rem] h-[13.5rem] rounded-full border border-yellow-500/20 flex items-center justify-center bg-gradient-to-br from-emerald-900/90 to-emerald-950/95 backdrop-blur-sm shadow-2xl"
-                     style="box-shadow: 0 0 25px rgba(0,0,0,0.3), inset 0 0 20px rgba(251,191,36,0.05);">
-                    <div class="text-center">
-                        <p class="text-[10px] text-emerald-400/80 uppercase tracking-[0.2em] mb-1 font-medium">1 USD</p>
-                        <p class="text-4xl font-bold gold-text-shimmer font-mono tracking-tight leading-none">
-                            {{ number_format($currentRate, 0, ',', '.') }}
-                        </p>
-                        <p class="text-xs text-yellow-400/70 font-medium mt-1 tracking-wider">FRANCS</p>
-                    </div>
+            {{-- Contenu statique au centre (normal, pas absolute) --}}
+            <div class="relative z-10 w-[13.5rem] h-[13.5rem] rounded-full border border-yellow-500/20 flex items-center justify-center bg-gradient-to-br from-emerald-900/90 to-emerald-950/95 backdrop-blur-sm shadow-2xl"
+                 style="box-shadow: 0 0 25px rgba(0,0,0,0.3), inset 0 0 20px rgba(251,191,36,0.05);">
+                <div class="text-center">
+                    <p class="text-[10px] text-emerald-400/80 uppercase tracking-[0.2em] mb-1 font-medium">1 USD</p>
+                    <p class="text-4xl font-bold gold-text-shimmer font-mono tracking-tight leading-none">
+                        {{ number_format($currentRate, 0, ',', '.') }}
+                    </p>
+                    <p class="text-xs text-yellow-400/70 font-medium mt-1 tracking-wider">FRANCS</p>
                 </div>
             </div>
         </div>
