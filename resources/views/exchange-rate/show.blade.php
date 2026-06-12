@@ -55,27 +55,33 @@
         </div>
 
         {{-- Cercle doré animé --}}
-        <div class="relative mb-10">
+        <div class="relative w-64 h-64 mb-10 mx-auto">
             {{-- Anneau extérieur tournant --}}
-            <div class="w-64 h-64 rounded-full gold-ring border-4 border-yellow-400/30 flex items-center justify-center relative"
-                 style="background: conic-gradient(from 0deg, rgba(251,191,36,0.1), rgba(251,191,36,0.3), rgba(217,119,6,0.2), rgba(251,191,36,0.1));">
-                {{-- Anneau intérieur --}}
-                <div class="w-56 h-56 rounded-full border-2 border-yellow-500/20 flex items-center justify-center bg-emerald-950/80 backdrop-blur-sm shadow-2xl">
+            <div class="absolute inset-0 gold-ring">
+                <div class="absolute inset-0 rounded-full border-[3px] border-yellow-400/40"
+                     style="background: conic-gradient(from 0deg, rgba(251,191,36,0.08), rgba(251,191,36,0.25), rgba(217,119,6,0.15), rgba(251,191,36,0.08));
+                            box-shadow: 0 0 30px rgba(251,191,36,0.15), inset 0 0 30px rgba(251,191,36,0.05);">
+                </div>
+                {{-- Points décoratifs sur l'anneau (tournent avec) --}}
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1.5 w-3 h-3 bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/60 border border-yellow-300/50"></div>
+                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1.5 w-3 h-3 bg-yellow-500 rounded-full shadow-lg shadow-yellow-500/60 border border-yellow-400/50"></div>
+                <div class="absolute left-0 top-1/2 -translate-x-1.5 -translate-y-1/2 w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"></div>
+                <div class="absolute right-0 top-1/2 translate-x-1.5 -translate-y-1/2 w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"></div>
+            </div>
+
+            {{-- Contenu statique au centre --}}
+            <div class="absolute inset-0 flex items-center justify-center z-10">
+                <div class="w-[13.5rem] h-[13.5rem] rounded-full border border-yellow-500/20 flex items-center justify-center bg-gradient-to-br from-emerald-900/90 to-emerald-950/95 backdrop-blur-sm shadow-2xl"
+                     style="box-shadow: 0 0 25px rgba(0,0,0,0.3), inset 0 0 20px rgba(251,191,36,0.05);">
                     <div class="text-center">
-                        <p class="text-xs text-emerald-400 uppercase tracking-wider mb-1">1 USD =</p>
-                        <p class="text-4xl font-bold gold-text-shimmer font-mono tracking-tight">
+                        <p class="text-[10px] text-emerald-400/80 uppercase tracking-[0.2em] mb-1 font-medium">1 USD</p>
+                        <p class="text-4xl font-bold gold-text-shimmer font-mono tracking-tight leading-none">
                             {{ number_format($currentRate, 0, ',', '.') }}
                         </p>
-                        <p class="text-sm text-yellow-400/80 font-medium mt-1">FC</p>
+                        <p class="text-xs text-yellow-400/70 font-medium mt-1 tracking-wider">FRANCS</p>
                     </div>
                 </div>
             </div>
-
-            {{-- Points décoratifs sur le cercle --}}
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-3 h-3 bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/50"></div>
-            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1 w-3 h-3 bg-yellow-500 rounded-full shadow-lg shadow-yellow-500/50"></div>
-            <div class="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-emerald-400 rounded-full"></div>
-            <div class="absolute right-0 top-1/2 translate-x-1 -translate-y-1/2 w-2 h-2 bg-emerald-400 rounded-full"></div>
         </div>
 
         {{-- Stats --}}
