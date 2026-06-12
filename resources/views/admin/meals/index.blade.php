@@ -10,7 +10,7 @@
         @forelse($meals as $meal)
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                 @if($meal->image)
-                    <img src="{{ asset('storage/' . $meal->image) }}" alt="{{ $meal->name }}" class="w-full h-40 object-cover">
+                    <img src="{{ str_starts_with($meal->image, 'http') ? $meal->image : asset('storage/' . $meal->image) }}" alt="{{ $meal->name }}" class="w-full h-40 object-cover">
                 @else
                     <div class="w-full h-40 bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 dark:text-gray-500 text-sm">Pas d'image</div>
                 @endif

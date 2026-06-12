@@ -51,7 +51,7 @@
             </div>
             @if($meal->image)
                 <div class="mb-4">
-                    <img src="{{ asset('storage/' . $meal->image) }}" class="h-32 rounded-lg object-cover">
+                    <img src="{{ str_starts_with($meal->image, 'http') ? $meal->image : asset('storage/' . $meal->image) }}" class="h-32 rounded-lg object-cover">
                 </div>
             @endif
             <div class="mb-4">
