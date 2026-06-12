@@ -1,4 +1,4 @@
-<div x-data="pwaInstall()" x-init="init()" x-cloak>
+<div x-data="pwaInstall()" x-init="init()" x-cloak x-show="showBanner && !isStandalone">
     <div class="mx-auto max-w-lg transform transition-all duration-500"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="translate-y-full opacity-0"
@@ -20,7 +20,7 @@
                     Ajoutez l'application sur votre écran d'accueil pour un accès rapide et une meilleure expérience hors ligne.
                 </p>
                 <div class="mt-3 flex items-center gap-3">
-                    <button @click="installPWA()"
+                    <button @click="promptInstall()"
                             class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition shadow-sm active:scale-95">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -193,17 +193,23 @@
             bannerTitle: 'Installer Green Express',
             installButtonText: 'Installer',
             canPrompt: false,
+            isStandalone: false,
 
             init() {
                 const ua = navigator.userAgent;
                 const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
                 const isAndroid = /Android/.test(ua);
-                const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+                this.isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
                 this.platform = isIOS ? 'ios' : (isAndroid ? 'android' : 'desktop');
 
                 // If already standalone, nothing to do
-                if (isStandalone) return;
+                if (this.isStandalone) return;
+
+                // Check if user previously dismissed
+                if (localStorage.getItem('pwa-dismissed')) {
+                    this.showBanner = false;
+                }
 
                 // Mandatory overlay: block until installed
                 this.showMandatoryOverlay = true;

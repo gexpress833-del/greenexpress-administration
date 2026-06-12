@@ -1,4 +1,4 @@
-<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed top-[calc(4rem+env(safe-area-inset-top))] lg:top-0 bottom-0 left-0 z-50 w-[280px] max-w-[85vw] bg-green-900 dark:bg-green-950 text-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 flex flex-col">
+<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed lg:top-0 bottom-0 left-0 z-50 w-64 bg-green-900 dark:bg-green-950 text-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 flex flex-col" style="top: calc(4rem + env(safe-area-inset-top)); max-width: 85vw;">
     <div class="flex items-center justify-between h-16 px-6 bg-green-950 dark:bg-black/20 shrink-0">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
             <img src="/logo.png" alt="Green Express" class="h-8 w-auto" onerror="this.style.display='none'; document.getElementById('nav-title').style.display='block';">
