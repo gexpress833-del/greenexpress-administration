@@ -36,12 +36,12 @@
                 @include('layouts.sidebar')
             @endauth
 
-            <div class="flex-1 flex flex-col min-w-0 @auth lg:ml-64 @endauth">
+            <div class="flex-1 flex flex-col min-w-0 @auth lg:ml-[280px] @endauth">
                 @auth
                     @include('layouts.topbar')
                 @endauth
 
-                <main class="flex-1 p-4 lg:p-8 @auth pt-20 lg:pt-24 @endauth">
+                <main class="flex-1 p-4 lg:p-8 @auth pt-[calc(6rem+env(safe-area-inset-top))] @endauth">
                     @if(session('success'))
                         <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900 shadow-sm dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100">
                             <div class="flex items-start gap-3">
