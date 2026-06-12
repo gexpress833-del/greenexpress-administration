@@ -18,10 +18,10 @@ class NotificationService
      * @param int|null $relatedId
      * @return void
      */
-    public static function notifyAllUsers(string $title, string $message, ?string $type = null, ?string $relatedClass = null, ?int $relatedId = null): void
+    public static function notifyAllUsers(string $title, string $message, ?string $type = null, ?string $relatedClass = null, ?int $relatedId = null, ?string $url = null): void
     {
         try {
-            User::chunkById(200, function ($users) use ($title, $message, $type, $relatedClass, $relatedId) {
+            User::chunkById(200, function ($users) use ($title, $message, $type, $relatedClass, $relatedId, $url) {
                 $now = now();
                 $rows = [];
                 foreach ($users as $user) {
@@ -32,6 +32,7 @@ class NotificationService
                         'type' => $type,
                         'notifiable_type' => $relatedClass,
                         'notifiable_id' => $relatedId,
+                        'url' => $url,
                         'is_read' => false,
                         'created_at' => $now,
                         'updated_at' => $now,

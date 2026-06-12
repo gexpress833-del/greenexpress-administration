@@ -53,7 +53,7 @@ class NotificationController extends Controller
                         'delivery' => 'truck',
                         default => 'check-circle',
                     },
-                    'url' => null,
+                    'url' => $n->url,
                 ],
                 'source' => 'app',
             ]);

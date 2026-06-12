@@ -17,6 +17,7 @@ use App\Http\Controllers\Agent\PointsController;
 use App\Http\Controllers\Agent\ReceiptController;
 use App\Http\Controllers\Client\ReviewController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExchangeRatePublicController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordChangeController;
 use App\Http\Controllers\ProfileController;
@@ -29,6 +30,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'password.changed'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/taux', [ExchangeRatePublicController::class, 'show'])->name('exchange-rate.show');
 
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

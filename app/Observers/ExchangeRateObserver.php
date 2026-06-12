@@ -23,7 +23,8 @@ class ExchangeRateObserver
             "Le taux de change {$rate->currency_from}/{$rate->currency_to} a été défini à {$rate->rate}",
             'exchange_rate',
             ExchangeRate::class,
-            $rate->id
+            $rate->id,
+            route('exchange-rate.show')
         );
     }
 
@@ -44,7 +45,8 @@ class ExchangeRateObserver
                 "Le taux {$rate->currency_from}/{$rate->currency_to} est maintenant de {$rate->rate}",
                 'exchange_rate',
                 ExchangeRate::class,
-                $rate->id
+                $rate->id,
+                route('exchange-rate.show')
             );
         }
     }
