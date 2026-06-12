@@ -97,8 +97,6 @@
                                 {{ $meal->category->name }}
                             </span>
                         @endif
-                        {{-- Badge disponible --}}
-                        <span class="absolute top-3 right-3 w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50"></span>
                     </div>
 
                     {{-- Contenu --}}
@@ -111,9 +109,16 @@
                                 <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400">${{ number_format($meal->price, 2) }}</span>
                                 <span class="text-xs text-slate-400 dark:text-slate-500 ml-1">/ {{ number_format($meal->price_fc, 0, ',', '.') }} FC</span>
                             </div>
-                            <span class="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-lg">
-                                Disponible
-                            </span>
+                            <div class="flex items-center gap-2">
+                                {{-- Point vert pulsant --}}
+                                <span class="relative flex h-2.5 w-2.5">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                </span>
+                                <span class="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-lg">
+                                    Disponible
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
