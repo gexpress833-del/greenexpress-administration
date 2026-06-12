@@ -27,16 +27,29 @@ class SubscriptionTypeController extends Controller
             'name' => 'required|string|max:100',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-            'price_fc' => 'required|numeric|min:0',
+            'currency' => 'required|in:usd,fc',
+            'price_fc' => 'nullable|numeric|min:0',
             'duration_days' => 'required|integer|min:1',
-            'currency' => 'required|string|max:10',
             'is_active' => 'boolean',
-            'display_order' => 'nullable|integer',
+            // display_order is computed automatically
         ]);
 
         $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']);
         $validated['is_active'] = $request->boolean('is_active', true);
-        $validated['display_order'] = $validated['display_order'] ?? 0;
+        // assign automatic display order (append to end)
+        $maxOrder = SubscriptionType::max('display_order');
+        $validated['display_order'] = is_null($maxOrder) ? 0 : ($maxOrder + 1);
+
+        // Normalize prices according to selected currency
+        $currencyService = app(\App\Services\CurrencyService::class);
+        $entered = (float) $validated['price'];
+        if (($validated['currency'] ?? 'usd') === 'fc') {
+            $validated['price_fc'] = $entered;
+            $validated['price'] = $currencyService->fcToUsd($entered);
+        } else {
+            $validated['price'] = $entered;
+            $validated['price_fc'] = $validated['price_fc'] ?? $currencyService->usdToFc($entered);
+        }
 
         $type = SubscriptionType::create($validated);
 
@@ -64,9 +77,9 @@ class SubscriptionTypeController extends Controller
             'name' => 'required|string|max:100',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-            'price_fc' => 'required|numeric|min:0',
+            'currency' => 'required|in:usd,fc',
+            'price_fc' => 'nullable|numeric|min:0',
             'duration_days' => 'required|integer|min:1',
-            'currency' => 'required|string|max:10',
             'is_active' => 'boolean',
             'display_order' => 'nullable|integer',
         ]);
@@ -74,6 +87,16 @@ class SubscriptionTypeController extends Controller
         $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']);
         $validated['is_active'] = $request->boolean('is_active', true);
         $validated['display_order'] = $validated['display_order'] ?? $subscriptionType->display_order;
+
+        $currencyService = app(\App\Services\CurrencyService::class);
+        $entered = (float) $validated['price'];
+        if (($validated['currency'] ?? 'usd') === 'fc') {
+            $validated['price_fc'] = $entered;
+            $validated['price'] = $currencyService->fcToUsd($entered);
+        } else {
+            $validated['price'] = $entered;
+            $validated['price_fc'] = $validated['price_fc'] ?? $currencyService->usdToFc($entered);
+        }
 
         $subscriptionType->update($validated);
 

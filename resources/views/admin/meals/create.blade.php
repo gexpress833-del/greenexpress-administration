@@ -16,7 +16,14 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Prix (USD)</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Devise</label>
+                    <select name="currency" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        <option value="usd" {{ old('currency', 'usd') === 'usd' ? 'selected' : '' }}>USD ($)</option>
+                        <option value="fc" {{ old('currency') === 'fc' ? 'selected' : '' }}>Francs congolais (FC)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Prix</label>
                     <input type="number" step="0.01" name="price" required value="{{ old('price') }}" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">
                 </div>
                 <div>

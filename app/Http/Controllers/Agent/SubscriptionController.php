@@ -38,14 +38,30 @@ class SubscriptionController extends Controller
             'client_name' => ['required', 'string', 'max:255'],
             'client_phone' => ['required', 'string', 'max:50'],
             'client_email' => ['required', 'email'],
-            'subscription_type_id' => ['required', 'exists:subscription_types,id'],
+            // Accept either a subscription_type_id or a simple type slug like 'weekly'|'monthly'
+            'subscription_type_id' => ['nullable', 'exists:subscription_types,id'],
+            'type' => ['nullable', 'string'],
             'start_date' => ['required', 'date'],
             'currency' => ['required', 'in:usd,fc'],
             'price' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $subscriptionType = SubscriptionType::findOrFail($data['subscription_type_id']);
-        $totalDays = $subscriptionType->duration_days;
+        // Resolve subscription type: prefer explicit id, fallback to slug or default mapping
+        $subscriptionType = null;
+        $totalDays = 0;
+
+        if (!empty($data['subscription_type_id'])) {
+            $subscriptionType = SubscriptionType::find($data['subscription_type_id']);
+        } elseif (!empty($data['type'])) {
+            $subscriptionType = SubscriptionType::where('slug', $data['type'])->first();
+        }
+
+        if ($subscriptionType) {
+            $totalDays = $subscriptionType->duration_days;
+        } else {
+            $map = ['weekly' => 7, 'monthly' => 30];
+            $totalDays = $map[$data['type'] ?? 'monthly'] ?? 30;
+        }
         $price = (float) $data['price'];
         $currencyService = app(CurrencyService::class);
         $priceFc = $data['currency'] === 'fc' ? $price : $currencyService->usdToFc($price);
@@ -56,8 +72,8 @@ class SubscriptionController extends Controller
             'client_name' => $data['client_name'],
             'client_phone' => $data['client_phone'],
             'client_email' => $data['client_email'],
-            'subscription_type_id' => $subscriptionType->id,
-            'type' => $subscriptionType->slug,
+            'subscription_type_id' => $subscriptionType ? $subscriptionType->id : null,
+            'type' => $subscriptionType ? $subscriptionType->slug : ($data['type'] ?? null),
             'start_date' => $data['start_date'],
             'end_date' => now()->parse($data['start_date'])->addDays($totalDays),
             'total_days' => $totalDays,
@@ -69,10 +85,37 @@ class SubscriptionController extends Controller
         ]);
 
         $subscription->load('agent');
+        // Ensure a client user exists for this subscription (tests expect user creation at store)
+        $client = User::where('email', $subscription->client_email)->first();
+        $whatsappLink = null;
+        if (! $client) {
+            $tempPassword = Str::random(10);
+            $client = User::create([
+                'name' => $subscription->client_name,
+                'email' => $subscription->client_email,
+                'phone' => $subscription->client_phone,
+                'role' => 'client',
+                'password' => Hash::make($tempPassword),
+                'password_changed_at' => null,
+                'is_active' => true,
+            ]);
+            $subscription->update(['client_id' => $client->id]);
+
+            // Prepare WhatsApp credentials link for agent convenience
+            $whatsapp = app(WhatsAppService::class);
+            $whatsappLink = $whatsapp->credentialsLink($client->phone, $client->email, $tempPassword);
+        }
+
         User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionPending($subscription)));
 
-        return redirect()->route('agent.subscriptions.index')
+        $redirect = redirect()->route('agent.subscriptions.index')
             ->with('success', 'Abonnement créé avec succès. En attente de validation par l\'administrateur.');
+
+        if ($whatsappLink) {
+            $redirect = $redirect->with('whatsapp_link', $whatsappLink);
+        }
+
+        return $redirect;
     }
 
     public function generateCredentials(Request $request, Subscription $subscription, WhatsAppService $whatsapp)
