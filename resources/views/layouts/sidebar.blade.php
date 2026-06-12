@@ -1,7 +1,7 @@
 <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed lg:top-0 bottom-0 left-0 z-50 w-64 bg-green-900 dark:bg-green-950 text-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 flex flex-col" style="top: calc(4rem + env(safe-area-inset-top)); max-width: 85vw;">
     <div class="flex items-center justify-between h-16 px-6 bg-green-950 dark:bg-black/20 shrink-0">
-        <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-            <img src="/logo.png" alt="Green Express" class="h-8 w-auto" onerror="this.style.display='none'; document.getElementById('nav-title').style.display='block';">
+        <a href="{{ route('about') }}" class="flex items-center gap-2 group">
+            <img src="/logo.png" alt="Green Express" class="h-10 w-auto transition-transform group-hover:scale-105" onerror="this.style.display='none'; document.getElementById('nav-title').style.display='block';">
             <span id="nav-title" class="text-xl font-bold tracking-wide hidden">Green Express</span>
         </a>
         <button @click="sidebarOpen = false" class="lg:hidden text-white focus:outline-none">
