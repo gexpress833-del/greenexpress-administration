@@ -40,6 +40,12 @@ class DeliveryController extends Controller
         ]);
 
         $order = Order::findOrFail($data['order_id']);
+
+        if ($order->admin_validated_at === null) {
+            return redirect()->route('admin.deliveries.create')
+                ->with('error', 'Cette commande n\'est pas encore validée par l\'administrateur.');
+        }
+
         $data['delivery_code'] = 'DLV-' . strtoupper(uniqid());
 
         Delivery::create($data);

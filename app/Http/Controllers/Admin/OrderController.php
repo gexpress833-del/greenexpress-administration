@@ -41,6 +41,9 @@ class OrderController extends Controller
         if ($request->status === 'delivered') {
             $order->delivered_at = now();
         }
+        if ($request->status === 'confirmed' && $oldStatus !== 'confirmed') {
+            $order->admin_validated_at = now();
+        }
         $order->save();
 
         // Notifier l'agent du changement de statut

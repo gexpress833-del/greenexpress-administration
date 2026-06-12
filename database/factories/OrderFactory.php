@@ -47,6 +47,7 @@ class OrderFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => 'confirmed',
             'confirmed_at' => now(),
+            'admin_validated_at' => now(),
         ]);
     }
 }

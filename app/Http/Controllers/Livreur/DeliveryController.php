@@ -55,7 +55,7 @@ class DeliveryController extends Controller
         $delivery->load(['order.items.meal', 'order.agent']);
 
         // Ne pas accéder aux commandes non validées par l'admin
-        if (! in_array($delivery->order->status, ['confirmed', 'preparing', 'delivering', 'delivered'])) {
+        if (! in_array($delivery->order->status, ['confirmed', 'preparing', 'delivering', 'delivered']) || $delivery->order->admin_validated_at === null) {
             abort(403, 'Cette commande n\'est pas encore validée par l\'administrateur.');
         }
 
@@ -67,7 +67,7 @@ class DeliveryController extends Controller
         abort_unless($delivery->livreur_id === null, 403, 'Cette livraison est déjà assignée.');
 
         // Ne pas assigner une commande non validée par l'admin
-        if (! in_array($delivery->order->status, ['confirmed', 'preparing'])) {
+        if (! in_array($delivery->order->status, ['confirmed', 'preparing']) || $delivery->order->admin_validated_at === null) {
             abort(403, 'Cette commande n\'est pas encore validée par l\'administrateur.');
         }
 
@@ -98,7 +98,7 @@ class DeliveryController extends Controller
         }
 
         // Vérifier que la commande est validée par admin
-        if (! in_array($order->status, ['confirmed', 'preparing', 'delivering', 'delivered'])) {
+        if (! in_array($order->status, ['confirmed', 'preparing', 'delivering', 'delivered']) || $order->admin_validated_at === null) {
             abort(403, 'Cette commande n\'est pas encore validée par l\'administrateur.');
         }
 
@@ -169,7 +169,7 @@ class DeliveryController extends Controller
         $order = $delivery->order;
 
         // Vérifier que la commande est validée par admin
-        if (! in_array($order->status, ['confirmed', 'preparing', 'delivering', 'delivered'])) {
+        if (! in_array($order->status, ['confirmed', 'preparing', 'delivering', 'delivered']) || $order->admin_validated_at === null) {
             abort(403, 'Cette commande n\'est pas encore validée par l\'administrateur.');
         }
 

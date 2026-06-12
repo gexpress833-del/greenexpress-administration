@@ -52,7 +52,9 @@ class ClientFeatureTest extends TestCase
 
         $sub->refresh();
         $this->assertEquals('monthly', $sub->type);
-        $this->assertEquals('active', $sub->status);
+        $this->assertEquals('pending', $sub->status);
+        $this->assertNull($sub->admin_validated_at);
+        $this->assertNull($sub->validated_by);
         $this->assertEquals(37, $sub->total_days);
     }
 
@@ -82,7 +84,9 @@ class ClientFeatureTest extends TestCase
             ->assertRedirect(route('client.subscriptions.index'));
 
         $sub->refresh();
-        $this->assertEquals('active', $sub->status);
+        $this->assertEquals('pending', $sub->status);
+        $this->assertNull($sub->admin_validated_at);
+        $this->assertNull($sub->validated_by);
     }
 
     public function test_client_can_view_orders(): void

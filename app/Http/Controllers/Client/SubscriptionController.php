@@ -46,7 +46,9 @@ class SubscriptionController extends Controller
         $subscription->end_date = now()->addDays($days);
         $subscription->total_days += $days;
         $subscription->remaining_days += $days;
-        $subscription->status = 'active';
+        $subscription->status = 'pending';
+        $subscription->admin_validated_at = null;
+        $subscription->validated_by = null;
         $subscription->save();
 
         $subscription->client->notify(new SubscriptionRenewed($subscription));
@@ -84,7 +86,9 @@ class SubscriptionController extends Controller
     {
         abort_unless($subscription->client_id === $request->user()->id, 403);
 
-        $subscription->status = 'active';
+        $subscription->status = 'pending';
+        $subscription->admin_validated_at = null;
+        $subscription->validated_by = null;
         $subscription->save();
 
         $subscription->client->notify(new SubscriptionReactivated($subscription));
