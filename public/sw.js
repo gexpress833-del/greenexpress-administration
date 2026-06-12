@@ -1,6 +1,6 @@
-const CACHE_NAME = 'green-express-v3';
-const STATIC_CACHE = 'green-express-static-v3';
-const DYNAMIC_CACHE = 'green-express-dynamic-v3';
+const CACHE_NAME = 'green-express-v4';
+const STATIC_CACHE = 'green-express-static-v4';
+const DYNAMIC_CACHE = 'green-express-dynamic-v4';
 
 const STATIC_ASSETS = [
     '/',
@@ -21,7 +21,7 @@ async function precacheStaticAssets() {
     await Promise.allSettled(
         STATIC_ASSETS.map((asset) =>
             fetch(asset, { cache: 'reload' }).then((response) => {
-                if (response && response.ok) {
+                if (response && response.ok && !response.redirected) {
                     return cache.put(asset, response);
                 }
             })
@@ -95,7 +95,7 @@ async function staleWhileRevalidate(request) {
     const cached = await cache.match(request);
 
     const fetchPromise = fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
+        if (networkResponse && networkResponse.status === 200 && !networkResponse.redirected) {
             cache.put(request, networkResponse.clone());
         }
         return networkResponse;
@@ -111,7 +111,7 @@ async function cacheFirst(request) {
     if (cached) return cached;
 
     const networkResponse = await fetch(request);
-    if (networkResponse && networkResponse.status === 200) {
+    if (networkResponse && networkResponse.status === 200 && !networkResponse.redirected) {
         cache.put(request, networkResponse.clone());
     }
     return networkResponse;
@@ -123,18 +123,18 @@ async function networkFirst(request) {
 
     try {
         const networkResponse = await fetch(request);
-        if (networkResponse && networkResponse.status === 200) {
+        if (networkResponse && networkResponse.status === 200 && !networkResponse.redirected) {
             cache.put(request, networkResponse.clone());
         }
         return networkResponse;
     } catch (error) {
         const cached = await cache.match(request);
-        if (cached) return cached;
+        if (cached && !cached.redirected) return cached;
 
         // Offline fallback
         if (request.mode === 'navigate') {
             const offlinePage = await cache.match('/');
-            if (offlinePage) return offlinePage;
+            if (offlinePage && !offlinePage.redirected) return offlinePage;
         }
 
         return new Response('Hors ligne', {
