@@ -174,9 +174,9 @@
         @endif
 
         {{-- Info --}}
-        <div class="text-center text-emerald-400/50 text-[10px] max-w-xs">
+        <div class="text-center text-yellow-400/80 text-xs max-w-xs leading-relaxed">
             Ce taux est utilisé pour toutes les conversions dans l'application Green Express.
-            Mis à jour automatiquement par l'administrateur.
+            Mis à jour automatiquement par La Direction Green Express.
         </div>
     </div>
 </div>
