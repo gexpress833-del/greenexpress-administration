@@ -40,7 +40,7 @@
     {{-- Motif subtil en arrière-plan --}}
     <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
 
-    <div class="relative z-10 flex flex-col items-center px-4 pt-8 pb-12 min-h-screen">
+    <div class="relative z-10 flex flex-col items-center px-4 pb-12 min-h-screen" style="padding-top: calc(2rem + 4rem + env(safe-area-inset-top));">
         {{-- En-tête --}}
         <div class="text-center mb-8">
             <div class="flex items-center justify-center gap-3 mb-2">
