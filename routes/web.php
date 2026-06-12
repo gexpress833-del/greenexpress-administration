@@ -19,6 +19,7 @@ use App\Http\Controllers\Client\ReviewController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ExchangeRatePublicController;
+use App\Http\Controllers\MealPublicController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordChangeController;
 use App\Http\Controllers\ProfileController;
@@ -32,6 +33,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'password.changed'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/taux', [ExchangeRatePublicController::class, 'show'])->name('exchange-rate.show');
+    Route::get('/repas', [MealPublicController::class, 'index'])->name('meals.public');
     Route::get('/a-propos', [AboutController::class, 'index'])->name('about');
 
     Route::middleware('auth')->group(function () {
