@@ -175,8 +175,8 @@
 
         {{-- Info --}}
         <div class="text-center text-yellow-400/80 text-xs max-w-xs leading-relaxed">
-            Ce taux est utilisé pour toutes les conversions dans l'application Green Express.
-            Mis à jour automatiquement par La Direction Green Express.
+            Taux de référence appliqué à l'ensemble des conversions effectuées sur cette plateforme.
+            Actualisé automatiquement par La Direction.
         </div>
     </div>
 </div>
