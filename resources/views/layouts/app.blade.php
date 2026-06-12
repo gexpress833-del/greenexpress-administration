@@ -41,10 +41,7 @@
                     @include('layouts.topbar')
                 @endauth
 
-                <main class="flex-1 p-4 lg:p-8 @auth pt-24 @endauth">
-                    @auth
-                        <div class="h-8 lg:hidden"></div>
-                    @endauth
+                <main class="flex-1 p-4 lg:p-8" @auth style="padding-top: calc(1rem + 4rem + env(safe-area-inset-top))" @endauth>
                     @if(session('success'))
                         <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900 shadow-sm dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100">
                             <div class="flex items-start gap-3">
