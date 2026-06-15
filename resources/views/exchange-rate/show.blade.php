@@ -62,11 +62,6 @@
                      style="background: conic-gradient(from 0deg, rgba(251,191,36,0.08), rgba(251,191,36,0.25), rgba(217,119,6,0.15), rgba(251,191,36,0.08));
                             box-shadow: 0 0 30px rgba(251,191,36,0.15), inset 0 0 30px rgba(251,191,36,0.05);">
                 </div>
-                {{-- Points décoratifs sur l'anneau (tournent avec) --}}
-                <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1.5 w-3 h-3 bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/60 border border-yellow-300/50"></div>
-                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1.5 w-3 h-3 bg-yellow-500 rounded-full shadow-lg shadow-yellow-500/60 border border-yellow-400/50"></div>
-                <div class="absolute left-0 top-1/2 -translate-x-1.5 -translate-y-1/2 w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"></div>
-                <div class="absolute right-0 top-1/2 translate-x-1.5 -translate-y-1/2 w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"></div>
             </div>
 
             {{-- Contenu statique au centre (normal, pas absolute) --}}
