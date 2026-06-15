@@ -8,9 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('withdrawals', function (Blueprint $table) {
-            $table->foreignId('livreur_id')->nullable()->after('agent_id')->constrained('users')->nullOnDelete();
-        });
+        if (! Schema::hasColumn('withdrawals', 'livreur_id')) {
+            Schema::table('withdrawals', function (Blueprint $table) {
+                $table->foreignId('livreur_id')->nullable()->after('agent_id')->constrained('users')->nullOnDelete();
+            });
+        }
 
         // L'agent_id devient nullable car un retrait peut désormais appartenir
         // soit à un agent, soit à un livreur.
