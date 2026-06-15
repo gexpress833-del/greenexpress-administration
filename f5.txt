@@ -1,0 +1,105 @@
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Unit\ExampleTest[39m
+  [32;1m✓[39;22m[90m [39m[90mthat true is true[39m
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\AdminFeatureTest[39m
+  [32;1m✓[39;22m[90m [39m[90madmin can validate subscription[39m[90m                                                                             [39m [90m0.55s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin can approve withdrawal[39m[90m                                                                                [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin can reject withdrawal[39m[90m                                                                                 [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin withdrawal update rejects invalid status[39m[90m                                                              [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin can assign delivery[39m[90m                                                                                   [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin can accept suspension[39m[90m                                                                                 [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin can reject suspension[39m[90m                                                                                 [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin can create user[39m[90m                                                                                       [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin can update and delete user[39m[90m                                                                            [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin can create category and meal[39m[90m                                                                          [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin can view commissions index[39m[90m                                                                            [39m [90m0.06s[39m  
+  [32;1m✓[39;22m[90m [39m[90mnon admin cannot access admin routes[39m[90m                                                                        [39m [90m0.03s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\AgentFeatureTest[39m
+  [32;1m✓[39;22m[90m [39m[90magent can view orders index[39m[90m                                                                                 [39m [90m0.05s[39m  
+  [32;1m✓[39;22m[90m [39m[90magent can view order create form[39m[90m                                                                            [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90magent can create order with items and commission[39m[90m                                                            [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90magent order store requires items[39m[90m                                                                            [39m [90m0.02s[39m  
+  [32;1m✓[39;22m[90m [39m[90magent can view their order[39m[90m                                                                                  [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90magent can create subscription[39m[90m                                                                               [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90magent subscription creation flashes prefilled whatsapp link[39m[90m                                                 [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90magent can view commissions and withdrawals[39m[90m                                                                  [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90magent can request withdrawal within balance[39m[90m                                                                 [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90magent cannot withdraw more than balance[39m[90m                                                                     [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mnon agent cannot access agent routes[39m[90m                                                                        [39m [90m0.02s[39m  
+  [32;1m✓[39;22m[90m [39m[90magent cannot view another agents order[39m[90m                                                                      [39m [90m0.03s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\Auth\AuthenticationTest[39m
+  [32;1m✓[39;22m[90m [39m[90mlogin screen can be rendered[39m[90m                                                                                [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90musers can authenticate using the login screen[39m[90m                                                               [39m [90m0.05s[39m  
+  [32;1m✓[39;22m[90m [39m[90musers can not authenticate with invalid password[39m[90m                                                            [39m [90m0.23s[39m  
+  [32;1m✓[39;22m[90m [39m[90musers can logout[39m[90m                                                                                            [39m [90m0.02s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\Auth\EmailVerificationTest[39m
+  [32;1m✓[39;22m[90m [39m[90memail verification screen can be rendered[39m[90m                                                                   [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90memail can be verified[39m[90m                                                                                       [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90memail is not verified with invalid hash[39m[90m                                                                     [39m [90m0.03s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\Auth\PasswordConfirmationTest[39m
+  [32;1m✓[39;22m[90m [39m[90mconfirm password screen can be rendered[39m[90m                                                                     [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90mpassword can be confirmed[39m[90m                                                                                   [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mpassword is not confirmed with invalid password[39m[90m                                                             [39m [90m0.24s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\Auth\PasswordResetTest[39m
+  [32;1m✓[39;22m[90m [39m[90mreset password link screen can be rendered[39m[90m                                                                  [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mreset password link can be requested[39m[90m                                                                        [39m [90m0.24s[39m  
+  [32;1m✓[39;22m[90m [39m[90mreset password screen can be rendered[39m[90m                                                                       [39m [90m0.24s[39m  
+  [32;1m✓[39;22m[90m [39m[90mpassword can be reset with valid token[39m[90m                                                                      [39m [90m0.25s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\Auth\PasswordUpdateTest[39m
+  [32;1m✓[39;22m[90m [39m[90mpassword can be updated[39m[90m                                                                                     [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mcorrect password must be provided to update password[39m[90m                                                        [39m [90m0.03s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\Auth\RegistrationTest[39m
+  [32;1m✓[39;22m[90m [39m[90mregistration screen can be rendered[39m[90m                                                                         [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mnew users can register[39m[90m                                                                                      [39m [90m0.03s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\ClientFeatureTest[39m
+  [32;1m✓[39;22m[90m [39m[90mclient can view dashboard[39m[90m                                                                                   [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mclient can view subscriptions index and show[39m[90m                                                                [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90mclient can renew subscription[39m[90m                                                                               [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mclient can request suspension[39m[90m                                                                               [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mclient can reactivate suspended subscription[39m[90m                                                                [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mclient can view orders[39m[90m                                                                                      [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90mclient can view deliveries[39m[90m                                                                                  [39m [90m0.05s[39m  
+  [32;1m✓[39;22m[90m [39m[90mnon client cannot access client routes[39m[90m                                                                      [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mclient cannot view another clients subscription[39m[90m                                                             [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mclient cannot renew another clients subscription[39m[90m                                                            [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mclient cannot view another clients order[39m[90m                                                                    [39m [90m0.03s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\ExampleTest[39m
+  [32;1m✓[39;22m[90m [39m[90mthe application redirects guests to login[39m[90m                                                                   [39m [90m0.03s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\LivreurFeatureTest[39m
+  [32;1m✓[39;22m[90m [39m[90mlivreur can view deliveries index[39m[90m                                                                           [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90mlivreur can view delivery[39m[90m                                                                                   [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mlivreur can mark delivery as delivered[39m[90m                                                                      [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mnon livreur cannot access livreur routes[39m[90m                                                                    [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mlivreur cannot deliver another livreurs delivery[39m[90m                                                            [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mlivreur can notify client via whatsapp[39m[90m                                                                      [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mlivreur cannot notify for another livreurs delivery[39m[90m                                                         [39m [90m0.03s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\ProfileTest[39m
+  [32;1m✓[39;22m[90m [39m[90mprofile page is displayed[39m[90m                                                                                   [39m [90m0.05s[39m  
+  [32;1m✓[39;22m[90m [39m[90mprofile information can be updated[39m[90m                                                                          [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90memail verification status is unchanged when the email address is unchanged[39m[90m                                  [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90muser can delete their account[39m[90m                                                                               [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mcorrect password must be provided to delete account[39m[90m                                                         [39m [90m0.03s[39m  
+
+  [30;42;1m PASS [39;49;22m[39m Tests\Feature\SmokeTest[39m
+  [32;1m✓[39;22m[90m [39m[90mlogin page loads[39m[90m                                                                                            [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin dashboard loads[39m[90m                                                                                       [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90madmin orders loads[39m[90m                                                                                          [39m [90m0.04s[39m  
+  [32;1m✓[39;22m[90m [39m[90magent dashboard loads[39m[90m                                                                                       [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mlivreur dashboard loads[39m[90m                                                                                     [39m [90m0.03s[39m  
+  [32;1m✓[39;22m[90m [39m[90mclient dashboard loads[39m[90m                                                                                      [39m [90m0.03s[39m  
+
+  [90mTests:[39m    [32;1m73 passed[39;22m[90m (181 assertions)[39m
+  [90mDuration:[39m [39m4.39s[39m
+

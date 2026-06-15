@@ -1,0 +1,54 @@
+services:
+  - type: web
+    name: greenexpress
+    runtime: docker
+    plan: free
+    envVars:
+      - key: APP_NAME
+        value: GreenExpress
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        value: base64:5Wt5BM9uMS5hC1qRyT55hZIp+A0/FsTlmUG/Qo+//0E=
+      - key: APP_URL
+        value: https://greenexpress-administration.onrender.com
+      - key: ASSET_URL
+        value: https://greenexpress-administration.onrender.com
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        value: dpg-d8iog6rtqb8s73bd94tg-a.oregon-postgres.render.com
+      - key: DB_PORT
+        value: 5432
+      - key: DB_DATABASE
+        value: greenexpress_db
+      - key: DB_USERNAME
+        value: greenexpress_db_user
+      - key: DB_PASSWORD
+        value: PASTE_YOUR_PASSWORD_HERE
+      - key: ADMIN_NAME
+        value: Administrateur
+      - key: ADMIN_EMAIL
+        value: admin@greenexpress.cd
+      - key: ADMIN_PASSWORD
+        value: GreenExpress2026!
+      - key: DB_SSLMODE
+        value: require
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dd74zepgt
+      - key: CLOUDINARY_API_KEY
+        value: 277927317916575
+      - key: CLOUDINARY_API_SECRET
+        value: e4RqcMwafizoUCXsqO2MrdwWccM

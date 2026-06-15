@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\User;
+use App\Notifications\NewOrderForCuisinier;
+use App\Notifications\NewOrderForDelivery;
+use App\Notifications\OrderStatusUpdated;
+use Illuminate\Http\Request;
+
+class OrderController extends Controller
+{
+    public function index(Request $request)
+    {
+        $orders = Order::with(['agent', 'client', 'items.meal'])
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $term = '%' . $request->search . '%';
+                $q->where('code', 'like', $term)
+                  ->orWhere('client_name', 'like', $term)
+                  ->orWhereHas('agent', fn ($a) => $a->where('name', 'like', $term));
+            })
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+        return view('admin.orders.index', compact('orders'));
+    }
+
+    public function show(Order $order)
+    {
+        $order->load(['agent', 'client', 'items.meal', 'delivery.livreur']);
+        return view('admin.orders.show', compact('order'));
+    }
+
+    public function updateStatus(Request $request, Order $order)
+    {
+        $request->validate(['status' => 'required|in:pending,confirmed,preparing,delivering,delivered,cancelled']);
+        $oldStatus = $order->status;
+        $order->status = $request->status;
+        if ($request->status === 'delivered') {
+            $order->delivered_at = now();
+        }
+        if ($request->status === 'confirmed' && $oldStatus !== 'confirmed') {
+            $order->admin_validated_at = now();
+        }
+        $order->save();
+
+        // Notifier l'agent du changement de statut
+        if ($order->agent && $oldStatus !== $request->status) {
+            $order->agent->notify(new OrderStatusUpdated($order, $oldStatus));
+        }
+
+        // Notifier tous les livreurs quand la commande est validée par l'admin
+        if ($request->status === 'confirmed' && $oldStatus !== 'confirmed') {
+            $livreurs = User::where('role', 'livreur')->get();
+            foreach ($livreurs as $livreur) {
+                $livreur->notify(new NewOrderForDelivery($order));
+            }
+        }
+
+        // Notifier tous les cuisiniers quand la commande est validée par l'admin
+        if ($request->status === 'confirmed' && $oldStatus !== 'confirmed') {
+            $cuisiniers = User::where('role', 'cuisinier')->get();
+            foreach ($cuisiniers as $cuisinier) {
+                $cuisinier->notify(new NewOrderForCuisinier($order));
+            }
+        }
+
+        return redirect()->route('admin.orders.show', $order)->with('success', 'Statut mis à jour.');
+    }
+
+    public function print(Order $order)
+    {
+        $order->load(['items.meal', 'agent', 'client']);
+
+        $qrData = "GREEN EXPRESS\nBon de préparation\nCommande: {$order->code}\nClient: " . ($order->client_name ?? 'N/A') . "\nTotal: $ " . number_format($order->total_amount, 2) . "\nVérifier sur: green-express.cd";
+
+        $qrOptions = new \chillerlan\QRCode\QROptions();
+        $qrOptions->outputInterface = \chillerlan\QRCode\Output\QRGdImagePNG::class;
+        $qrOptions->scale = 5;
+
+        $qrCode = new \chillerlan\QRCode\QRCode($qrOptions);
+        $qrCodePng = $qrCode->render($qrData);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('cuisinier.orders.print', compact('order', 'qrCodePng'));
+
+        return $pdf->stream("bon-preparation-{$order->code}.pdf");
+    }
+}
