@@ -25,7 +25,7 @@ WORKDIR /var/www/html
 
 # Copy composer files and install dependencies
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN composer install --no-dev --no-interaction --no-scripts --no-autoloader
 
 # Copy npm files and install dependencies
 COPY package.json package-lock.json ./
