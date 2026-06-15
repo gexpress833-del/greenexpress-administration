@@ -34,6 +34,9 @@ RUN npm ci
 # Copy application code
 COPY . .
 
+# Regenerate autoloader to pick up new PHP classes
+RUN composer dump-autoload --optimize
+
 # Build frontend assets
 RUN npm run build
 
