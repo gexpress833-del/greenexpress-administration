@@ -41,6 +41,15 @@
                 </a>
             @endif
 
+            @if(auth()->user()->isLivreur())
+                <a href="{{ route('livreur.points.index') }}" class="flex items-center gap-1 sm:gap-1.5 bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800 rounded-full pl-1.5 pr-2 sm:pl-2 sm:pr-3 py-1 transition" title="Voir mes points livreur">
+                    <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shrink-0">
+                        <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <span class="text-[10px] sm:text-xs font-bold text-amber-700 dark:text-amber-300 leading-none">{{ \App\Models\LivreurPoint::where('livreur_id', auth()->id())->sum('points') ?: 0 }}<span class="hidden sm:inline"> pts</span></span>
+                </a>
+            @endif
+
             <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 group" title="Mon profil">
                 @if(auth()->user()->avatar)
                     <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600 group-hover:border-green-500 dark:group-hover:border-green-400 transition">
