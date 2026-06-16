@@ -8,17 +8,38 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+@keyframes spin-gold-reverse {
+    0% { transform: rotate(360deg); }
+    100% { transform: rotate(0deg); }
+}
 @keyframes pulse-gold {
-    0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(234,179,8,0.3); }
-    50% { opacity: 0.85; box-shadow: 0 0 40px rgba(234,179,8,0.6); }
+    0%, 100% { opacity: 1; filter: drop-shadow(0 0 14px rgba(251,191,36,0.45)) saturate(1); }
+    50% { opacity: 0.9; filter: drop-shadow(0 0 34px rgba(245,158,11,0.85)) saturate(1.35); }
 }
 @keyframes color-shift {
-    0% { filter: hue-rotate(0deg); }
-    50% { filter: hue-rotate(15deg); }
-    100% { filter: hue-rotate(0deg); }
+    0%, 100% { border-color: rgba(251,191,36,0.9); box-shadow: 0 0 28px rgba(251,191,36,0.38), inset 0 0 24px rgba(251,191,36,0.12); }
+    35% { border-color: rgba(250,204,21,0.95); box-shadow: 0 0 44px rgba(250,204,21,0.55), inset 0 0 28px rgba(250,204,21,0.18); }
+    70% { border-color: rgba(217,119,6,0.9); box-shadow: 0 0 36px rgba(217,119,6,0.5), inset 0 0 22px rgba(217,119,6,0.16); }
 }
 .gold-ring {
-    animation: spin-gold 8s linear infinite, pulse-gold 3s ease-in-out infinite;
+    animation: spin-gold 7s linear infinite, pulse-gold 2.8s ease-in-out infinite;
+    background:
+        conic-gradient(from 0deg, transparent 0deg, rgba(251,191,36,0.98) 52deg, rgba(250,204,21,0.55) 78deg, transparent 118deg, transparent 180deg, rgba(217,119,6,0.75) 238deg, rgba(251,191,36,0.95) 286deg, transparent 330deg);
+    mask: radial-gradient(farthest-side, transparent calc(100% - 12px), #000 calc(100% - 11px));
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 12px), #000 calc(100% - 11px));
+}
+.gold-ring-soft {
+    animation: spin-gold-reverse 12s linear infinite, color-shift 4s ease-in-out infinite;
+}
+.gold-halo {
+    background: radial-gradient(circle, rgba(251,191,36,0.24) 0%, rgba(251,191,36,0.12) 36%, transparent 70%);
+    animation: pulse-gold 3.2s ease-in-out infinite;
+}
+.currency-frame {
+    box-shadow:
+        0 0 42px rgba(251,191,36,0.22),
+        0 0 90px rgba(245,158,11,0.12),
+        inset 0 0 30px rgba(251,191,36,0.08);
 }
 .gold-text-shimmer {
     background: linear-gradient(90deg, #fbbf24, #f59e0b, #d97706, #fbbf24);
@@ -55,18 +76,16 @@
         </div>
 
         {{-- Cercle doré animé --}}
-        <div class="relative w-64 h-64 mb-10 mx-auto flex items-center justify-center">
-            {{-- Anneau extérieur tournant (arrière-plan) --}}
-            <div class="absolute inset-0 gold-ring pointer-events-none">
-                <div class="absolute inset-0 rounded-full border-[3px] border-yellow-400/40"
-                     style="background: conic-gradient(from 0deg, rgba(251,191,36,0.08), rgba(251,191,36,0.25), rgba(217,119,6,0.15), rgba(251,191,36,0.08));
-                            box-shadow: 0 0 30px rgba(251,191,36,0.15), inset 0 0 30px rgba(251,191,36,0.05);">
-                </div>
-            </div>
+        <div class="relative w-72 h-72 mb-10 mx-auto flex items-center justify-center currency-frame rounded-full">
+            <div class="absolute -inset-8 gold-halo pointer-events-none rounded-full"></div>
+            <div class="absolute inset-0 gold-ring pointer-events-none rounded-full"></div>
+            <div class="absolute inset-3 rounded-full border-2 border-yellow-400/45 gold-ring-soft pointer-events-none"></div>
+            <div class="absolute inset-8 rounded-full border border-amber-300/20 pointer-events-none"
+                 style="box-shadow: inset 0 0 30px rgba(251,191,36,0.08), 0 0 20px rgba(251,191,36,0.12);"></div>
 
-            {{-- Contenu statique au centre (normal, pas absolute) --}}
-            <div class="relative z-10 w-[13.5rem] h-[13.5rem] rounded-full border border-yellow-500/20 flex items-center justify-center bg-gradient-to-br from-emerald-900/90 to-emerald-950/95 backdrop-blur-sm shadow-2xl"
-                 style="box-shadow: 0 0 25px rgba(0,0,0,0.3), inset 0 0 20px rgba(251,191,36,0.05);">
+            {{-- Contenu statique au centre --}}
+            <div class="relative z-10 w-[13.75rem] h-[13.75rem] rounded-full border border-yellow-500/25 flex items-center justify-center bg-gradient-to-br from-emerald-900/95 via-emerald-950/95 to-emerald-950 backdrop-blur-sm shadow-2xl"
+                 style="box-shadow: 0 0 32px rgba(0,0,0,0.35), inset 0 0 32px rgba(251,191,36,0.08);">
                 <div class="text-center">
                     <p class="text-[10px] text-emerald-400/80 uppercase tracking-[0.2em] mb-1 font-medium">1 USD</p>
                     <p class="text-4xl font-bold gold-text-shimmer font-mono tracking-tight leading-none">
