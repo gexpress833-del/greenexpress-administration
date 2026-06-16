@@ -51,7 +51,7 @@ RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /e
 
 # Add Apache config for Laravel
 COPY docker/apache/laravel.conf /etc/apache2/sites-available/laravel.conf
-RUN a2ensite laravel
+RUN a2dissite 000-default && a2ensite laravel
 
 # Copy startup script
 COPY docker/start.sh /start.sh
