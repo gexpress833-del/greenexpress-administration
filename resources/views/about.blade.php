@@ -27,7 +27,7 @@
         </div>
         <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Green Express</h1>
         <p class="text-base text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-            Une infrastructure alimentaire conçue pour simpler l'accès au bien-manger, un repas à la fois.
+            Une infrastructure alimentaire conçue pour faciliter l'accès à une alimentation saine, fiable et savoureuse, un repas à la fois.
         </p>
     </div>
 
@@ -36,7 +36,7 @@
         <h2 class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-4">Notre mission</h2>
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
             <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-[15px]">
-                Green Express articule une réponse structurée à un défi quotidien : permettre à chacun de bénéficier d'une alimentation équilibrée, préparée avec rigueur et livrée avec ponctualité. Nous ne sommes pas un simple service de livraison — nous sommes une chaîne de valeur pensée pour réconcilier efficience opérationnelle et exigence nutritionnelle.
+                Green Express apporte une réponse structurée à un besoin essentiel du quotidien : permettre à chacun de bénéficier d'une alimentation équilibrée, préparée avec soin et livrée avec ponctualité. Plus qu'un simple service de livraison, nous constituons une chaîne de valeur pensée pour allier efficacité opérationnelle, qualité culinaire et exigence nutritionnelle.
             </p>
         </div>
     </section>
@@ -50,28 +50,28 @@
                     <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                 </div>
                 <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Restauration soignée</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Des menus élaborés par des professionnels de la gastronomie, pensés pour l'équilibre nutritionnel sans sacrifier le plaisir du goût.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Des menus élaborés avec soin par des professionnels de la restauration, pensés pour préserver l'équilibre nutritionnel sans renoncer au plaisir du goût.</p>
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
                 <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-3">
                     <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0 2 2 0 00-4 0z"/></svg>
                 </div>
                 <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Logistique optimisée</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Un réseau de livreurs structuré et géolocalisé, garantissant une distribution rapide et une traçabilité complète de chaque commande.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Un réseau de livreurs organisé et géolocalisé, conçu pour assurer une distribution rapide, fiable et traçable de chaque commande.</p>
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
                 <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-3">
                     <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9a2 2 0 11-4 0 2 2 0 014 0zm-4 4a2 2 0 11-4 0 2 2 0 014 0zm4 4a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                 </div>
                 <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Abonnements adaptatifs</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Des formules flexibles qui évoluent avec vos besoins, pour une planification hebdomadaire ou mensuelle sans contrainte.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Des formules flexibles qui s'adaptent à vos besoins, pour une planification hebdomadaire ou mensuelle simple, claire et sans contrainte.</p>
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
                 <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-3">
                     <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                 </div>
                 <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Transactions sécurisées</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Un système de paiement intégré avec conversion automatique USD/FC, assurant transparence et fiabilité à chaque transaction.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Un système de paiement intégré, associé à une conversion automatique USD/FC, pour garantir transparence, sécurité et fiabilité à chaque transaction.</p>
             </div>
         </div>
     </section>
@@ -81,10 +81,10 @@
         <h2 class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-4">Notre histoire</h2>
         <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
             <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-[15px] mb-4">
-                Green Express est le fruit d'une conviction : l'alimentation de qualité ne devrait pas être un privilège géographique ou économique. Partant de ce constat, nous avons construit une plateforme qui connecte des chefs talentueux, des livreurs engagés et des clients exigeants dans un écosystème vertueux.
+                Green Express est né d'une conviction forte : l'accès à une alimentation de qualité ne devrait dépendre ni de la position géographique, ni du niveau de revenu. À partir de cette vision, nous avons conçu une plateforme qui relie des cuisiniers talentueux, des livreurs engagés, des agents actifs et des clients exigeants au sein d'un écosystème cohérent et vertueux.
             </p>
             <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-[15px]">
-                Au fil des itérations, notre modèle s'est affiné. De la simple livraison de repas, nous sommes passés à une infrastructure complète de gestion alimentaire, intégrant la planification des menus, le suivi des abonnements, la gestion des commissions et un système de change en temps réel. Chaque fonctionnalité reflète une attention méticuleuse portée aux besoins réels de nos utilisateurs.
+                Au fil du temps, notre modèle s'est progressivement affiné. D'un service centré sur la livraison de repas, Green Express est devenu une véritable infrastructure de gestion alimentaire, intégrant la planification des menus, le suivi des abonnements, la gestion des commissions, les retraits des partenaires et un système de change en temps réel. Chaque fonctionnalité traduit notre volonté de répondre avec précision aux besoins concrets de nos utilisateurs.
             </p>
         </div>
     </section>
@@ -97,28 +97,28 @@
                 <div class="w-2 h-2 mt-2 rounded-full bg-emerald-500 shrink-0"></div>
                 <div>
                     <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Excellence opérationnelle</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Chaque processus est pensé pour minimiser la friction et maximiser la valeur perçue par l'utilisateur final.</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Chaque processus est conçu pour réduire les obstacles, améliorer l'expérience utilisateur et créer une valeur réelle à chaque étape du parcours.</p>
                 </div>
             </div>
             <div class="flex items-start gap-4 bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
                 <div class="w-2 h-2 mt-2 rounded-full bg-emerald-500 shrink-0"></div>
                 <div>
                     <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Transparence économique</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Taux de change affichés en temps réel, tarification claire, commissions accessibles — aucune opacité n'a sa place ici.</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Taux de change affichés en temps réel, tarification claire, commissions consultables et retraits traçables : la transparence guide notre fonctionnement.</p>
                 </div>
             </div>
             <div class="flex items-start gap-4 bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
                 <div class="w-2 h-2 mt-2 rounded-full bg-emerald-500 shrink-0"></div>
                 <div>
                     <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Développement communautaire</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Nous créons des opportunités de revenus pour nos agents et livreurs, en transformant chaque partenaire en acteur à part entière de notre réussite.</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Nous créons des opportunités de revenus pour nos agents, livreurs et cuisiniers, en faisant de chaque partenaire un acteur essentiel de notre croissance.</p>
                 </div>
             </div>
             <div class="flex items-start gap-4 bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
                 <div class="w-2 h-2 mt-2 rounded-full bg-emerald-500 shrink-0"></div>
                 <div>
                     <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Innovation pragmatique</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Chaque évolution technologique répond à un besoin concret. Nous privilégions l'utilité à la sophistication ostentatoire.</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Chaque évolution technologique répond à un besoin concret. Nous privilégions les solutions utiles, simples et efficaces aux artifices sans valeur réelle.</p>
                 </div>
             </div>
         </div>
@@ -129,7 +129,7 @@
         <h2 class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-4">Rejoindre l'écosystème</h2>
         <div class="bg-gradient-to-br from-emerald-800 to-emerald-950 rounded-2xl p-6 lg:p-8 text-white shadow-xl">
             <p class="leading-relaxed text-emerald-100/90 text-[15px] mb-5">
-                Que vous souhaitiez commander, distribuer ou contribuer à la croissance de Green Express, notre plateforme vous offre les outils et la structure nécessaires pour vous épanouir dans un environnement digne de confiance.
+                Que vous souhaitiez commander, livrer, cuisiner, représenter la marque ou contribuer à la croissance de Green Express, notre plateforme met à votre disposition les outils, l'organisation et le cadre nécessaires pour évoluer dans un environnement fiable et professionnel.
             </p>
             <div class="flex flex-wrap gap-3">
                 <span class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 backdrop-blur border border-white/10 text-sm">
