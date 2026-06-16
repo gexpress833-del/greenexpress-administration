@@ -46,8 +46,7 @@ RUN chown -R www-data:www-data /var/www/html/public /var/www/html/storage /var/w
 
 # Configure Apache to serve from public directory
 RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
-    && sed -i 's|<Directory /var/www/html>|<Directory /var/www/html/public>|g' /etc/apache2/sites-available/000-default.conf \
-    && sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
+    && sed -i 's|<Directory /var/www/html>|<Directory /var/www/html/public>|g' /etc/apache2/sites-available/000-default.conf
 
 # Add Apache config for Laravel
 COPY docker/apache/laravel.conf /etc/apache2/sites-available/laravel.conf
