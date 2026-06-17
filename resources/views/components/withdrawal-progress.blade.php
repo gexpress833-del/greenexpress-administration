@@ -1,8 +1,12 @@
 @php
+$available = (float) ($available ?? 0);
+$minRequired = (float) ($minRequired ?? 1);
+$availableFc = (float) ($availableFc ?? 0);
+$minRequiredFc = (float) ($minRequiredFc ?? 0);
 $progress = $minRequired > 0 ? min(100, round(($available / $minRequired) * 100, 1)) : 0;
 $remaining = max(0, $minRequired - $available);
 $radius = 48;
-$circumference = 2 * M_PI * $radius;
+$circumference = round(2 * pi() * $radius, 2);
 $offset = $circumference - ($progress / 100) * $circumference;
 $canWithdraw = $available >= $minRequired;
 $color = $canWithdraw ? '#16a34a' : '#0ea5e9';
@@ -34,22 +38,21 @@ $bgClass = $canWithdraw ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dar
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                 Solde : <span class="font-bold text-gray-700 dark:text-gray-200">$ {{ number_format($available, 2) }}</span>
             </p>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                {{ number_format($available * \App\Models\ExchangeRate::current(), 0, ',', '.') }} FC
-            </p>
+            @if($availableFc > 0)
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($availableFc, 0, ',', '.') }} FC</p>
+            @endif
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Min requis : $ {{ number_format($minRequired, 2) }}
             </p>
-            <p class="text-xs text-gray-400 dark:text-gray-500">
-                {{ number_format($minRequired * \App\Models\ExchangeRate::current(), 0, ',', '.') }} FC
-            </p>
+            @if($minRequiredFc > 0)
+                <p class="text-xs text-gray-400 dark:text-gray-500">{{ number_format($minRequiredFc, 0, ',', '.') }} FC</p>
+            @endif
 
             @if($canWithdraw)
                 <p class="text-xs font-semibold text-green-600 dark:text-green-400 mt-2">Retrait disponible !</p>
             @else
                 <p class="text-xs text-sky-600 dark:text-sky-400 mt-2">
                     Encore $ {{ number_format($remaining, 2) }}
-                    ({{ number_format($remaining * \App\Models\ExchangeRate::current(), 0, ',', '.') }} FC)
                 </p>
             @endif
         </div>

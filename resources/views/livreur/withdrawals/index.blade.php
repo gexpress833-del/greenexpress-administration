@@ -4,7 +4,7 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-        <x-withdrawal-progress :available="$available" :minRequired="$minWithdrawal" label="Solde disponible" />
+        <x-withdrawal-progress :available="$available" :minRequired="$minWithdrawal" :availableFc="$available * \App\Models\ExchangeRate::current()" :minRequiredFc="$minWithdrawalFc" label="Solde disponible" />
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">

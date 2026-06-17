@@ -62,7 +62,7 @@
                 <p class="text-lg font-bold text-gray-800 dark:text-gray-100">{{ $todayPoints }}</p>
                 <p class="text-[10px] text-gray-400 dark:text-gray-500">~$ {{ number_format($todayValueUsd, 2) }}</p>
             </div>
-            <x-withdrawal-progress :available="$availableBalance" :minRequired="$minWithdrawal" label="Solde retirable" />
+            <x-withdrawal-progress :available="$availableBalance" :minRequired="$minWithdrawal" :availableFc="$availableBalance * \App\Models\ExchangeRate::current()" :minRequiredFc="$minWithdrawal * \App\Models\ExchangeRate::current()" label="Solde retirable" />
         </div>
 
         {{-- How it works --}}
