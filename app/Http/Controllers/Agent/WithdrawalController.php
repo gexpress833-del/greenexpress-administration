@@ -19,9 +19,11 @@ class WithdrawalController extends Controller
         $withdrawals = Withdrawal::where('agent_id', $user->id)->latest()->paginate(15);
         $available = app(CommissionService::class)->getAvailableBalance($user->id);
         $minWithdrawal = CommissionService::MIN_WITHDRAWAL_USD;
-        $minWithdrawalFc = (new CurrencyService())->usdToFc($minWithdrawal);
+        $currencyService = new CurrencyService();
+        $minWithdrawalFc = $currencyService->usdToFc($minWithdrawal);
+        $availableFc = $currencyService->usdToFc($available);
 
-        return view('agent.withdrawals.index', compact('withdrawals', 'available', 'minWithdrawal', 'minWithdrawalFc'));
+        return view('agent.withdrawals.index', compact('withdrawals', 'available', 'availableFc', 'minWithdrawal', 'minWithdrawalFc'));
     }
 
     public function store(Request $request)

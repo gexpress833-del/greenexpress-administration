@@ -1,4 +1,3 @@
-@php use App\Models\ExchangeRate; @endphp
 <x-app-layout>
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Mes points</h1>
@@ -66,7 +65,7 @@
                             <td class="px-6 py-3 font-bold text-green-700">+{{ $p->points }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">
                                 $ {{ number_format($p->value_usd, 2) }}
-                                <span class="text-xs text-gray-400 dark:text-gray-500 block">{{ number_format($p->value_usd * ExchangeRate::current(), 0, ',', '.') }} FC</span>
+                                <span class="text-xs text-gray-400 dark:text-gray-500 block">{{ number_format($p->value_usd * $exchangeRate, 0, ',', '.') }} FC</span>
                             </td>
                             <td class="px-6 py-3 text-gray-500 dark:text-gray-400">{{ $p->earned_at?->format('d/m/Y H:i') }}</td>
                         </tr>

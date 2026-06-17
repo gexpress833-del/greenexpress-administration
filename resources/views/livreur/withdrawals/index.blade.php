@@ -4,13 +4,13 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-        <x-withdrawal-progress :available="$available" :minRequired="$minWithdrawal" :availableFc="$available * \App\Models\ExchangeRate::current()" :minRequiredFc="$minWithdrawalFc" label="Solde disponible" />
+        <x-withdrawal-progress :available="$available" :minRequired="$minWithdrawal" :availableFc="$availableFc" :minRequiredFc="$minWithdrawalFc" label="Solde disponible" />
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Demander un retrait</h2>
         @if($available < 7)
-            <p class="text-sm text-red-600 dark:text-red-400">Solde insuffisant. Minimum requis : $ 7.00 ({{ number_format(7 * \App\Models\ExchangeRate::current(), 0, ',', '.') }} FC)</p>
+            <p class="text-sm text-red-600 dark:text-red-400">Solde insuffisant. Minimum requis : $ {{ number_format($minWithdrawal, 2) }} ({{ number_format($minWithdrawalFc, 0, ',', '.') }} FC)</p>
         @else
             <form method="POST" action="{{ route('livreur.withdrawals.store') }}" class="flex flex-col sm:flex-row gap-3" x-data="{ loading: false }" @submit="loading = true">
                 @csrf

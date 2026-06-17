@@ -19,9 +19,11 @@ class WithdrawalController extends Controller
         $withdrawals = Withdrawal::where('livreur_id', $user->id)->latest()->paginate(15);
         $available = app(LivreurPointService::class)->getAvailableBalance($user->id);
         $minWithdrawal = LivreurPointService::MIN_WITHDRAWAL_USD;
-        $minWithdrawalFc = (new CurrencyService())->usdToFc($minWithdrawal);
+        $currencyService = new CurrencyService();
+        $minWithdrawalFc = $currencyService->usdToFc($minWithdrawal);
+        $availableFc = $currencyService->usdToFc($available);
 
-        return view('livreur.withdrawals.index', compact('withdrawals', 'available', 'minWithdrawal', 'minWithdrawalFc'));
+        return view('livreur.withdrawals.index', compact('withdrawals', 'available', 'availableFc', 'minWithdrawal', 'minWithdrawalFc'));
     }
 
     public function store(Request $request)

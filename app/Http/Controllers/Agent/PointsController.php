@@ -40,6 +40,9 @@ class PointsController extends Controller
 
         $availableBalance = app(CommissionService::class)->getAvailableBalance($user->id);
         $minWithdrawal = CommissionService::MIN_WITHDRAWAL_USD;
+        $currencyService = new CurrencyService();
+        $availableBalanceFc = $currencyService->usdToFc($availableBalance);
+        $minWithdrawalFc = $currencyService->usdToFc($minWithdrawal);
 
         return view('agent.points.index', compact(
             'totalPoints',
@@ -50,7 +53,9 @@ class PointsController extends Controller
             'weeklyPoints',
             'totalCommissionsUsd',
             'availableBalance',
-            'minWithdrawal'
+            'availableBalanceFc',
+            'minWithdrawal',
+            'minWithdrawalFc'
         ));
     }
 }
