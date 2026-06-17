@@ -14,12 +14,24 @@
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Téléphone</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->client_phone }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Adresse</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->delivery_address }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Date livraison</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ $order->delivery_date?->format('d/m/Y') }}</span></div>
-                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Total</span><span class="font-bold text-green-700 dark:text-green-400">$ {{ number_format($order->total_amount, 2) }}<br><span class="text-xs text-gray-500 dark:text-gray-400">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</span></span></div>
+                <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Total</span><span class="font-bold text-green-700 dark:text-green-400">
+                    @if($order->currency === 'fc')
+                        {{ number_format($order->total_amount_fc, 0, ',', '.') }} FC
+                    @else
+                        $ {{ number_format($order->total_amount, 2) }}
+                    @endif
+                </span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Statut</span><span class="font-medium text-gray-800 dark:text-gray-100">{{ ucfirst($order->status) }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Code validation client</span><span class="font-mono font-bold text-orange-600 dark:text-orange-400 tracking-wider">{{ $order->client_validation_code }}</span></div>
             </div>
 
             <div class="mt-6 space-y-2">
+                <a href="{{ route('agent.receipt.show', $order) }}" target="_blank" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+                    Reçu client
+                </a>
+                <a href="{{ route('agent.receipt.pdf', $order) }}" class="block w-full text-center bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg transition">
+                    Télécharger PDF reçu
+                </a>
                 <a href="{{ route('admin.orders.print', $order) }}" target="_blank" class="block w-full text-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 font-semibold py-2 px-4 rounded-lg transition">
                     � Exporter le bon en PDF
                 </a>
@@ -78,9 +90,22 @@
                 <div class="flex justify-between items-center py-2 border-b border-gray-50 dark:border-gray-700 text-sm">
                     <div>
                         <p class="font-medium text-gray-800 dark:text-gray-100">{{ $item->meal->name }}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Qté: {{ $item->quantity }} x $ {{ number_format($item->unit_price, 2) }} ({{ number_format($item->unit_price_fc, 0, ',', '.') }} FC)</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Qté: {{ $item->quantity }} x
+                            @if($order->currency === 'fc')
+                                {{ number_format($item->unit_price_fc, 0, ',', '.') }} FC
+                            @else
+                                $ {{ number_format($item->unit_price, 2) }}
+                            @endif
+                        </p>
                     </div>
-                    <p class="font-semibold text-gray-800 dark:text-gray-100">$ {{ number_format($item->total_price, 2) }}<br><span class="text-xs text-gray-500 dark:text-gray-400">{{ number_format($item->total_price_fc, 0, ',', '.') }} FC</span></p>
+                    <p class="font-semibold text-gray-800 dark:text-gray-100">
+                        @if($order->currency === 'fc')
+                            {{ number_format($item->total_price_fc, 0, ',', '.') }} FC
+                        @else
+                            $ {{ number_format($item->total_price, 2) }}
+                        @endif
+                    </p>
                 </div>
             @endforeach
         </div>

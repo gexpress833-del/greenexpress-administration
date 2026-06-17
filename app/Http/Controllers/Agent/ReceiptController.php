@@ -83,9 +83,15 @@ class ReceiptController extends Controller
         return $data ? 'data:image/png;base64,' . base64_encode($data) : null;
     }
 
+    private function canView(Order $order, Request $request): bool
+    {
+        $user = $request->user();
+        return $order->agent_id === $user->id || $user->role === 'admin';
+    }
+
     public function show(Request $request, Order $order)
     {
-        abort_unless($order->agent_id === $request->user()->id, 403);
+        abort_unless($this->canView($order, $request), 403);
 
         $order->load(['agent', 'items.meal']);
         $qrCode = $this->generateQrSvg($order);
@@ -95,7 +101,7 @@ class ReceiptController extends Controller
 
     public function pdf(Request $request, Order $order)
     {
-        abort_unless($order->agent_id === $request->user()->id, 403);
+        abort_unless($this->canView($order, $request), 403);
 
         $order->load(['agent', 'items.meal']);
         $qrCode = $this->generateQrPngBase64($order);
