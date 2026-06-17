@@ -9,12 +9,12 @@
 
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Demander un retrait</h2>
-        @if($available < 10)
+        @if($available < $minWithdrawal)
             <p class="text-sm text-red-600 dark:text-red-400">Solde insuffisant. Minimum requis : $ {{ number_format($minWithdrawal, 2) }} ({{ number_format($minWithdrawalFc, 0, ',', '.') }} FC)</p>
         @else
             <form method="POST" action="{{ route('agent.withdrawals.store') }}" class="flex flex-col sm:flex-row gap-3" x-data="{ loading: false }" @submit="loading = true">
                 @csrf
-                <input type="number" step="0.01" name="amount_usd" min="10" max="{{ $available }}" required placeholder="Montant USD (min 10)"
+                <input type="number" step="0.01" name="amount_usd" min="{{ $minWithdrawal }}" max="{{ $available }}" required placeholder="Montant USD (min {{ $minWithdrawal }})""
                        class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed"
                        :readonly="loading">
                 <button type="submit" :disabled="loading" class="bg-green-600 hover:bg-green-700 disabled:bg-green-500 text-white font-semibold py-2 px-6 rounded-lg transition flex items-center gap-2 disabled:cursor-not-allowed">

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\AgentPoint;
 use App\Models\Order;
+use App\Models\Withdrawal;
 
 class PointService
 {
@@ -11,6 +12,11 @@ class PointService
     public const POINTS_FOR_SMALL_ORDER = 3;
     public const SMALL_ORDER_LIMIT_FC = 5000;
     public const VALUE_PER_POINT_USD = 0.025; // 12 pts = 0.30$
+
+    /**
+     * Montant minimum de retrait pour un agent (basé sur les points).
+     */
+    public const MIN_WITHDRAWAL_USD = 7.00;
 
     public function creditForOrder(Order $order): ?AgentPoint
     {
@@ -60,5 +66,19 @@ class PointService
             ->whereNotNull('client_validated_at')
             ->whereDate('client_validated_at', today())
             ->count();
+    }
+
+    /**
+     * Solde disponible au retrait : valeur totale des points - retraits approuvés/payés.
+     */
+    public function getAvailableBalance(int $agentId): float
+    {
+        $totalValue = (float) (AgentPoint::where('agent_id', $agentId)->sum('value_usd') ?: 0);
+
+        $totalWithdrawn = Withdrawal::where('agent_id', $agentId)
+            ->whereIn('status', ['approved', 'paid'])
+            ->sum('amount_usd') ?: 0;
+
+        return max(0, round($totalValue - (float) $totalWithdrawn, 2));
     }
 }

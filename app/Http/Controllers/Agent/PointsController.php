@@ -38,8 +38,8 @@ class PointsController extends Controller
             ->where('type', 'daily_commission')
             ->sum('amount_usd') ?: 0;
 
-        $availableBalance = app(CommissionService::class)->getAvailableBalance($user->id);
-        $minWithdrawal = CommissionService::MIN_WITHDRAWAL_USD;
+        $availableBalance = $pointService->getAvailableBalance($user->id);
+        $minWithdrawal = PointService::MIN_WITHDRAWAL_USD;
         $currencyService = new CurrencyService();
         $availableBalanceFc = $currencyService->usdToFc($availableBalance);
         $minWithdrawalFc = $currencyService->usdToFc($minWithdrawal);

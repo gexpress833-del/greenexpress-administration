@@ -7,8 +7,8 @@ use App\Models\ExchangeRate;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Notifications\WithdrawalRequested;
-use App\Services\CommissionService;
 use App\Services\CurrencyService;
+use App\Services\PointService;
 use Illuminate\Http\Request;
 
 class WithdrawalController extends Controller
@@ -17,8 +17,8 @@ class WithdrawalController extends Controller
     {
         $user = $request->user();
         $withdrawals = Withdrawal::where('agent_id', $user->id)->latest()->paginate(15);
-        $available = app(CommissionService::class)->getAvailableBalance($user->id);
-        $minWithdrawal = CommissionService::MIN_WITHDRAWAL_USD;
+        $available = app(PointService::class)->getAvailableBalance($user->id);
+        $minWithdrawal = PointService::MIN_WITHDRAWAL_USD;
         $currencyService = new CurrencyService();
         $minWithdrawalFc = $currencyService->usdToFc($minWithdrawal);
         $availableFc = $currencyService->usdToFc($available);
@@ -29,8 +29,8 @@ class WithdrawalController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
-        $available = app(CommissionService::class)->getAvailableBalance($user->id);
-        $minWithdrawal = CommissionService::MIN_WITHDRAWAL_USD;
+        $available = app(PointService::class)->getAvailableBalance($user->id);
+        $minWithdrawal = PointService::MIN_WITHDRAWAL_USD;
 
         $data = $request->validate([
             'amount_usd' => ['required', 'numeric', "min:{$minWithdrawal}", "max:{$available}"],
