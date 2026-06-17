@@ -9,14 +9,14 @@
             @csrf
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nom</label>
-                <input type="text" name="name" required value="{{ old('name') }}" :disabled="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                <input type="text" name="name" required value="{{ old('name') }}" :readonly="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed">
             </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-                <textarea name="description" rows="2" :disabled="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed">{{ old('description') }}</textarea>
+                <textarea name="description" rows="2" :readonly="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed">{{ old('description') }}</textarea>
             </div>
             <div class="mb-6 flex items-center">
-                <input type="checkbox" name="is_active" value="1" checked :disabled="loading" class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed">
                 <label class="ml-2 text-sm text-gray-700 dark:text-gray-300">Actif</label>
             </div>
             <button type="submit" :disabled="loading" class="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2 disabled:cursor-not-allowed">

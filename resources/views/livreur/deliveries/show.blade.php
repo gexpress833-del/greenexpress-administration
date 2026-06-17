@@ -70,8 +70,8 @@
                         <label for="validation_code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Code de validation client</label>
                         <input type="text" name="validation_code" id="validation_code" maxlength="6" placeholder="Ex: A3B9K7"
                                value="{{ session('validation_code') }}"
-                               class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed"
-                               required :disabled="loading">
+                               class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed"
+                               required :readonly="loading">
                     </div>
                     <button type="submit" :disabled="loading" class="w-full bg-amber-600 hover:bg-amber-700 disabled:bg-amber-500 text-white font-semibold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2 disabled:cursor-not-allowed">
                         <template x-if="loading">

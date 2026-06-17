@@ -6,8 +6,8 @@
 
     <form method="GET" class="mb-4 flex gap-2" x-data="{ loading: false }" @submit="loading = true">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Rechercher par code livraison, commande ou client..."
-               class="flex-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-60 disabled:cursor-not-allowed"
-               :disabled="loading">
+               class="flex-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 read-only:opacity-60 read-only:cursor-not-allowed"
+               :readonly="loading">
         <button type="submit" :disabled="loading" class="bg-gray-800 hover:bg-gray-900 disabled:bg-gray-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition flex items-center gap-2 disabled:cursor-not-allowed">
             <template x-if="loading">
                 <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">

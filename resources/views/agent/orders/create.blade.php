@@ -11,34 +11,34 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nom client</label>
-                    <input type="text" name="client_name" required value="{{ old('client_name') }}" :disabled="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                    <input type="text" name="client_name" required value="{{ old('client_name') }}" :readonly="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Téléphone client</label>
-                    <input type="text" name="client_phone" required value="{{ old('client_phone') }}" :disabled="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                    <input type="text" name="client_phone" required value="{{ old('client_phone') }}" :readonly="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed">
                 </div>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Adresse de livraison</label>
-                <textarea name="delivery_address" required rows="2" :disabled="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed">{{ old('delivery_address') }}</textarea>
+                <textarea name="delivery_address" required rows="2" :readonly="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed">{{ old('delivery_address') }}</textarea>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date de livraison</label>
-                    <input type="date" name="delivery_date" required value="{{ old('delivery_date', now()->format('Y-m-d')) }}" :disabled="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                    <input type="date" name="delivery_date" required value="{{ old('delivery_date', now()->format('Y-m-d')) }}" :readonly="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Devise</label>
-                    <select name="currency" id="currency-select" required :disabled="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                    <select name="currency" id="currency-select" required class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed">
                         <option value="usd" {{ old('currency') === 'fc' ? '' : 'selected' }}>USD ($)</option>
                         <option value="fc" {{ old('currency') === 'fc' ? 'selected' : '' }}>Francs congolais (FC)</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                    <input type="text" name="notes" value="{{ old('notes') }}" :disabled="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                    <input type="text" name="notes" value="{{ old('notes') }}" :readonly="loading" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed">
                 </div>
             </div>
 
@@ -47,13 +47,13 @@
                 <div class="space-y-2" id="meals-container">
                     <template id="meal-row-template">
                         <div class="meal-row flex flex-col sm:flex-row gap-2 items-start sm:items-end bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg" data-index="INDEX">
-                            <select name="items[INDEX][meal_id]" required :disabled="loading" class="flex-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 meal-select disabled:opacity-60 disabled:cursor-not-allowed">
+                            <select name="items[INDEX][meal_id]" required class="flex-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 meal-select read-only:opacity-60 read-only:cursor-not-allowed">
                                 <option value="">Choisir un repas</option>
                                 @foreach($meals as $meal)
                                     <option value="{{ $meal->id }}" data-price="{{ $meal->price }}" data-price-fc="{{ $meal->price_fc }}" data-label-usd="{{ $meal->name }} - ${{ number_format($meal->price, 2) }}" data-label-fc="{{ $meal->name }} - {{ number_format($meal->price_fc, 0, ',', '.') }} FC">{{ $meal->name }} - ${{ number_format($meal->price, 2) }}</option>
                                 @endforeach
                             </select>
-                            <input type="number" name="items[INDEX][quantity]" min="1" value="1" required :disabled="loading" class="w-24 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 qty-input disabled:opacity-60 disabled:cursor-not-allowed">
+                            <input type="number" name="items[INDEX][quantity]" min="1" value="1" required :readonly="loading" class="w-24 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 qty-input read-only:opacity-60 read-only:cursor-not-allowed">
                             <button type="button" onclick="this.closest('.meal-row').remove(); updateTotal();" :disabled="loading" class="text-red-600 hover:text-red-800 text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed">Supprimer</button>
                         </div>
                     </template>

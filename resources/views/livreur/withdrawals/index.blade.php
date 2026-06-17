@@ -19,8 +19,8 @@
             <form method="POST" action="{{ route('livreur.withdrawals.store') }}" class="flex flex-col sm:flex-row gap-3" x-data="{ loading: false }" @submit="loading = true">
                 @csrf
                 <input type="number" step="0.01" name="amount_usd" min="7" max="{{ $available }}" required placeholder="Montant USD (min 7)"
-                       class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed"
-                       :disabled="loading">
+                       class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed"
+                       :readonly="loading">
                 <button type="submit" :disabled="loading" class="bg-green-600 hover:bg-green-700 disabled:bg-green-500 text-white font-semibold py-2 px-6 rounded-lg transition flex items-center gap-2 disabled:cursor-not-allowed">
                     <template x-if="loading">
                         <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">

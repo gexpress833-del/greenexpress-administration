@@ -7,7 +7,7 @@
     <form method="get" action="{{ route('verify.show') }}" class="mb-6" x-data="{ loading: false }" @submit="loading = true">
         <label class="block mb-2 font-medium">Code du reçu / commande</label>
         <div class="flex gap-2">
-            <input name="code" value="{{ old('code', $code ?? '') }}" class="flex-1 border rounded px-3 py-2 disabled:opacity-60 disabled:cursor-not-allowed" placeholder="Entrez le code de commande" :disabled="loading" />
+            <input name="code" value="{{ old('code', $code ?? '') }}" class="flex-1 border rounded px-3 py-2 read-only:opacity-60 read-only:cursor-not-allowed" placeholder="Entrez le code de commande" :readonly="loading" />
             <button type="submit" :disabled="loading" class="bg-green-600 hover:bg-green-700 disabled:bg-green-500 text-white px-4 py-2 rounded transition flex items-center gap-2 disabled:cursor-not-allowed">
                 <template x-if="loading">
                     <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">

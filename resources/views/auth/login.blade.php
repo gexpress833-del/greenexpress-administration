@@ -21,8 +21,8 @@
                     </svg>
                 </div>
                 <input id="login" type="text" name="login" value="{{ old('login') }}" required autofocus autocomplete="username"
-                       :disabled="loading"
-                       class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition disabled:opacity-60 disabled:cursor-not-allowed"
+                       :readonly="loading"
+                       class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition read-only:opacity-60 read-only:cursor-not-allowed"
                        placeholder="Email ou numéro de téléphone">
             </div>
             @error('login')
@@ -40,10 +40,10 @@
                     </svg>
                 </div>
                 <input id="password" :type="show ? 'text' : 'password'" name="password" required autocomplete="current-password"
-                       :disabled="loading"
-                       class="block w-full pl-10 pr-10 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition disabled:opacity-60 disabled:cursor-not-allowed"
+                       :readonly="loading"
+                       class="block w-full pl-10 pr-10 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition read-only:opacity-60 read-only:cursor-not-allowed"
                        placeholder="••••••••">
-                <button type="button" @click="show = !show" :disabled="loading" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed">
+                <button type="button" @click="show = !show" :disabled="loading" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed disabled:opacity-60 disabled:cursor-not-allowed">
                     <svg x-show="!show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -61,7 +61,7 @@
         {{-- Options --}}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <label for="remember_me" class="inline-flex items-center cursor-pointer">
-                <input id="remember_me" type="checkbox" :disabled="loading" class="w-4 h-4 sm:w-5 sm:h-5 rounded border-gray-300 dark:border-gray-600 text-green-600 shadow-sm focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed" name="remember">
+                <input id="remember_me" type="checkbox" class="w-4 h-4 sm:w-5 sm:h-5 rounded border-gray-300 dark:border-gray-600 text-green-600 shadow-sm focus:ring-green-500" name="remember">
                 <span class="ms-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">Se souvenir de moi</span>
             </label>
             @if (Route::has('password.request'))
@@ -73,7 +73,7 @@
 
         {{-- Bouton connexion --}}
         <button type="submit" :disabled="loading"
-                class="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-500 text-white font-semibold py-2.5 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2 text-sm sm:text-base disabled:cursor-not-allowed">
+                class="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-500 text-white font-semibold py-2.5 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2 text-sm sm:text-base read-only:cursor-not-allowed">
             <template x-if="!loading">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
