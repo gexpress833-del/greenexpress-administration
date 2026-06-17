@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Agent;
 use App\Http\Controllers\Controller;
 use App\Models\AgentPoint;
 use App\Models\Commission;
+use App\Services\CommissionService;
+use App\Services\CurrencyService;
 use App\Services\PointService;
 use Illuminate\Http\Request;
 
@@ -36,6 +38,9 @@ class PointsController extends Controller
             ->where('type', 'daily_commission')
             ->sum('amount_usd') ?: 0;
 
+        $availableBalance = app(CommissionService::class)->getAvailableBalance($user->id);
+        $minWithdrawal = CommissionService::MIN_WITHDRAWAL_USD;
+
         return view('agent.points.index', compact(
             'totalPoints',
             'todayPoints',
@@ -43,7 +48,9 @@ class PointsController extends Controller
             'todayValueUsd',
             'pointsHistory',
             'weeklyPoints',
-            'totalCommissionsUsd'
+            'totalCommissionsUsd',
+            'availableBalance',
+            'minWithdrawal'
         ));
     }
 }

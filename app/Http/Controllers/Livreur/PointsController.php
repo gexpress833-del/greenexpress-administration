@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Livreur;
 
 use App\Http\Controllers\Controller;
 use App\Models\LivreurPoint;
+use App\Services\CurrencyService;
 use App\Services\LivreurPointService;
 use Illuminate\Http\Request;
 
@@ -18,6 +19,13 @@ class PointsController extends Controller
         $totalValueUsd = round($totalPoints * LivreurPointService::VALUE_PER_POINT_USD, 2);
         $todayValueUsd = round($todayPoints * LivreurPointService::VALUE_PER_POINT_USD, 2);
         $availableBalance = $pointService->getAvailableBalance($user->id);
+
+        $currencyService = new CurrencyService();
+        $totalValueFc = $currencyService->usdToFc($totalValueUsd);
+        $todayValueFc = $currencyService->usdToFc($todayValueUsd);
+        $availableBalanceFc = $currencyService->usdToFc($availableBalance);
+        $minWithdrawal = LivreurPointService::MIN_WITHDRAWAL_USD;
+        $minWithdrawalFc = $currencyService->usdToFc($minWithdrawal);
 
         $pointsHistory = LivreurPoint::where('livreur_id', $user->id)
             ->with(['order', 'delivery'])
@@ -38,6 +46,10 @@ class PointsController extends Controller
             'totalValueUsd',
             'todayValueUsd',
             'availableBalance',
+            'totalValueFc',
+            'todayValueFc',
+            'availableBalanceFc',
+            'minWithdrawalFc',
             'pointsHistory',
             'weeklyPoints'
         ));

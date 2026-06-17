@@ -1,3 +1,4 @@
+@php use App\Models\ExchangeRate; @endphp
 <x-app-layout>
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Mes points</h1>
@@ -8,17 +9,15 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">Points totaux</p>
             <p class="text-2xl font-bold text-green-700">{{ $totalPoints }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">$ {{ number_format($totalValueUsd, 2) }}</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($totalValueFc, 0, ',', '.') }} FC</p>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700">
             <p class="text-sm text-gray-500 dark:text-gray-400">Aujourd'hui</p>
             <p class="text-2xl font-bold text-green-700">{{ $todayPoints }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">$ {{ number_format($todayValueUsd, 2) }}</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($todayValueFc, 0, ',', '.') }} FC</p>
         </div>
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Solde retirable</p>
-            <p class="text-2xl font-bold text-green-700">$ {{ number_format($availableBalance, 2) }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Min retrait : $ 7.00</p>
-        </div>
+        <x-withdrawal-progress :available="$availableBalance" :minRequired="$minWithdrawal" label="Solde retirable" />
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700 flex items-center justify-center">
             <a href="{{ route('livreur.withdrawals.index') }}" class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition text-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a1 1 0 11-2 0 1 1 0 012 0z"/></svg>
@@ -65,7 +64,10 @@
                         <tr>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $p->order?->code ?? '-' }}</td>
                             <td class="px-6 py-3 font-bold text-green-700">+{{ $p->points }}</td>
-                            <td class="px-6 py-3 text-gray-800 dark:text-gray-100">$ {{ number_format($p->value_usd, 2) }}</td>
+                            <td class="px-6 py-3 text-gray-800 dark:text-gray-100">
+                                $ {{ number_format($p->value_usd, 2) }}
+                                <span class="text-xs text-gray-400 dark:text-gray-500 block">{{ number_format($p->value_usd * ExchangeRate::current(), 0, ',', '.') }} FC</span>
+                            </td>
                             <td class="px-6 py-3 text-gray-500 dark:text-gray-400">{{ $p->earned_at?->format('d/m/Y H:i') }}</td>
                         </tr>
                     @empty

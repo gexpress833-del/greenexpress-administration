@@ -7,6 +7,7 @@ use App\Models\ExchangeRate;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Notifications\WithdrawalRequested;
+use App\Services\CurrencyService;
 use App\Services\LivreurPointService;
 use Illuminate\Http\Request;
 
@@ -17,8 +18,10 @@ class WithdrawalController extends Controller
         $user = $request->user();
         $withdrawals = Withdrawal::where('livreur_id', $user->id)->latest()->paginate(15);
         $available = app(LivreurPointService::class)->getAvailableBalance($user->id);
+        $minWithdrawal = LivreurPointService::MIN_WITHDRAWAL_USD;
+        $minWithdrawalFc = (new CurrencyService())->usdToFc($minWithdrawal);
 
-        return view('livreur.withdrawals.index', compact('withdrawals', 'available'));
+        return view('livreur.withdrawals.index', compact('withdrawals', 'available', 'minWithdrawal', 'minWithdrawalFc'));
     }
 
     public function store(Request $request)

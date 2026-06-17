@@ -3,18 +3,14 @@
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Retraits</h1>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Solde disponible</p>
-            <p class="text-2xl font-bold text-green-700">$ {{ number_format($available, 2) }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Min retrait : $ 7.00</p>
-        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+        <x-withdrawal-progress :available="$available" :minRequired="$minWithdrawal" label="Solde disponible" />
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Demander un retrait</h2>
         @if($available < 7)
-            <p class="text-sm text-red-600 dark:text-red-400">Solde insuffisant. Minimum requis : $ 7.00</p>
+            <p class="text-sm text-red-600 dark:text-red-400">Solde insuffisant. Minimum requis : $ 7.00 ({{ number_format(7 * \App\Models\ExchangeRate::current(), 0, ',', '.') }} FC)</p>
         @else
             <form method="POST" action="{{ route('livreur.withdrawals.store') }}" class="flex flex-col sm:flex-row gap-3" x-data="{ loading: false }" @submit="loading = true">
                 @csrf

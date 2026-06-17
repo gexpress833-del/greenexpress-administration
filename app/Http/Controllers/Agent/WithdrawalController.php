@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Withdrawal;
 use App\Notifications\WithdrawalRequested;
 use App\Services\CommissionService;
+use App\Services\CurrencyService;
 use Illuminate\Http\Request;
 
 class WithdrawalController extends Controller
@@ -17,8 +18,10 @@ class WithdrawalController extends Controller
         $user = $request->user();
         $withdrawals = Withdrawal::where('agent_id', $user->id)->latest()->paginate(15);
         $available = app(CommissionService::class)->getAvailableBalance($user->id);
+        $minWithdrawal = CommissionService::MIN_WITHDRAWAL_USD;
+        $minWithdrawalFc = (new CurrencyService())->usdToFc($minWithdrawal);
 
-        return view('agent.withdrawals.index', compact('withdrawals', 'available'));
+        return view('agent.withdrawals.index', compact('withdrawals', 'available', 'minWithdrawal', 'minWithdrawalFc'));
     }
 
     public function store(Request $request)
