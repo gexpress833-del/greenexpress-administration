@@ -6,6 +6,12 @@
         </a>
     </div>
 
+    @if(session('success'))
+        <div class="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/30 text-green-800 dark:text-green-200 rounded-lg text-sm font-medium">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
@@ -29,6 +35,13 @@
                             </td>
                             <td class="px-6 py-3 space-x-2">
                                 <a href="{{ route('admin.categories.edit', $cat) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">Modifier</a>
+                                <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}" class="inline" onsubmit="return confirm('Supprimer cette catégorie ?');" x-data="{ loading: false }" @submit="loading = true">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" :disabled="loading" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm disabled:opacity-60 disabled:cursor-not-allowed">
+                                        <span x-text="loading ? '...' : 'Supprimer'">Supprimer</span>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @empty
