@@ -8,7 +8,7 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-5">
+    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-5" x-data="{ loading: false }" @submit="loading = true">
         @csrf
         @method('patch')
 
@@ -26,7 +26,8 @@
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Photo de profil</label>
                 <p class="text-xs text-gray-400 dark:text-gray-500 mb-1">JPG, PNG, GIF, WebP — max 5 Mo</p>
                 <input type="file" accept="image/*" @change="openCropper($event)"
-                       class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900 dark:file:text-green-300">
+                       class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900 dark:file:text-green-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                       :disabled="loading">
                 <input type="hidden" name="avatar" id="cropped-avatar" x-ref="croppedInput">
                 @error('avatar')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -55,7 +56,8 @@
         <div>
             <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom complet</label>
             <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name"
-                   class="block w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                   class="block w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition disabled:opacity-60 disabled:cursor-not-allowed"
+                   :disabled="loading">
             @error('name')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -64,7 +66,8 @@
         <div>
             <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adresse e-mail</label>
             <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required autocomplete="username"
-                   class="block w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                   class="block w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition disabled:opacity-60 disabled:cursor-not-allowed"
+                   :disabled="loading">
             @error('email')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -74,8 +77,9 @@
             <div>
                 <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Téléphone</label>
                 <input id="phone" name="phone" type="text" value="{{ old('phone', $user->phone) }}" autocomplete="tel"
-                       class="block w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-                       placeholder="+243...">
+                       class="block w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition disabled:opacity-60 disabled:cursor-not-allowed"
+                       placeholder="+243..."
+                       :disabled="loading">
                 @error('phone')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -83,8 +87,9 @@
             <div>
                 <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adresse</label>
                 <input id="address" name="address" type="text" value="{{ old('address', $user->address) }}" autocomplete="address"
-                       class="block w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-                       placeholder="Votre adresse de résidence">
+                       class="block w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition disabled:opacity-60 disabled:cursor-not-allowed"
+                       placeholder="Votre adresse de résidence"
+                       :disabled="loading">
                 @error('address')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -104,11 +109,19 @@
         @endif
 
         <div class="flex items-center gap-4">
-            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Enregistrer
+            <button type="submit" :disabled="loading" class="bg-green-600 hover:bg-green-700 disabled:bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center gap-2 disabled:cursor-not-allowed">
+                <template x-if="!loading">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </template>
+                <template x-if="loading">
+                    <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    </svg>
+                </template>
+                <span x-text="loading ? 'Enregistrement...' : 'Enregistrer'">Enregistrer</span>
             </button>
 
             @if (session('status') === 'profile-updated')

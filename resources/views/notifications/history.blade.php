@@ -4,9 +4,11 @@
             <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Notifications</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Toutes vos notifications sur Green Express</p>
         </div>
-        <form method="POST" action="{{ route('notifications.read-all') }}" class="inline">
+        <form method="POST" action="{{ route('notifications.read-all') }}" class="inline" x-data="{ loading: false }" @submit="loading = true">
             @csrf
-            <button type="submit" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Tout marquer comme lu</button>
+            <button type="submit" :disabled="loading" class="text-sm text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-60 disabled:cursor-not-allowed">
+                <span x-text="loading ? 'Chargement...' : 'Tout marquer comme lu'">Tout marquer comme lu</span>
+            </button>
         </form>
     </div>
 
@@ -36,10 +38,12 @@
                                 </p>
                                 <div class="mt-2 flex items-center gap-3">
                                     @if(!$notification->is_read)
-                                        <form method="POST" action="{{ route('notifications.read', $notification->id) }}" class="inline">
+                                        <form method="POST" action="{{ route('notifications.read', $notification->id) }}" class="inline" x-data="{ loading: false }" @submit="loading = true">
                                             @csrf
                                             <input type="hidden" name="source" value="app">
-                                            <button type="submit" class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">Marquer comme lu</button>
+                                            <button type="submit" :disabled="loading" class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium disabled:opacity-60 disabled:cursor-not-allowed">
+                                                <span x-text="loading ? '...' : 'Marquer comme lu'">Marquer comme lu</span>
+                                            </button>
                                         </form>
                                     @endif
                                     <span class="text-xs text-gray-400 dark:text-gray-500">{{ $notification->created_at->format('d/m/Y H:i') }}</span>

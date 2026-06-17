@@ -28,13 +28,17 @@
                             </td>
                             <td class="px-6 py-3">
                                 @if($sus->status === 'pending')
-                                    <form method="POST" action="{{ route('admin.suspensions.accept', $sus) }}" class="inline">
+                                    <form method="POST" action="{{ route('admin.suspensions.accept', $sus) }}" class="inline" x-data="{ loading: false }" @submit="loading = true">
                                         @csrf
-                                        <button type="submit" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm mr-2">Accepter</button>
+                                        <button type="submit" :disabled="loading" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm mr-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                                            <span x-text="loading ? '...' : 'Accepter'">Accepter</span>
+                                        </button>
                                     </form>
-                                    <form method="POST" action="{{ route('admin.suspensions.reject', $sus) }}" class="inline">
+                                    <form method="POST" action="{{ route('admin.suspensions.reject', $sus) }}" class="inline" x-data="{ loading: false }" @submit="loading = true">
                                         @csrf
-                                        <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm">Rejeter</button>
+                                        <button type="submit" :disabled="loading" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm disabled:opacity-60 disabled:cursor-not-allowed">
+                                            <span x-text="loading ? '...' : 'Rejeter'">Rejeter</span>
+                                        </button>
                                     </form>
                                 @endif
                             </td>

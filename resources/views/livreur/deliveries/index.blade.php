@@ -4,10 +4,19 @@
         <x-back-button :href="route('livreur.dashboard')" />
     </div>
 
-    <form method="GET" class="mb-4 flex gap-2">
+    <form method="GET" class="mb-4 flex gap-2" x-data="{ loading: false }" @submit="loading = true">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Rechercher par code livraison, commande ou client..."
-               class="flex-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-        <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium py-2 px-4 rounded-lg transition">Rechercher</button>
+               class="flex-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-60 disabled:cursor-not-allowed"
+               :disabled="loading">
+        <button type="submit" :disabled="loading" class="bg-gray-800 hover:bg-gray-900 disabled:bg-gray-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition flex items-center gap-2 disabled:cursor-not-allowed">
+            <template x-if="loading">
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                </svg>
+            </template>
+            <span x-text="loading ? 'Recherche...' : 'Rechercher'">Rechercher</span>
+        </button>
         @if(request('search'))
             <a href="{{ route('livreur.deliveries.index') }}" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 text-sm font-medium py-2 px-4 rounded-lg transition">Réinitialiser</a>
         @endif
@@ -46,9 +55,11 @@
                             </td>
                             <td class="px-6 py-3">
                                 @if($delivery->livreur_id === null)
-                                    <form action="{{ route('livreur.deliveries.assign', $delivery) }}" method="POST" class="inline">
+                                    <form action="{{ route('livreur.deliveries.assign', $delivery) }}" method="POST" class="inline" x-data="{ loading: false }" @submit="loading = true">
                                         @csrf
-                                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-xs font-medium py-1.5 px-3 rounded-lg transition">Prendre en charge</button>
+                                        <button type="submit" :disabled="loading" class="bg-green-600 hover:bg-green-700 disabled:bg-green-500 text-white text-xs font-medium py-1.5 px-3 rounded-lg transition disabled:cursor-not-allowed">
+                                            <span x-text="loading ? '...' : 'Prendre en charge'">Prendre en charge</span>
+                                        </button>
                                     </form>
                                 @else
                                     <a href="{{ route('livreur.deliveries.show', $delivery) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Détails</a>

@@ -25,29 +25,47 @@
                 </a>
 
                 @if($order->status === 'pending')
-                    <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="inline w-full">
+                    <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="inline w-full" x-data="{ loading: false }" @submit="loading = true">
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="status" value="confirmed">
-                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition">
-                            Valider la commande
+                        <button type="submit" :disabled="loading" class="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2 disabled:cursor-not-allowed">
+                            <template x-if="loading">
+                                <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                                </svg>
+                            </template>
+                            <span x-text="loading ? 'Validation...' : 'Valider la commande'">Valider la commande</span>
                         </button>
                     </form>
-                    <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="inline w-full">
+                    <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="inline w-full" x-data="{ loading: false }" @submit="loading = true">
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="status" value="cancelled">
-                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition">
-                            Rejeter / Annuler
+                        <button type="submit" :disabled="loading" class="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2 disabled:cursor-not-allowed">
+                            <template x-if="loading">
+                                <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                                </svg>
+                            </template>
+                            <span x-text="loading ? 'Annulation...' : 'Rejeter / Annuler'">Rejeter / Annuler</span>
                         </button>
                     </form>
                 @elseif($order->status === 'confirmed')
-                    <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="inline w-full">
+                    <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="inline w-full" x-data="{ loading: false }" @submit="loading = true">
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="status" value="cancelled">
-                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition">
-                            Annuler la commande
+                        <button type="submit" :disabled="loading" class="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-500 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2 disabled:cursor-not-allowed">
+                            <template x-if="loading">
+                                <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                                </svg>
+                            </template>
+                            <span x-text="loading ? 'Annulation...' : 'Annuler la commande'">Annuler la commande</span>
                         </button>
                     </form>
                 @endif

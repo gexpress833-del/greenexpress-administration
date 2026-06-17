@@ -16,11 +16,19 @@
         @if($available < 10)
             <p class="text-sm text-red-600 dark:text-red-400">Solde insuffisant. Minimum requis : $ 10.00</p>
         @else
-            <form method="POST" action="{{ route('agent.withdrawals.store') }}" class="flex flex-col sm:flex-row gap-3">
+            <form method="POST" action="{{ route('agent.withdrawals.store') }}" class="flex flex-col sm:flex-row gap-3" x-data="{ loading: false }" @submit="loading = true">
                 @csrf
-                <input type="number" step="0.01" name="amount_usd" min="10" max="{{ $available }}" required placeholder="Montant USD (min 10)" class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition">
-                    Demander
+                <input type="number" step="0.01" name="amount_usd" min="10" max="{{ $available }}" required placeholder="Montant USD (min 10)"
+                       class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                       :disabled="loading">
+                <button type="submit" :disabled="loading" class="bg-green-600 hover:bg-green-700 disabled:bg-green-500 text-white font-semibold py-2 px-6 rounded-lg transition flex items-center gap-2 disabled:cursor-not-allowed">
+                    <template x-if="loading">
+                        <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                        </svg>
+                    </template>
+                    <span x-text="loading ? 'Traitement...' : 'Demander'">Demander</span>
                 </button>
             </form>
         @endif

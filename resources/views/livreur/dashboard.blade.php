@@ -28,13 +28,13 @@
                 <div class="w-full">
                     <h2 class="text-base sm:text-lg font-semibold mb-1">Valider par code client</h2>
                     <p class="text-amber-100 text-xs sm:text-sm mb-4">Saisissez le code de validation à 6 caractères fourni par le client.</p>
-                    <form action="{{ route('livreur.deliveries.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2">
+                    <form action="{{ route('livreur.deliveries.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2" x-data="{ loading: false }" @submit="loading = true">
                         <input type="text" name="search" maxlength="6" placeholder="Ex: A3B9K7"
-                               class="flex-1 border-0 rounded-lg px-3 py-2 text-gray-900 font-mono uppercase tracking-wider placeholder-gray-400 focus:ring-2 focus:ring-white"
-                               required>
-                        <button type="submit" class="w-full sm:w-auto bg-white text-amber-600 font-semibold px-4 py-2 rounded-lg hover:bg-amber-50 transition shadow-sm">
-                            <span class="hidden sm:inline">Rechercher</span>
-                            <span class="sm:hidden">OK</span>
+                               class="flex-1 border-0 rounded-lg px-3 py-2 text-gray-900 font-mono uppercase tracking-wider placeholder-gray-400 focus:ring-2 focus:ring-white disabled:opacity-60 disabled:cursor-not-allowed"
+                               required :disabled="loading">
+                        <button type="submit" :disabled="loading" class="w-full sm:w-auto bg-white text-amber-600 font-semibold px-4 py-2 rounded-lg hover:bg-amber-50 transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed">
+                            <span x-text="loading ? '...' : 'Rechercher'" class="hidden sm:inline">Rechercher</span>
+                            <span x-text="loading ? '...' : 'OK'" class="sm:hidden">OK</span>
                         </button>
                     </form>
                 </div>
