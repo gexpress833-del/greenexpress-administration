@@ -63,7 +63,7 @@
                 <p class="text-[10px] text-gray-400 dark:text-gray-500">~$ {{ number_format($todayValueUsd, 2) }}</p>
             </div>
             <div class="col-span-2 sm:col-span-1">
-                <x-withdrawal-progress :available="$availableBalance" :minRequired="$minWithdrawal" :availableFc="$availableBalanceFc" :minRequiredFc="$minWithdrawalFc" label="Solde retirable" />
+                <x-withdrawal-progress :available="$availableBalance" :minRequired="$minWithdrawal" :availableFc="$availableBalanceFc" :minRequiredFc="$minWithdrawalFc" :points="$totalPoints" label="Solde retirable" />
             </div>
         </div>
 

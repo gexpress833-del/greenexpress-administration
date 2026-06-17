@@ -3,6 +3,7 @@ $available = (float) ($available ?? 0);
 $minRequired = (float) ($minRequired ?? 1);
 $availableFc = (float) ($availableFc ?? 0);
 $minRequiredFc = (float) ($minRequiredFc ?? 0);
+$points = $points ?? null;
 $progress = $minRequired > 0 ? min(100, round(($available / $minRequired) * 100, 1)) : 0;
 $remaining = max(0, $minRequired - $available);
 $radius = 48;
@@ -28,7 +29,11 @@ $bgClass = $canWithdraw ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dar
             </svg>
             <div class="absolute inset-0 flex flex-col items-center justify-center">
                 <span class="text-base sm:text-xl font-bold {{ $colorClass }}">{{ $progress }}%</span>
-                <span class="text-[10px] text-gray-500 dark:text-gray-400">{{ $canWithdraw ? 'Dispo' : 'En cours' }}</span>
+                @if($points !== null)
+                    <span class="text-[10px] text-gray-500 dark:text-gray-400">{{ $points }} pts</span>
+                @else
+                    <span class="text-[10px] text-gray-500 dark:text-gray-400">{{ $canWithdraw ? 'Dispo' : 'En cours' }}</span>
+                @endif
             </div>
         </div>
 
@@ -37,6 +42,9 @@ $bgClass = $canWithdraw ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dar
             <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">{{ $label ?? 'Retrait' }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                 Solde : <span class="font-bold text-gray-700 dark:text-gray-200">$ {{ number_format($available, 2) }}</span>
+                @if($points !== null)
+                    <span class="text-gray-400 dark:text-gray-500">({{ $points }} pts)</span>
+                @endif
             </p>
             @if($availableFc > 0)
                 <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($availableFc, 0, ',', '.') }} FC</p>

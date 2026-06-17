@@ -17,7 +17,7 @@
             <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($todayValueFc, 0, ',', '.') }} FC</p>
         </div>
         <div class="col-span-2 lg:col-span-1">
-            <x-withdrawal-progress :available="$availableBalance" :minRequired="$minWithdrawal" :availableFc="$availableBalanceFc" :minRequiredFc="$minWithdrawalFc" label="Solde retirable" />
+            <x-withdrawal-progress :available="$availableBalance" :minRequired="$minWithdrawal" :availableFc="$availableBalanceFc" :minRequiredFc="$minWithdrawalFc" :points="$totalPoints" label="Solde retirable" />
         </div>
         <div class="col-span-2 lg:col-span-1 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700 flex items-center justify-center">
             <a href="{{ route('livreur.withdrawals.index') }}" class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition text-sm">
