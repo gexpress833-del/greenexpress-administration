@@ -112,8 +112,11 @@
                         <span class="item-qty">x{{ $item->quantity }}</span>
                     </td>
                     <td>
-                        <div class="item-price">$ {{ number_format($item->total_price, 2) }}</div>
-                        <div class="item-fc">{{ number_format($item->total_price_fc, 0, ',', '.') }} FC</div>
+                        @if($order->currency === 'fc')
+                            <div class="item-price">{{ number_format($item->total_price_fc, 0, ',', '.') }} FC</div>
+                        @else
+                            <div class="item-price">$ {{ number_format($item->total_price, 2) }}</div>
+                        @endif
                     </td>
                 </tr>
                 @endforeach
@@ -124,8 +127,11 @@
                     <tr>
                         <td>Total payé</td>
                         <td>
-                            <div class="total-usd">$ {{ number_format($order->total_amount, 2) }}</div>
-                            <div class="total-fc">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</div>
+                            @if($order->currency === 'fc')
+                                <div class="total-usd">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</div>
+                            @else
+                                <div class="total-usd">$ {{ number_format($order->total_amount, 2) }}</div>
+                            @endif
                         </td>
                     </tr>
                 </table>

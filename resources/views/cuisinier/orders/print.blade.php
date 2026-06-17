@@ -150,8 +150,20 @@
                 <tr>
                     <td><strong>{{ $item->meal->name }}</strong></td>
                     <td class="text-center">{{ $item->quantity }}</td>
-                    <td class="text-right">$ {{ number_format($item->unit_price, 2) }}</td>
-                    <td class="text-right"><strong>$ {{ number_format($item->total_price, 2) }}</strong></td>
+                    <td class="text-right">
+                        @if($order->currency === 'fc')
+                            {{ number_format($item->unit_price_fc, 0, ',', '.') }} FC
+                        @else
+                            $ {{ number_format($item->unit_price, 2) }}
+                        @endif
+                    </td>
+                    <td class="text-right"><strong>
+                        @if($order->currency === 'fc')
+                            {{ number_format($item->total_price_fc, 0, ',', '.') }} FC
+                        @else
+                            $ {{ number_format($item->total_price, 2) }}
+                        @endif
+                    </strong></td>
                 </tr>
                 @endforeach
             </tbody>
@@ -160,7 +172,13 @@
         <!-- Total -->
         <div class="total-row">
             <span class="total-label">Total : </span>
-            <span class="total-amount">$ {{ number_format($order->total_amount, 2) }}</span>
+            <span class="total-amount">
+                @if($order->currency === 'fc')
+                    {{ number_format($order->total_amount_fc, 0, ',', '.') }} FC
+                @else
+                    $ {{ number_format($order->total_amount, 2) }}
+                @endif
+            </span>
         </div>
 
         <!-- QR Section -->

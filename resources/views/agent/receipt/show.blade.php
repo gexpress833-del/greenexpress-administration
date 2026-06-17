@@ -53,8 +53,11 @@
                             <span class="text-gray-400 text-sm ml-1">x{{ $item->quantity }}</span>
                         </div>
                         <div class="text-right">
-                            <div class="font-semibold text-gray-800">$ {{ number_format($item->total_price, 2) }}</div>
-                            <div class="text-xs text-gray-500">{{ number_format($item->total_price_fc, 0, ',', '.') }} FC</div>
+                            @if($order->currency === 'fc')
+                                <div class="font-semibold text-gray-800">{{ number_format($item->total_price_fc, 0, ',', '.') }} FC</div>
+                            @else
+                                <div class="font-semibold text-gray-800">$ {{ number_format($item->total_price, 2) }}</div>
+                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -64,8 +67,11 @@
                     <div class="flex justify-between items-center">
                         <span class="text-lg font-bold text-gray-800">Total payé</span>
                         <div class="text-right">
-                            <div class="text-xl font-extrabold text-green-700">$ {{ number_format($order->total_amount, 2) }}</div>
-                            <div class="text-sm text-gray-600 font-medium">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</div>
+                            @if($order->currency === 'fc')
+                                <div class="text-xl font-extrabold text-green-700">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</div>
+                            @else
+                                <div class="text-xl font-extrabold text-green-700">$ {{ number_format($order->total_amount, 2) }}</div>
+                            @endif
                         </div>
                     </div>
                 </div>

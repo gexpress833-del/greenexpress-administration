@@ -50,7 +50,10 @@ class OrderController extends Controller
     {
         $order->load(['items.meal', 'agent', 'client']);
 
-        $qrData = "GREEN EXPRESS\nBon de préparation\nCommande: {$order->code}\nClient: " . ($order->client_name ?? 'N/A') . "\nTotal: $ " . number_format($order->total_amount, 2) . "\nVérifier sur: green-express.cd";
+        $totalLabel = $order->currency === 'fc'
+            ? number_format($order->total_amount_fc, 0, ',', '.') . ' FC'
+            : '$ ' . number_format($order->total_amount, 2);
+        $qrData = "GREEN EXPRESS\nBon de préparation\nCommande: {$order->code}\nClient: " . ($order->client_name ?? 'N/A') . "\nTotal: {$totalLabel}\nVérifier sur: green-express.cd";
 
         $qrOptions = new \chillerlan\QRCode\QROptions();
         $qrOptions->outputInterface = \chillerlan\QRCode\Output\QRGdImagePNG::class;
