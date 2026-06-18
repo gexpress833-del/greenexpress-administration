@@ -47,13 +47,13 @@ $bgClass = $canWithdraw ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dar
                 @endif
             </p>
             @if($availableFc > 0)
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($availableFc, 0, ',', '.') }} FC</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($availableFc, 0, '.', '') }} FC</p>
             @endif
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Min requis : $ {{ number_format($minRequired, 2) }}
             </p>
             @if($minRequiredFc > 0)
-                <p class="text-xs text-gray-400 dark:text-gray-500">{{ number_format($minRequiredFc, 0, ',', '.') }} FC</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500">{{ number_format($minRequiredFc, 0, '.', '') }} FC</p>
             @endif
 
             @if($canWithdraw)

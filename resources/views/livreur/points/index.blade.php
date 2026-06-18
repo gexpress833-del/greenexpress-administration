@@ -8,13 +8,13 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">Points totaux</p>
             <p class="text-2xl font-bold text-green-700">{{ $totalPoints }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">$ {{ number_format($totalValueUsd, 2) }}</p>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($totalValueFc, 0, ',', '.') }} FC</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($totalValueFc, 0, '.', '') }} FC</p>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700">
             <p class="text-sm text-gray-500 dark:text-gray-400">Aujourd'hui</p>
             <p class="text-2xl font-bold text-green-700">{{ $todayPoints }}</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">$ {{ number_format($todayValueUsd, 2) }}</p>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($todayValueFc, 0, ',', '.') }} FC</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($todayValueFc, 0, '.', '') }} FC</p>
         </div>
         <div class="col-span-2 lg:col-span-1">
             <x-withdrawal-progress :available="$availableBalance" :minRequired="$minWithdrawal" :availableFc="$availableBalanceFc" :minRequiredFc="$minWithdrawalFc" :points="$totalPoints" label="Solde retirable" />
@@ -67,7 +67,7 @@
                             <td class="px-6 py-3 font-bold text-green-700">+{{ $p->points }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">
                                 $ {{ number_format($p->value_usd, 2) }}
-                                <span class="text-xs text-gray-400 dark:text-gray-500 block">{{ number_format($p->value_usd * $exchangeRate, 0, ',', '.') }} FC</span>
+                                <span class="text-xs text-gray-400 dark:text-gray-500 block">{{ number_format($p->value_usd * $exchangeRate, 0, '.', '') }} FC</span>
                             </td>
                             <td class="px-6 py-3 text-gray-500 dark:text-gray-400">{{ $p->earned_at?->format('d/m/Y H:i') }}</td>
                         </tr>

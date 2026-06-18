@@ -69,17 +69,25 @@ class PointService
             ->count();
     }
 
+    public function getTotalValueUsd(int $agentId): float
+    {
+        return round((float) (AgentPoint::where('agent_id', $agentId)->sum('value_usd') ?: 0), 2);
+    }
+
+    public function getTotalWithdrawn(int $agentId): float
+    {
+        return round((float) (Withdrawal::where('agent_id', $agentId)
+            ->whereIn('status', ['approved', 'paid'])
+            ->sum('amount_usd') ?: 0), 2);
+    }
+
     /**
      * Solde disponible au retrait : valeur totale des points - retraits approuvés/payés.
      */
     public function getAvailableBalance(int $agentId): float
     {
-        $totalValue = (float) (AgentPoint::where('agent_id', $agentId)->sum('value_usd') ?: 0);
-
-        $totalWithdrawn = Withdrawal::where('agent_id', $agentId)
-            ->whereIn('status', ['approved', 'paid'])
-            ->sum('amount_usd') ?: 0;
-
-        return max(0, round($totalValue - (float) $totalWithdrawn, 2));
+        $totalValue = $this->getTotalValueUsd($agentId);
+        $totalWithdrawn = $this->getTotalWithdrawn($agentId);
+        return max(0, round($totalValue - $totalWithdrawn, 2));
     }
 }

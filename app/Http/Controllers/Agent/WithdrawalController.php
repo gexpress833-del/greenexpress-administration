@@ -17,13 +17,22 @@ class WithdrawalController extends Controller
     {
         $user = $request->user();
         $withdrawals = Withdrawal::where('agent_id', $user->id)->latest()->paginate(15);
-        $available = app(PointService::class)->getAvailableBalance($user->id);
+        $pointService = app(PointService::class);
+        $available = $pointService->getAvailableBalance($user->id);
         $minWithdrawal = PointService::MIN_WITHDRAWAL_USD;
         $currencyService = new CurrencyService();
+        $exchangeRate = $currencyService->getRate();
         $minWithdrawalFc = $currencyService->usdToFc($minWithdrawal);
         $availableFc = $currencyService->usdToFc($available);
+        $totalValue = $pointService->getTotalValueUsd($user->id);
+        $totalValueFc = $currencyService->usdToFc($totalValue);
+        $totalWithdrawn = $pointService->getTotalWithdrawn($user->id);
+        $totalWithdrawnFc = $currencyService->usdToFc($totalWithdrawn);
 
-        return view('agent.withdrawals.index', compact('withdrawals', 'available', 'availableFc', 'minWithdrawal', 'minWithdrawalFc'));
+        return view('agent.withdrawals.index', compact(
+            'withdrawals', 'available', 'availableFc', 'minWithdrawal', 'minWithdrawalFc',
+            'totalValue', 'totalValueFc', 'totalWithdrawn', 'totalWithdrawnFc', 'exchangeRate'
+        ));
     }
 
     public function store(Request $request)
@@ -31,15 +40,26 @@ class WithdrawalController extends Controller
         $user = $request->user();
         $available = app(PointService::class)->getAvailableBalance($user->id);
         $minWithdrawal = PointService::MIN_WITHDRAWAL_USD;
+        $exchangeRate = ExchangeRate::current();
 
         $data = $request->validate([
-            'amount_usd' => ['required', 'numeric', "min:{$minWithdrawal}", "max:{$available}"],
+            'currency' => ['required', 'in:usd,fc'],
+            'amount_usd' => ['nullable', 'numeric', 'required_if:currency,usd', "min:{$minWithdrawal}", "max:{$available}"],
+            'amount_fc'  => ['nullable', 'numeric', 'required_if:currency,fc', "min:{$minWithdrawal * $exchangeRate}", "max:{$available * $exchangeRate}"],
         ]);
+
+        if ($data['currency'] === 'fc') {
+            $amountFc = round((float) $data['amount_fc'], 2);
+            $amountUsd = round($amountFc / $exchangeRate, 2);
+        } else {
+            $amountUsd = round((float) $data['amount_usd'], 2);
+            $amountFc = round($amountUsd * $exchangeRate, 2);
+        }
 
         $withdrawal = Withdrawal::create([
             'agent_id' => $user->id,
-            'amount_usd' => $data['amount_usd'],
-            'amount_fc' => $data['amount_usd'] * ExchangeRate::current(),
+            'amount_usd' => $amountUsd,
+            'amount_fc' => $amountFc,
             'status' => 'pending',
         ]);
 

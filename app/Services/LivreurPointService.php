@@ -80,16 +80,22 @@ class LivreurPointService
     }
 
     /**
+     * Montant total déjà retiré (approuvé/payé).
+     */
+    public function getTotalWithdrawn(int $livreurId): float
+    {
+        return round((float) (Withdrawal::where('livreur_id', $livreurId)
+            ->whereIn('status', ['approved', 'paid'])
+            ->sum('amount_usd') ?: 0), 2);
+    }
+
+    /**
      * Solde disponible au retrait : valeur totale des points - retraits approuvés/payés.
      */
     public function getAvailableBalance(int $livreurId): float
     {
         $totalValue = $this->getTotalValueUsd($livreurId);
-
-        $totalWithdrawn = Withdrawal::where('livreur_id', $livreurId)
-            ->whereIn('status', ['approved', 'paid'])
-            ->sum('amount_usd') ?: 0;
-
-        return max(0, round($totalValue - (float) $totalWithdrawn, 2));
+        $totalWithdrawn = $this->getTotalWithdrawn($livreurId);
+        return max(0, round($totalValue - $totalWithdrawn, 2));
     }
 }
