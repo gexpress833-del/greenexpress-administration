@@ -138,6 +138,3 @@ require __DIR__.'/auth.php';
 
 // Public document/receipt verification page
 Route::get('/verify', [DocumentVerificationController::class, 'show'])->name('verify.show');
-
-// Cache clear route (temporary for deployment issues)
-require __DIR__.'/cache-clear.php';
