@@ -46,10 +46,13 @@ class WithdrawalController extends Controller
         $minWithdrawal = PointService::MIN_WITHDRAWAL_USD;
         $exchangeRate = ExchangeRate::current();
 
+        $minFc = round($minWithdrawal * $exchangeRate, 2);
+        $maxFc = round($available * $exchangeRate, 2);
+
         $data = $request->validate([
             'currency' => ['required', 'in:usd,fc'],
-            'amount_usd' => ['nullable', 'numeric', 'required_if:currency,usd', "min:{$minWithdrawal}", "max:{$available}"],
-            'amount_fc'  => ['nullable', 'numeric', 'required_if:currency,fc', "min:{$minWithdrawal * $exchangeRate}", "max:{$available * $exchangeRate}"],
+            'amount_usd' => ['nullable', 'numeric', 'required_if:currency,usd', 'min:' . $minWithdrawal, 'max:' . $available],
+            'amount_fc'  => ['nullable', 'numeric', 'required_if:currency,fc', 'min:' . $minFc, 'max:' . $maxFc],
         ]);
 
         if ($data['currency'] === 'fc') {
