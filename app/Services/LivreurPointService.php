@@ -97,4 +97,12 @@ class LivreurPointService
         $totalWithdrawn = $this->getTotalWithdrawn($livreurId);
         return max(0, round($totalValue - $totalWithdrawn, 2));
     }
+
+    /**
+     * Nombre de points disponibles après déduction des retraits.
+     */
+    public function getAvailablePoints(int $livreurId): int
+    {
+        return (int) floor($this->getAvailableBalance($livreurId) / self::VALUE_PER_POINT_USD);
+    }
 }
