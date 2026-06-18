@@ -13,17 +13,17 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
                 <p class="text-xs text-gray-500 dark:text-gray-400">Total accumulé</p>
-                <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($totalValue, 2) }}</p>
+                <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($totalValue ?? 0, 2) }}</p>
                 <p class="text-xs text-gray-400 dark:text-gray-500">{{ number_format($totalValueFc, 0, '.', '') }} FC</p>
             </div>
             <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
                 <p class="text-xs text-gray-500 dark:text-gray-400">Déjà retiré</p>
-                <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($totalWithdrawn, 2) }}</p>
+                <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($totalWithdrawn ?? 0, 2) }}</p>
                 <p class="text-xs text-gray-400 dark:text-gray-500">{{ number_format($totalWithdrawnFc, 0, '.', '') }} FC</p>
             </div>
             <div class="bg-sky-50 dark:bg-sky-900/20 rounded-lg p-4">
                 <p class="text-xs text-gray-500 dark:text-gray-400">Disponible</p>
-                <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($available, 2) }}</p>
+                <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($available ?? 0, 2) }}</p>
                 <p class="text-xs text-gray-400 dark:text-gray-500">{{ number_format($availableFc, 0, '.', '') }} FC</p>
             </div>
         </div>
@@ -32,7 +32,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Demander un retrait</h2>
         @if($available < $minWithdrawal)
-            <p class="text-sm text-red-600 dark:text-red-400">Solde insuffisant. Minimum requis : $ {{ number_format($minWithdrawal, 2) }} ({{ number_format($minWithdrawalFc, 0, '.', '') }} FC)</p>
+            <p class="text-sm text-red-600 dark:text-red-400">Solde insuffisant. Minimum requis : $ {{ number_format($minWithdrawal ?? 0, 2) }} ({{ number_format($minWithdrawalFc ?? 0, 0, '.', '') }} FC)</p>
         @else
             <form method="POST" action="{{ route('livreur.withdrawals.store') }}" class="flex flex-col gap-4" x-data="{ loading: false, currency: 'usd', rate: {{ $exchangeRate }} }" @submit="loading = true">
                 @csrf
@@ -46,7 +46,7 @@
                         <input type="number" step="0.01" name="amount_usd" x-show="currency === 'usd'" x-bind:required="currency === 'usd'" :min="{{ $minWithdrawal }}" :max="{{ $available }}" placeholder="Montant USD (min {{ $minWithdrawal }})"
                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed"
                                :readonly="loading">
-                        <input type="number" step="1" name="amount_fc" x-show="currency === 'fc'" x-bind:required="currency === 'fc'" :min="{{ $minWithdrawal * $exchangeRate }}" :max="{{ $available * $exchangeRate }}" placeholder="Montant FC (min {{ number_format($minWithdrawalFc, 0, ',', '.') }})"
+                        <input type="number" step="1" name="amount_fc" x-show="currency === 'fc'" x-bind:required="currency === 'fc'" :min="{{ $minWithdrawal * $exchangeRate }}" :max="{{ $available * $exchangeRate }}" placeholder="Montant FC (min {{ number_format($minWithdrawalFc ?? 0, 0, '.', '') }})"
                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 read-only:opacity-60 read-only:cursor-not-allowed"
                                :readonly="loading">
                     </div>
