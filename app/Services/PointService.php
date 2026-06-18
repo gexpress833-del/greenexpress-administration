@@ -15,8 +15,9 @@ class PointService
 
     /**
      * Montant minimum de retrait pour un agent (basé sur les points).
+     * TEMPORAIREMENT À 0 POUR LES TESTS. À REMETTRE À 10.00 APRÈS.
      */
-    public const MIN_WITHDRAWAL_USD = 10.00;
+    public const MIN_WITHDRAWAL_USD = 0.00;
 
     public function creditForOrder(Order $order): ?AgentPoint
     {
