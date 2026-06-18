@@ -20,9 +20,8 @@ class LivreurPointService
 
     /**
      * Montant minimum de retrait pour un livreur.
-     * TEMPORAIREMENT À 0 POUR LES TESTS. À REMETTRE À 7.00 APRÈS.
      */
-    public const MIN_WITHDRAWAL_USD = 0.00;
+    public const MIN_WITHDRAWAL_USD = 7.00;
 
     /**
      * Crédite les points au livreur pour une livraison validée.
