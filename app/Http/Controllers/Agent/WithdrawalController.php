@@ -15,24 +15,28 @@ class WithdrawalController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user();
-        $withdrawals = Withdrawal::where('agent_id', $user->id)->latest()->paginate(15);
-        $pointService = app(PointService::class);
-        $available = $pointService->getAvailableBalance($user->id);
-        $minWithdrawal = PointService::MIN_WITHDRAWAL_USD;
-        $currencyService = new CurrencyService();
-        $exchangeRate = $currencyService->getRate();
-        $minWithdrawalFc = $currencyService->usdToFc($minWithdrawal);
-        $availableFc = $currencyService->usdToFc($available);
-        $totalValue = $pointService->getTotalValueUsd($user->id);
-        $totalValueFc = $currencyService->usdToFc($totalValue);
-        $totalWithdrawn = $pointService->getTotalWithdrawn($user->id);
-        $totalWithdrawnFc = $currencyService->usdToFc($totalWithdrawn);
+        try {
+            $user = $request->user();
+            $withdrawals = Withdrawal::where('agent_id', $user->id)->latest()->paginate(15);
+            $pointService = app(PointService::class);
+            $available = $pointService->getAvailableBalance($user->id);
+            $minWithdrawal = PointService::MIN_WITHDRAWAL_USD;
+            $currencyService = new CurrencyService();
+            $exchangeRate = $currencyService->getRate();
+            $minWithdrawalFc = $currencyService->usdToFc($minWithdrawal);
+            $availableFc = $currencyService->usdToFc($available);
+            $totalValue = $pointService->getTotalValueUsd($user->id);
+            $totalValueFc = $currencyService->usdToFc($totalValue);
+            $totalWithdrawn = $pointService->getTotalWithdrawn($user->id);
+            $totalWithdrawnFc = $currencyService->usdToFc($totalWithdrawn);
 
-        return view('agent.withdrawals.index', compact(
-            'withdrawals', 'available', 'availableFc', 'minWithdrawal', 'minWithdrawalFc',
-            'totalValue', 'totalValueFc', 'totalWithdrawn', 'totalWithdrawnFc', 'exchangeRate'
-        ));
+            return view('agent.withdrawals.index', compact(
+                'withdrawals', 'available', 'availableFc', 'minWithdrawal', 'minWithdrawalFc',
+                'totalValue', 'totalValueFc', 'totalWithdrawn', 'totalWithdrawnFc', 'exchangeRate'
+            ));
+        } catch (\Throwable $e) {
+            return response('<h1>Debug Error</h1><pre>' . htmlspecialchars($e->getMessage()) . "\n\n" . htmlspecialchars($e->getTraceAsString()) . '</pre>', 500);
+        }
     }
 
     public function store(Request $request)
