@@ -15,7 +15,6 @@ class WithdrawalController extends Controller
 {
     public function index(Request $request)
     {
-        die('Controller reached');
         try {
             $user = $request->user();
             $withdrawals = Withdrawal::where('agent_id', $user->id)->latest()->paginate(15);
