@@ -9,9 +9,10 @@ use App\Models\Withdrawal;
 class PointService
 {
     public const POINTS_PER_ORDER = 12;
-    public const POINTS_FOR_SMALL_ORDER = 3;
-    public const SMALL_ORDER_LIMIT_FC = 5000;
-    public const VALUE_PER_POINT_USD = 0.025; // 12 pts = 0.30$
+    public const POINTS_PER_TIER = 3;
+    public const TIER_LIMIT_FC = 5000;
+    public const MAX_POINTS = 12;
+    public const VALUE_PER_POINT_USD = 0.025;
 
     /**
      * Montant minimum de retrait pour un agent (basé sur les points).
@@ -32,9 +33,8 @@ class PointService
             return $existingPoint;
         }
 
-        $points = $order->total_amount_fc < self::SMALL_ORDER_LIMIT_FC
-            ? self::POINTS_FOR_SMALL_ORDER
-            : self::POINTS_PER_ORDER;
+        $tiers = max(1, 1 + (int) floor($order->total_amount_fc / self::TIER_LIMIT_FC));
+        $points = min(self::MAX_POINTS, self::POINTS_PER_TIER * $tiers);
         $valueUsd = round($points * self::VALUE_PER_POINT_USD, 2);
 
         return AgentPoint::create([

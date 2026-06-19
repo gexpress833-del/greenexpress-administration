@@ -124,8 +124,43 @@
         </div>
     </section>
 
-    {{-- Rejoindre --}}
+    {{-- Programme Agent --}}
     <section class="mb-10 animate-fade-up animate-delay-5">
+        <h2 class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-4">Programme Agent</h2>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-[15px] mb-4">
+                En tant qu'agent Green Express, vous gagnez des points à chaque commande que vous enregistrez et qui est livrée et validée par le client. Le nombre de points dépend du montant total de la commande (pas du nombre de repas), selon des tranches progressives.
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 text-center">
+                    <p class="text-lg font-bold text-emerald-700 dark:text-emerald-300">3 pts</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">1 000 – 4 999 FC</p>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500">~$ 0.08</p>
+                </div>
+                <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 text-center">
+                    <p class="text-lg font-bold text-emerald-700 dark:text-emerald-300">6 pts</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">5 000 – 9 999 FC</p>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500">~$ 0.15</p>
+                </div>
+                <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 text-center">
+                    <p class="text-lg font-bold text-emerald-700 dark:text-emerald-300">9 pts</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">10 000 – 14 999 FC</p>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500">~$ 0.23</p>
+                </div>
+                <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 text-center">
+                    <p class="text-lg font-bold text-emerald-700 dark:text-emerald-300">12 pts</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">15 000 FC et +</p>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500">~$ 0.30</p>
+                </div>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 italic">
+                Exemple : une commande contenant un plat à 2 500 FC et un autre à 10 000 FC (total 12 500 FC) rapporte 9 points. Plus vous générez de commandes de valeur, plus vos gains progressent de manière juste et prévisible.
+            </p>
+        </div>
+    </section>
+
+    {{-- Rejoindre --}}
+    <section class="mb-10 animate-fade-up">
         <h2 class="text-sm font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-4">Rejoindre l'écosystème</h2>
         <div class="bg-gradient-to-br from-emerald-800 to-emerald-950 rounded-2xl p-6 lg:p-8 text-white shadow-xl">
             <p class="leading-relaxed text-emerald-100/90 text-[15px] mb-5">

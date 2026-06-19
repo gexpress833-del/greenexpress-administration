@@ -93,20 +93,26 @@
         {{-- How it works --}}
         <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl p-4 mb-6">
             <p class="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">Comment ça marche ?</p>
+            <p class="text-xs text-blue-700 dark:text-blue-300 mb-2">Les points sont calculés par tranche de 5 000 FC du montant total de la commande (pas par repas).</p>
             <ul class="text-xs text-blue-700 dark:text-blue-300 space-y-1">
                 <li class="flex items-start gap-2">
                     <span class="w-4 h-4 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center text-[10px] font-bold mt-0.5 shrink-0">1</span>
-                    <span>12 points par commande livrée et validée par le client</span>
+                    <span>1 000 – 4 999 FC : <strong>3 pts</strong> (~$ 0.08)</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="w-4 h-4 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center text-[10px] font-bold mt-0.5 shrink-0">2</span>
-                    <span>3 points pour les petites commandes (moins de 5 000 FC)</span>
+                    <span>5 000 – 9 999 FC : <strong>6 pts</strong> (~$ 0.15)</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="w-4 h-4 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center text-[10px] font-bold mt-0.5 shrink-0">3</span>
-                    <span>Valeur : 1 point = $ {{ number_format(App\Services\PointService::VALUE_PER_POINT_USD, 3) }}</span>
+                    <span>10 000 – 14 999 FC : <strong>9 pts</strong> (~$ 0.23)</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="w-4 h-4 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center text-[10px] font-bold mt-0.5 shrink-0">4</span>
+                    <span>15 000 FC et + : <strong>12 pts</strong> (~$ 0.30)</span>
                 </li>
             </ul>
+            <p class="text-[10px] text-blue-600 dark:text-blue-400 mt-2 italic">Exemple : une commande de 2 500 FC + 10 000 FC = 12 500 FC → 9 points</p>
         </div>
 
         {{-- History --}}
