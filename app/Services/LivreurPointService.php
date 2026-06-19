@@ -9,9 +9,24 @@ use App\Models\Withdrawal;
 class LivreurPointService
 {
     /**
-     * Points crédités au livreur pour chaque livraison validée.
+     * Points par tranche de 5 000 FC du montant total de la commande livrée.
      */
-    public const POINTS_PER_DELIVERY = 8;
+    public const POINTS_PER_TIER = 2;
+
+    /**
+     * Points de base pour la première tranche (bonus livreur).
+     */
+    public const BASE_POINTS = 2;
+
+    /**
+     * Seuil d'une tranche en FC.
+     */
+    public const TIER_LIMIT_FC = 5000;
+
+    /**
+     * Points maximum par livraison.
+     */
+    public const MAX_POINTS = 10;
 
     /**
      * Valeur d'un point en USD (identique au système agent).
@@ -47,7 +62,8 @@ class LivreurPointService
             return $existing;
         }
 
-        $points = self::POINTS_PER_DELIVERY;
+        $tiers = max(1, 1 + (int) floor($order->total_amount_fc / self::TIER_LIMIT_FC));
+        $points = min(self::MAX_POINTS, self::BASE_POINTS + (self::POINTS_PER_TIER * $tiers));
         $valueUsd = round($points * self::VALUE_PER_POINT_USD, 2);
 
         return LivreurPoint::create([

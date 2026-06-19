@@ -49,6 +49,37 @@
         </div>
     </div>
 
+    {{-- Comment ça marche --}}
+    <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-xl p-5 mb-8">
+        <p class="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-2">Comment ça marche ?</p>
+        <p class="text-xs text-amber-700 dark:text-amber-300 mb-2">Les points sont calculés selon le montant total de la commande livrée et validée (pas par repas).</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 text-center">
+                <p class="text-base font-bold text-amber-700 dark:text-amber-300">4 pts</p>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400">1 000 – 4 999 FC</p>
+                <p class="text-[10px] text-gray-400 dark:text-gray-500">~$ 0.10</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 text-center">
+                <p class="text-base font-bold text-amber-700 dark:text-amber-300">6 pts</p>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400">5 000 – 9 999 FC</p>
+                <p class="text-[10px] text-gray-400 dark:text-gray-500">~$ 0.15</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 text-center">
+                <p class="text-base font-bold text-amber-700 dark:text-amber-300">8 pts</p>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400">10 000 – 14 999 FC</p>
+                <p class="text-[10px] text-gray-400 dark:text-gray-500">~$ 0.20</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 text-center">
+                <p class="text-base font-bold text-amber-700 dark:text-amber-300">10 pts</p>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400">15 000 FC et +</p>
+                <p class="text-[10px] text-gray-400 dark:text-gray-500">~$ 0.25</p>
+            </div>
+        </div>
+        <p class="text-[11px] text-amber-600 dark:text-amber-400 italic">
+            Exemple : une livraison de commande à 2 500 FC + 10 000 FC (total 12 500 FC) = 8 points.
+        </p>
+    </div>
+
     {{-- Graphique hebdomadaire --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-8">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Points des 7 derniers jours</h2>
