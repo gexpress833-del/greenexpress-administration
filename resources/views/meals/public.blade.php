@@ -13,6 +13,7 @@
 }
 .meal-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
 }
 .meal-card:hover {
     transform: translateY(-4px);
@@ -24,9 +25,11 @@
 .meal-card:hover .meal-image {
     transform: scale(1.05);
 }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 
-<div class="max-w-6xl mx-auto px-4 py-6 lg:py-10">
+<div x-data="mealCatalog()" class="max-w-6xl mx-auto px-4 py-6 lg:py-10" @keydown.escape.window="detailOpen = false">
 
     {{-- En-tête --}}
     <div class="text-center mb-8 animate-fade-up">
@@ -79,7 +82,16 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             @foreach($meals as $i => $meal)
                 <div class="meal-card bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm animate-fade-up"
-                     style="animation-delay: {{ 0.15 + ($i * 0.05) }}s;">
+                     style="animation-delay: {{ 0.15 + ($i * 0.05) }}s;"
+                     @click="openMeal({{ json_encode([
+                         'id' => $meal->id,
+                         'name' => $meal->name,
+                         'description' => $meal->description,
+                         'price' => (float) $meal->price,
+                         'price_fc' => (float) $meal->price_fc,
+                         'image' => $meal->image ? (str_starts_with($meal->image, 'http') ? $meal->image : asset('storage/' . $meal->image)) : null,
+                         'category' => optional($meal->category)->name,
+                     ]) }})">
                     {{-- Image --}}
                     <div class="relative h-48 overflow-hidden bg-slate-100 dark:bg-slate-800">
                         @if($meal->image)
@@ -91,33 +103,26 @@
                                 </svg>
                             </div>
                         @endif
-                        {{-- Badge catégorie --}}
                         @if($meal->category)
                             <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-black/40 backdrop-blur text-white text-[10px] font-semibold uppercase tracking-wider">
                                 {{ $meal->category->name }}
                             </span>
                         @endif
                     </div>
-
-                    {{-- Contenu --}}
                     <div class="p-5">
                         <h3 class="font-bold text-slate-900 dark:text-white text-base mb-1 truncate">{{ $meal->name }}</h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4 line-clamp-2">{{ $meal->description ?? 'Un plat savoureux préparé avec des ingrédients frais et de qualité.' }}</p>
-
                         <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
                             <div>
                                 <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400">${{ number_format($meal->price, 2) }}</span>
                                 <span class="text-xs text-slate-400 dark:text-slate-500 ml-1">/ {{ number_format($meal->price_fc, 0, ',', '.') }} FC</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                {{-- Point vert pulsant --}}
                                 <span class="relative flex h-2.5 w-2.5">
                                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                     <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                                 </span>
-                                <span class="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-lg">
-                                    Disponible
-                                </span>
+                                <span class="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-lg">Disponible</span>
                             </div>
                         </div>
                     </div>
@@ -126,12 +131,105 @@
         </div>
     @endif
 
-    {{-- Pied de page --}}
     @if($meals->isNotEmpty())
         <div class="text-center mt-10 text-xs text-slate-400 dark:text-slate-500 animate-fade-up" style="animation-delay: 0.8s;">
             {{ $meals->count() }} plat{{ $meals->count() > 1 ? 's' : '' }} disponible{{ $meals->count() > 1 ? 's' : '' }} — Green Express
         </div>
     @endif
 
+    {{-- ==================== MODAL DETAIL ==================== --}}
+    <div x-show="detailOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4" style="display:none">
+        <div x-show="detailOpen"
+             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+             @click="detailOpen = false" class="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
+
+        <div x-show="detailOpen"
+             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90 translate-y-8" x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100 translate-y-0" x-transition:leave-end="opacity-0 scale-90 translate-y-8"
+             class="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden max-h-[92vh] flex flex-col">
+
+            {{-- Bouton fermeture --}}
+            <button @click="detailOpen = false" class="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-white hover:dark:bg-slate-700 hover:text-slate-900 hover:dark:text-white transition shadow-lg active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="flex flex-col md:flex-row overflow-y-auto">
+                {{-- Image avec overlay dégradé --}}
+                <div class="relative md:w-1/2 h-64 sm:h-72 md:h-auto min-h-[280px] bg-slate-100 dark:bg-slate-800 shrink-0 overflow-hidden">
+                    <template x-if="selectedMeal?.image">
+                        <img :src="selectedMeal.image" :alt="selectedMeal.name" class="w-full h-full object-cover">
+                    </template>
+                    <template x-if="!selectedMeal?.image">
+                        <div class="w-full h-full flex items-center justify-center">
+                            <svg class="w-20 h-20 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                    </template>
+                    {{-- Overlay dégradé bas --}}
+                    <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
+                    {{-- Badge catégorie --}}
+                    <div class="absolute top-4 left-4">
+                        <span x-show="selectedMeal?.category" x-text="selectedMeal?.category"
+                              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 shadow-sm">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                            <span x-text="selectedMeal?.category"></span>
+                        </span>
+                    </div>
+                </div>
+
+                {{-- Informations --}}
+                <div class="md:w-1/2 p-6 sm:p-8 flex flex-col">
+                    {{-- Nom --}}
+                    <h2 x-text="selectedMeal?.name" class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-3 leading-tight"></h2>
+
+                    {{-- Séparateur --}}
+                    <div class="w-12 h-1 rounded-full bg-emerald-500 mb-4"></div>
+
+                    {{-- Description --}}
+                    <p x-text="selectedMeal?.description ?? 'Un plat savoureux préparé avec des ingrédients frais et de qualité.'"
+                       class="text-sm sm:text-base text-slate-500 dark:text-slate-400 leading-relaxed mb-6 flex-1"></p>
+
+                    {{-- Section prix --}}
+                    <div class="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-5 mb-5 border border-slate-100 dark:border-slate-700">
+                        <p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Prix</p>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">$<span x-text="selectedMeal?.price?.toFixed(2)"></span></span>
+                            <span class="text-base text-slate-400 dark:text-slate-500">/ <span x-text="Math.round(selectedMeal?.price_fc || 0).toLocaleString('fr-FR')"></span> FC</span>
+                        </div>
+                    </div>
+
+                    {{-- Actions --}}
+                    @auth
+                        @if(auth()->user()->isAgent())
+                            <a href="{{ route('agent.orders.create') }}" class="group flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 active:scale-[0.98] text-sm">
+                                <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                </svg>
+                                Commander ce plat
+                            </a>
+                        @endif
+                    @endauth
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+@push('scripts')
+<script>
+function mealCatalog() {
+    return {
+        detailOpen: false,
+        selectedMeal: null,
+        openMeal(meal) {
+            this.selectedMeal = meal;
+            this.detailOpen = true;
+        }
+    }
+}
+</script>
+@endpush
 @endsection

@@ -29,8 +29,60 @@
                 if (theme === 'dark') document.documentElement.classList.add('dark');
             })();
         </script>
+        <style>
+            /* View Transitions API native */
+            @view-transition {
+                navigation: auto;
+            }
+            /* Custom transition styles */
+            ::view-transition-old(root) {
+                animation: fade-out 0.25s ease-out forwards;
+            }
+            ::view-transition-new(root) {
+                animation: fade-in 0.35s ease-out forwards;
+            }
+            @keyframes fade-out {
+                from { opacity: 1; transform: scale(1); }
+                to   { opacity: 0; transform: scale(0.985); }
+            }
+            @keyframes fade-in {
+                from { opacity: 0; transform: scale(1.015); }
+                to   { opacity: 1; transform: scale(1); }
+            }
+            /* Fallback overlay transition */
+            #page-transition {
+                position: fixed;
+                inset: 0;
+                z-index: 9999;
+                background: #16a34a;
+                opacity: 0;
+                pointer-events: none;
+                transform: scaleX(0);
+                transform-origin: left;
+                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+            }
+            #page-transition.active {
+                opacity: 1;
+                transform: scaleX(1);
+                transform-origin: right;
+            }
+            #page-transition.exit {
+                transform-origin: right;
+                transform: scaleX(0);
+                opacity: 0;
+            }
+            /* Smooth page entrance */
+            .page-enter {
+                animation: page-enter 0.5s ease-out forwards;
+            }
+            @keyframes page-enter {
+                from { opacity: 0; transform: translateY(12px); }
+                to   { opacity: 1; transform: translateY(0); }
+            }
+        </style>
     </head>
     <body class="font-sans antialiased bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200 overscroll-none safe-area">
+        <div id="page-transition"></div>
         <div x-data="{ sidebarOpen: false }" class="min-h-screen flex flex-col lg:flex-row">
             @auth
                 @include('layouts.sidebar')
@@ -41,7 +93,7 @@
                     @include('layouts.topbar')
                 @endauth
 
-                <main class="flex-1 p-4 lg:p-8" @auth style="padding-top: calc(1rem + 4rem + env(safe-area-inset-top))" @endauth>
+                <main id="main-content" class="flex-1 p-4 lg:p-8 page-enter" @auth style="padding-top: calc(1rem + 4rem + env(safe-area-inset-top))" @endauth>
                     @if(session('success'))
                         <div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900 shadow-sm dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100">
                             <div class="flex items-start gap-3">
@@ -106,27 +158,145 @@
         @stack('scripts')
         @include('components.currency-converter')
         <script>
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js', { scope: '/' })
-                        .then((registration) => {
-                            if (registration.waiting) {
-                                registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-                            }
-                            registration.addEventListener('updatefound', () => {
-                                const worker = registration.installing;
-                                if (worker) {
-                                    worker.addEventListener('statechange', () => {
-                                        if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-                                            worker.postMessage({ type: 'SKIP_WAITING' });
-                                        }
-                                    });
+            (function() {
+                // ========== PAGE TRANSITIONS ==========
+                const supportsViewTransition = document.startViewTransition;
+                const overlay = document.getElementById('page-transition');
+
+                function isInternalLink(el) {
+                    return el && el.tagName === 'A' && el.href &&
+                           el.href.startsWith(window.location.origin) &&
+                           !el.hasAttribute('download') &&
+                           el.getAttribute('target') !== '_blank' &&
+                           !el.href.includes('#') &&
+                           !el.closest('[data-no-transition]');
+                }
+
+                document.addEventListener('click', function(e) {
+                    const link = e.composedPath ? e.composedPath().find(el => el.tagName === 'A') : e.target.closest('a');
+                    if (!link || !isInternalLink(link)) return;
+                    if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+                    const url = new URL(link.href);
+                    if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+
+                    e.preventDefault();
+
+                    if (supportsViewTransition) {
+                        document.startViewTransition(() => {
+                            window.location.href = link.href;
+                        });
+                    } else {
+                        overlay.classList.add('active');
+                        setTimeout(() => {
+                            window.location.href = link.href;
+                        }, 300);
+                    }
+                });
+
+                // Reveal on back/forward navigation (pageshow)
+                window.addEventListener('pageshow', function(e) {
+                    if (e.persisted) {
+                        overlay.classList.remove('active');
+                        document.getElementById('main-content')?.classList.add('page-enter');
+                    }
+                });
+
+                // ========== SERVICE WORKER ==========
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', () => {
+                        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                            .then((registration) => {
+                                if (registration.waiting) {
+                                    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                                }
+                                registration.addEventListener('updatefound', () => {
+                                    const worker = registration.installing;
+                                    if (worker) {
+                                        worker.addEventListener('statechange', () => {
+                                            if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                                                worker.postMessage({ type: 'SKIP_WAITING' });
+                                            }
+                                        });
+                                    }
+                                });
+
+                                // ========== PUSH NOTIFICATIONS ==========
+                                setupPushNotifications(registration);
+                            })
+                            .catch(() => {});
+                    });
+                }
+
+                function setupPushNotifications(registration) {
+                    if (!('Notification' in window) || !registration.pushManager) return;
+
+                    // Ask permission after a short delay (not intrusive on first load)
+                    let asked = localStorage.getItem('push-asked');
+                    if (!asked && Notification.permission === 'default') {
+                        setTimeout(() => {
+                            Notification.requestPermission().then(permission => {
+                                localStorage.setItem('push-asked', '1');
+                                if (permission === 'granted') {
+                                    subscribeToPush(registration);
                                 }
                             });
-                        })
-                        .catch(() => {});
-                });
-            }
+                        }, 3000);
+                    } else if (Notification.permission === 'granted') {
+                        subscribeToPush(registration);
+                    }
+                }
+
+                async function subscribeToPush(registration) {
+                    try {
+                        const existing = await registration.pushManager.getSubscription();
+                        if (existing) {
+                            await sendSubscriptionToServer(existing);
+                            return;
+                        }
+
+                        // Fetch VAPID public key from backend
+                        const keyRes = await fetch('/api/vapid-public-key');
+                        const keyData = await keyRes.json();
+                        if (!keyData.publicKey) return;
+
+                        const converted = urlBase64ToUint8Array(keyData.publicKey);
+
+                        const subscription = await registration.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: converted
+                        });
+                        await sendSubscriptionToServer(subscription);
+                    } catch (err) {
+                        console.warn('Push subscription failed', err);
+                    }
+                }
+
+                async function sendSubscriptionToServer(subscription) {
+                    try {
+                        await fetch('/api/push-subscribe', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                            },
+                            body: JSON.stringify(subscription.toJSON())
+                        });
+                    } catch (e) {
+                        console.warn('Could not send push subscription to server', e);
+                    }
+                }
+
+                function urlBase64ToUint8Array(base64String) {
+                    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+                    const raw = window.atob(base64);
+                    const out = new Uint8Array(raw.length);
+                    for (let i = 0; i < raw.length; ++i) {
+                        out[i] = raw.charCodeAt(i);
+                    }
+                    return out;
+                }
+            })();
         </script>
     </body>
 </html>

@@ -151,3 +151,66 @@ self.addEventListener('message', (event) => {
         self.skipWaiting();
     }
 });
+
+// ========== PUSH NOTIFICATIONS ==========
+self.addEventListener('push', (event) => {
+    if (!event.data) return;
+
+    let payload;
+    try {
+        payload = event.data.json();
+    } catch (e) {
+        payload = { title: 'Green Express', body: event.data.text(), icon: '/logo-192.png' };
+    }
+
+    const title = payload.title || 'Green Express';
+    const options = {
+        body: payload.body || 'Vous avez une nouvelle notification.',
+        icon: payload.icon || '/logo-192.png',
+        badge: payload.badge || '/logo-192.png',
+        image: payload.image || undefined,
+        tag: payload.tag || 'green-express',
+        requireInteraction: payload.requireInteraction ?? false,
+        renotify: payload.renotify ?? false,
+        data: payload.data || { url: payload.url || '/' },
+        actions: payload.actions || []
+    };
+
+    event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+
+    const url = event.notification.data?.url || '/';
+    const action = event.action;
+
+    event.waitUntil(
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then((clientList) => {
+                // Check if a window/tab is already open
+                for (const client of clientList) {
+                    if (client.url === url && 'focus' in client) {
+                        return client.focus();
+                    }
+                    if ('focus' in client) {
+                        client.focus();
+                        if ('navigate' in client) {
+                            return client.navigate(url);
+                        }
+                    }
+                }
+                // Open new window
+                if (self.clients.openWindow) {
+                    return self.clients.openWindow(url);
+                }
+            })
+    );
+});
+
+// Background sync for offline actions (optional enhancement)
+self.addEventListener('sync', (event) => {
+    if (event.tag === 'sync-orders') {
+        // Background sync can be implemented here for offline order submission
+    }
+});

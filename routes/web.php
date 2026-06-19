@@ -24,11 +24,15 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordChangeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DocumentVerificationController;
+use App\Http\Controllers\PushSubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+// Public push VAPID key
+Route::get('/api/vapid-public-key', [PushSubscriptionController::class, 'publicKey'])->name('push.public-key');
 
 Route::middleware(['auth', 'password.changed'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -47,6 +51,10 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+
+    // Push subscriptions
+    Route::post('/api/push-subscribe', [PushSubscriptionController::class, 'store'])->name('push.subscribe');
+    Route::post('/api/push-unsubscribe', [PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
 
     // Admin routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {

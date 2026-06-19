@@ -41,4 +41,10 @@ return [
         'api_secret' => env('CLOUDINARY_API_SECRET'),
     ],
 
+    'webpush' => [
+        'public_key' => env('VAPID_PUBLIC_KEY'),
+        'private_key' => env('VAPID_PRIVATE_KEY'),
+        'subject' => env('VAPID_SUBJECT', 'mailto:contact@greenexpress.com'),
+    ],
+
 ];
