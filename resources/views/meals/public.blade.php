@@ -138,7 +138,7 @@
     @endif
 
     {{-- ==================== MODAL DETAIL ==================== --}}
-    <div x-show="detailOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4" style="display:none">
+    <div x-show="detailOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto" style="display:none">
         <div x-show="detailOpen"
              x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
              x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
@@ -147,7 +147,7 @@
         <div x-show="detailOpen"
              x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90 translate-y-8" x-transition:enter-end="opacity-100 scale-100 translate-y-0"
              x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100 translate-y-0" x-transition:leave-end="opacity-0 scale-90 translate-y-8"
-             class="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden max-h-[92vh] flex flex-col">
+             class="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-3xl my-auto overflow-hidden max-h-[90vh] flex flex-col">
 
             {{-- Bouton fermeture --}}
             <button @click="detailOpen = false" class="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-white hover:dark:bg-slate-700 hover:text-slate-900 hover:dark:text-white transition shadow-lg active:scale-95">
@@ -156,7 +156,7 @@
 
             <div class="flex flex-col md:flex-row overflow-y-auto">
                 {{-- Image avec overlay dégradé --}}
-                <div class="relative md:w-1/2 h-64 sm:h-72 md:h-auto min-h-[280px] bg-slate-100 dark:bg-slate-800 shrink-0 overflow-hidden">
+                <div class="relative md:w-1/2 h-56 sm:h-64 md:h-auto md:min-h-[320px] bg-slate-100 dark:bg-slate-800 shrink-0 overflow-hidden">
                     <template x-if="selectedMeal?.image">
                         <img :src="selectedMeal.image" :alt="selectedMeal.name" class="w-full h-full object-cover">
                     </template>
@@ -180,7 +180,7 @@
                 </div>
 
                 {{-- Informations --}}
-                <div class="md:w-1/2 p-6 sm:p-8 flex flex-col">
+                <div class="md:w-1/2 p-5 sm:p-8 flex flex-col">
                     {{-- Nom --}}
                     <h2 x-text="selectedMeal?.name" class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-3 leading-tight"></h2>
 
@@ -189,7 +189,7 @@
 
                     {{-- Description --}}
                     <p x-text="selectedMeal?.description ?? 'Un plat savoureux préparé avec des ingrédients frais et de qualité.'"
-                       class="text-sm sm:text-base text-slate-500 dark:text-slate-400 leading-relaxed mb-6 flex-1"></p>
+                       class="text-sm sm:text-base text-slate-500 dark:text-slate-400 leading-relaxed mb-5 flex-1"></p>
 
                     {{-- Section prix --}}
                     <div class="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-5 mb-5 border border-slate-100 dark:border-slate-700">
