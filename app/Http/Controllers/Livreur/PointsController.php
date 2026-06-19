@@ -27,6 +27,9 @@ class PointsController extends Controller
         $minWithdrawal = LivreurPointService::MIN_WITHDRAWAL_USD;
         $minWithdrawalFc = $currencyService->usdToFc($minWithdrawal);
         $exchangeRate = $currencyService->getRate();
+        $totalWithdrawn = $pointService->getTotalWithdrawn($user->id);
+        $totalWithdrawnFc = $currencyService->usdToFc($totalWithdrawn);
+        $availablePoints = $pointService->getAvailablePoints($user->id);
 
         $pointsHistory = LivreurPoint::where('livreur_id', $user->id)
             ->with(['order', 'delivery'])
@@ -50,6 +53,9 @@ class PointsController extends Controller
             'totalValueFc',
             'todayValueFc',
             'availableBalanceFc',
+            'totalWithdrawn',
+            'totalWithdrawnFc',
+            'availablePoints',
             'minWithdrawal',
             'minWithdrawalFc',
             'exchangeRate',

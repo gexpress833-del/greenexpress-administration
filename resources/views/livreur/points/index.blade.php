@@ -5,10 +5,10 @@
 
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Points totaux</p>
-            <p class="text-2xl font-bold text-green-700">{{ $totalPoints }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">$ {{ number_format($totalValueUsd, 2) }}</p>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($totalValueFc, 0, '.', '') }} FC</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Points disponibles</p>
+            <p class="text-2xl font-bold text-green-700">{{ $availablePoints }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">$ {{ number_format($availableBalance, 2) }}</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($availableBalanceFc, 0, '.', '') }} FC</p>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700">
             <p class="text-sm text-gray-500 dark:text-gray-400">Aujourd'hui</p>
@@ -24,6 +24,28 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a1 1 0 11-2 0 1 1 0 012 0z"/></svg>
                 Retirer
             </a>
+        </div>
+    </div>
+
+    {{-- Récapitulatif du solde --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 mb-8">
+        <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">Récapitulatif du solde</h2>
+        <div class="grid grid-cols-3 gap-3">
+            <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total accumulé</p>
+                <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($totalValueUsd, 2) }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($totalValueFc, 0, '.', '') }} FC</p>
+            </div>
+            <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Déjà retiré</p>
+                <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($totalWithdrawn, 2) }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($totalWithdrawnFc, 0, '.', '') }} FC</p>
+            </div>
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Disponible</p>
+                <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($availableBalance, 2) }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($availableBalanceFc, 0, '.', '') }} FC</p>
+            </div>
         </div>
     </div>
 

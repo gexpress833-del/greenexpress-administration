@@ -7,7 +7,7 @@
 
             <div class="relative p-6 sm:p-8">
                 <div class="flex items-center justify-between mb-2">
-                    <p class="text-blue-100 text-sm font-medium">Solde de points</p>
+                    <p class="text-blue-100 text-sm font-medium">Solde disponible</p>
                     <div class="flex items-center gap-1 bg-white/20 rounded-full px-3 py-1 text-xs font-semibold">
                         <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                         Actif
@@ -15,19 +15,42 @@
                 </div>
 
                 <div class="mb-6">
-                    <p class="text-4xl sm:text-5xl font-bold tracking-tight">{{ number_format($totalPoints) }}</p>
-                    <p class="text-blue-200 text-sm mt-1">points cumulés</p>
+                    <p class="text-4xl sm:text-5xl font-bold tracking-tight">{{ number_format($availablePoints) }}</p>
+                    <p class="text-blue-200 text-sm mt-1">points disponibles</p>
                 </div>
 
                 <div class="flex items-center gap-4">
                     <div class="bg-white/15 backdrop-blur rounded-2xl p-4 flex-1">
-                        <p class="text-blue-100 text-xs mb-1">Valeur estimée</p>
-                        <p class="text-xl font-bold">$ {{ number_format($totalValueUsd, 2) }}</p>
+                        <p class="text-blue-100 text-xs mb-1">Valeur disponible</p>
+                        <p class="text-xl font-bold">$ {{ number_format($availableBalance, 2) }}</p>
+                        <p class="text-xs text-blue-200 mt-0.5">{{ number_format($availableBalanceFc, 0, '.', '') }} FC</p>
                     </div>
                     <div class="bg-white/15 backdrop-blur rounded-2xl p-4 flex-1">
                         <p class="text-blue-100 text-xs mb-1">Aujourd'hui</p>
                         <p class="text-xl font-bold">+{{ $todayPoints }}</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Récapitulatif du solde --}}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 mb-6">
+            <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">Récapitulatif du solde</h2>
+            <div class="grid grid-cols-3 gap-3">
+                <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total accumulé</p>
+                    <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($totalValueUsd, 2) }}</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($totalValueFc, 0, '.', '') }} FC</p>
+                </div>
+                <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Déjà retiré</p>
+                    <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($totalWithdrawn, 2) }}</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($totalWithdrawnFc, 0, '.', '') }} FC</p>
+                </div>
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Disponible</p>
+                    <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($availableBalance, 2) }}</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ number_format($availableBalanceFc, 0, '.', '') }} FC</p>
                 </div>
             </div>
         </div>

@@ -43,12 +43,20 @@ class PointsController extends Controller
         $currencyService = new CurrencyService();
         $availableBalanceFc = $currencyService->usdToFc($availableBalance);
         $minWithdrawalFc = $currencyService->usdToFc($minWithdrawal);
+        $totalValueFc = $currencyService->usdToFc($totalValueUsd);
+        $totalWithdrawn = $pointService->getTotalWithdrawn($user->id);
+        $totalWithdrawnFc = $currencyService->usdToFc($totalWithdrawn);
+        $availablePoints = $pointService->getAvailablePoints($user->id);
 
         return view('agent.points.index', compact(
             'totalPoints',
             'todayPoints',
             'totalValueUsd',
             'todayValueUsd',
+            'totalValueFc',
+            'totalWithdrawn',
+            'totalWithdrawnFc',
+            'availablePoints',
             'pointsHistory',
             'weeklyPoints',
             'totalCommissionsUsd',
