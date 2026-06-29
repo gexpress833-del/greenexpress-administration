@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionSuspension;
@@ -36,16 +37,23 @@ class SubscriptionController extends Controller
     {
         abort_unless($subscription->client_id === $request->user()->id, 403);
 
+        // Check if subscription has ended before allowing renewal
+        if ($subscription->end_date && $subscription->end_date->gt(now())) {
+            return redirect()->route('client.subscriptions.index')
+                ->with('error', 'Le renouvellement n\'est possible qu\'après la fin de l\'abonnement en cours.');
+        }
+
         $data = $request->validate([
             'type' => ['required', 'in:weekly,monthly'],
         ]);
 
-        $days = $data['type'] === 'weekly' ? 7 : 30;
+        // Weekly: 5 business days, Monthly: 20 business days
+        $days = $data['type'] === 'weekly' ? 5 : 20;
         $subscription->type = $data['type'];
-        $subscription->start_date = now();
-        $subscription->end_date = now()->addDays($days);
-        $subscription->total_days += $days;
-        $subscription->remaining_days += $days;
+        $subscription->start_date = null; // Will be set on validation
+        $subscription->end_date = null; // Will be calculated on validation
+        $subscription->total_days = $days;
+        $subscription->remaining_days = $days;
         $subscription->status = 'pending';
         $subscription->admin_validated_at = null;
         $subscription->validated_by = null;
@@ -55,7 +63,7 @@ class SubscriptionController extends Controller
         $subscription->agent?->notify(new SubscriptionRenewed($subscription));
         User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionRenewed($subscription)));
 
-        return redirect()->route('client.subscriptions.index')->with('success', 'Abonnement renouvelé.');
+        return redirect()->route('client.subscriptions.index')->with('success', 'Demande de renouvellement envoyée. En attente de validation par l\'administrateur.');
     }
 
     public function suspend(Request $request, Subscription $subscription)
