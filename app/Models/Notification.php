@@ -20,6 +20,7 @@ class Notification extends Model
         'type',
         'notifiable_type',
         'notifiable_id',
+        'url',
         'is_read',
         'read_at',
     ];

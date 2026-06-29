@@ -2,17 +2,36 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['client_id', 'agent_id', 'subscription_type_id', 'type', 'start_date', 'end_date', 'total_days', 'remaining_days', 'price', 'currency', 'price_fc', 'status', 'admin_validated_at', 'validated_by', 'client_name', 'client_phone', 'client_email', 'credentials_generated_at'])]
 class Subscription extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'client_id',
+        'agent_id',
+        'subscription_type_id',
+        'type',
+        'start_date',
+        'end_date',
+        'total_days',
+        'remaining_days',
+        'price',
+        'currency',
+        'price_fc',
+        'status',
+        'admin_validated_at',
+        'validated_by',
+        'client_name',
+        'client_phone',
+        'client_email',
+        'credentials_generated_at',
+    ];
 
     protected function casts(): array
     {
