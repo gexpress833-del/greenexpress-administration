@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\User;
-use App\Notifications\ClientAccountCreated;
 use App\Notifications\CredentialsGenerated;
 use App\Notifications\SubscriptionPending;
 use App\Services\CurrencyService;
@@ -104,15 +103,9 @@ class SubscriptionController extends Controller
                 'is_active' => true,
             ]);
             $subscription->update(['client_id' => $client->id]);
-
-            // Send notification to client with credentials
-            $client->notify(new ClientAccountCreated($subscription, $tempPassword));
-
-            // Prepare WhatsApp credentials link for agent convenience
-            $whatsapp = app(WhatsAppService::class);
-            $whatsappLink = $whatsapp->credentialsLink($client->phone, $client->email, $tempPassword);
         }
 
+        // Notify admins about pending subscription
         User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionPending($subscription)));
 
         $redirect = redirect()->route('agent.subscriptions.index')
