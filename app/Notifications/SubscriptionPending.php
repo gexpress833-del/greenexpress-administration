@@ -23,7 +23,7 @@ class SubscriptionPending extends Notification
             'title' => 'Nouvel abonnement en attente',
             'message' => "Un nouvel abonnement pour {$this->subscription->client_name} a été créé par {$this->subscription->agent->name} et est en attente de validation.",
             'subscription_id' => $this->subscription->id,
-            'url' => route('admin.subscriptions.show', $this->subscription),
+            'url' => route('admin.subscriptions.show', ['subscription' => $this->subscription->id]),
             'icon' => 'clipboard-list',
             'color' => 'amber',
         ];

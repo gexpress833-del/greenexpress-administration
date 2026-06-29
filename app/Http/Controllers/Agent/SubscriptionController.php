@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Agent;
 
+use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
 use App\Models\User;
+use App\Notifications\ClientAccountCreated;
 use App\Notifications\CredentialsGenerated;
 use App\Notifications\SubscriptionPending;
 use App\Services\CurrencyService;
@@ -59,14 +61,16 @@ class SubscriptionController extends Controller
         if ($subscriptionType) {
             $totalDays = $subscriptionType->duration_days;
         } else {
-            $map = ['weekly' => 7, 'monthly' => 30];
-            $totalDays = $map[$data['type'] ?? 'monthly'] ?? 30;
+            // Weekly: 5 business days (Monday-Friday), Monthly: 20 business days (4 weeks)
+            $map = ['weekly' => 5, 'monthly' => 20];
+            $totalDays = $map[$data['type'] ?? 'monthly'] ?? 20;
         }
         $price = (float) $data['price'];
         $currencyService = app(CurrencyService::class);
         $priceFc = $data['currency'] === 'fc' ? $price : $currencyService->usdToFc($price);
         $priceUsd = $data['currency'] === 'usd' ? $price : $currencyService->fcToUsd($price);
 
+        // Store requested start date, actual dates will be calculated on validation
         $subscription = Subscription::create([
             'agent_id' => $request->user()->id,
             'client_name' => $data['client_name'],
@@ -74,9 +78,9 @@ class SubscriptionController extends Controller
             'client_email' => $data['client_email'],
             'subscription_type_id' => $subscriptionType ? $subscriptionType->id : null,
             'type' => $subscriptionType ? $subscriptionType->slug : ($data['type'] ?? null),
-            'start_date' => $data['start_date'],
-            'end_date' => now()->parse($data['start_date'])->addDays($totalDays),
-            'total_days' => $totalDays,
+            'start_date' => $data['start_date'], // Requested start date
+            'end_date' => null, // Will be calculated on validation
+            'total_days' => $totalDays, // Duration in business days
             'remaining_days' => $totalDays,
             'price' => $priceUsd,
             'currency' => $data['currency'],
@@ -100,6 +104,9 @@ class SubscriptionController extends Controller
                 'is_active' => true,
             ]);
             $subscription->update(['client_id' => $client->id]);
+
+            // Send notification to client with credentials
+            $client->notify(new ClientAccountCreated($subscription, $tempPassword));
 
             // Prepare WhatsApp credentials link for agent convenience
             $whatsapp = app(WhatsAppService::class);

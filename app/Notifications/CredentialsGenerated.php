@@ -27,7 +27,7 @@ class CredentialsGenerated extends Notification
                 'title' => 'Identifiants générés',
                 'message' => "{$agentName} a généré les identifiants pour {$clientName}.",
                 'subscription_id' => $this->subscription->id,
-                'url' => route('admin.subscriptions.show', $this->subscription),
+                'url' => route('admin.subscriptions.show', ['subscription' => $this->subscription->id]),
                 'icon' => 'user-check',
                 'color' => 'blue',
             ];
