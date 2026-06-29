@@ -220,82 +220,81 @@
                                     }
                                 });
 
-                                // ========== PUSH NOTIFICATIONS ==========
-                                setupPushNotifications(registration);
+                                // ========== PUSH NOTIFICATIONS (disabled until minishlink/web-push is added to composer) ==========
+                                // setupPushNotifications(registration);
                             })
                             .catch(() => {});
                     });
                 }
 
-                function setupPushNotifications(registration) {
-                    if (!('Notification' in window) || !registration.pushManager) return;
-
-                    // Ask permission after a short delay (not intrusive on first load)
-                    let asked = localStorage.getItem('push-asked');
-                    if (!asked && Notification.permission === 'default') {
-                        setTimeout(() => {
-                            Notification.requestPermission().then(permission => {
-                                localStorage.setItem('push-asked', '1');
-                                if (permission === 'granted') {
-                                    subscribeToPush(registration);
-                                }
-                            });
-                        }, 3000);
-                    } else if (Notification.permission === 'granted') {
-                        subscribeToPush(registration);
-                    }
-                }
-
-                async function subscribeToPush(registration) {
-                    try {
-                        const existing = await registration.pushManager.getSubscription();
-                        if (existing) {
-                            await sendSubscriptionToServer(existing);
-                            return;
-                        }
-
-                        // Fetch VAPID public key from backend
-                        const keyRes = await fetch('/api/vapid-public-key');
-                        const keyData = await keyRes.json();
-                        if (!keyData.publicKey) return;
-
-                        const converted = urlBase64ToUint8Array(keyData.publicKey);
-
-                        const subscription = await registration.pushManager.subscribe({
-                            userVisibleOnly: true,
-                            applicationServerKey: converted
-                        });
-                        await sendSubscriptionToServer(subscription);
-                    } catch (err) {
-                        console.warn('Push subscription failed', err);
-                    }
-                }
-
-                async function sendSubscriptionToServer(subscription) {
-                    try {
-                        await fetch('/api/push-subscribe', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
-                            },
-                            body: JSON.stringify(subscription.toJSON())
-                        });
-                    } catch (e) {
-                        console.warn('Could not send push subscription to server', e);
-                    }
-                }
-
-                function urlBase64ToUint8Array(base64String) {
-                    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-                    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-                    const raw = window.atob(base64);
-                    const out = new Uint8Array(raw.length);
-                    for (let i = 0; i < raw.length; ++i) {
-                        out[i] = raw.charCodeAt(i);
-                    }
-                    return out;
-                }
+                // Push notifications disabled until minishlink/web-push is added to composer
+                // function setupPushNotifications(registration) {
+                //     if (!('Notification' in window) || !registration.pushManager) return;
+                //
+                //     let asked = localStorage.getItem('push-asked');
+                //     if (!asked && Notification.permission === 'default') {
+                //         setTimeout(() => {
+                //             Notification.requestPermission().then(permission => {
+                //                 localStorage.setItem('push-asked', '1');
+                //                 if (permission === 'granted') {
+                //                     subscribeToPush(registration);
+                //                 }
+                //             });
+                //         }, 3000);
+                //     } else if (Notification.permission === 'granted') {
+                //         subscribeToPush(registration);
+                //     }
+                // }
+                //
+                // async function subscribeToPush(registration) {
+                //     try {
+                //         const existing = await registration.pushManager.getSubscription();
+                //         if (existing) {
+                //             await sendSubscriptionToServer(existing);
+                //             return;
+                //         }
+                //
+                //         const keyRes = await fetch('/api/vapid-public-key');
+                //         const keyData = await keyRes.json();
+                //         if (!keyData.publicKey) return;
+                //
+                //         const converted = urlBase64ToUint8Array(keyData.publicKey);
+                //
+                //         const subscription = await registration.pushManager.subscribe({
+                //             userVisibleOnly: true,
+                //             applicationServerKey: converted
+                //         });
+                //         await sendSubscriptionToServer(subscription);
+                //     } catch (err) {
+                //         console.warn('Push subscription failed', err);
+                //     }
+                // }
+                //
+                // async function sendSubscriptionToServer(subscription) {
+                //     try {
+                //         await fetch('/api/push-subscribe', {
+                //             method: 'POST',
+                //             headers: {
+                //                 'Content-Type': 'application/json',
+                //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                //             },
+                //             body: JSON.stringify(subscription.toJSON())
+                //         });
+                //     } catch (e) {
+                //         console.warn('Could not send push subscription to server', e);
+                //     }
+                // }
+                //
+                // function urlBase64ToUint8Array(base64String) {
+                //     const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                //     const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+                //     const raw = window.atob(base64);
+                //     const out = new Uint8Array(raw.length);
+                //     for (let i = 0; i < raw.length; ++i) {
+                //         out[i] = raw.charCodeAt(i);
+                //     }
+                //     return out;
+                // }
             })();
         </script>
     </body>
