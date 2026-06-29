@@ -80,4 +80,27 @@ class SubscriptionController extends Controller
 
         return $redirect;
     }
+
+    public function reject(Request $request, Subscription $subscription)
+    {
+        $subscription->status = 'rejected';
+        $subscription->admin_validated_at = now();
+        $subscription->validated_by = $request->user()->id;
+        $subscription->save();
+
+        app(ActivityLogService::class)->logFromRequest($request, 'subscription_rejected', Subscription::class, $subscription->id, 'Admin rejected subscription for client '.($subscription->client?->name ?? $subscription->client_name));
+
+        return redirect()->route('admin.subscriptions.index')
+            ->with('success', 'Abonnement refusé.');
+    }
+
+    public function destroy(Request $request, Subscription $subscription)
+    {
+        $subscription->delete();
+
+        app(ActivityLogService::class)->logFromRequest($request, 'subscription_deleted', Subscription::class, $subscription->id, 'Admin deleted subscription for client '.($subscription->client?->name ?? $subscription->client_name));
+
+        return redirect()->route('admin.subscriptions.index')
+            ->with('success', 'Abonnement supprimé.');
+    }
 }

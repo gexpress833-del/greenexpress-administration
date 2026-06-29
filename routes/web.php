@@ -57,7 +57,8 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::resource('orders', OrderController::class)->only(['index', 'show']);
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::get('/orders/{order}/print', [OrderController::class, 'print'])->name('orders.print');
-        Route::resource('subscriptions', SubscriptionController::class)->only(['index', 'show', 'update']);
+        Route::resource('subscriptions', SubscriptionController::class)->only(['index', 'show', 'update', 'destroy']);
+        Route::post('/subscriptions/{subscription}/reject', [SubscriptionController::class, 'reject'])->name('subscriptions.reject');
         Route::resource('subscription-types', SubscriptionTypeController::class)->except(['show']);
         Route::resource('deliveries', DeliveryController::class)->only(['index', 'create', 'store']);
         Route::resource('exchange-rates', ExchangeRateController::class)->only(['index', 'store']);
