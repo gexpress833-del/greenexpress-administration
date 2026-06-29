@@ -26,11 +26,25 @@
                     @csrf
                     @method('PATCH')
                     <input type="hidden" name="status" value="active">
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition mb-2">
                         Valider l'abonnement
                     </button>
                 </form>
+                <form method="POST" action="{{ route('admin.subscriptions.reject', $subscription) }}" class="mt-2">
+                    @csrf
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition mb-2">
+                        Refuser l'abonnement
+                    </button>
+                </form>
             @endif
+
+            <form method="POST" action="{{ route('admin.subscriptions.destroy', $subscription) }}" class="mt-6" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet abonnement ?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+                    Supprimer l'abonnement
+                </button>
+            </form>
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
