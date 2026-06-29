@@ -21,6 +21,7 @@ class Notification extends Model
         'notifiable_type',
         'notifiable_id',
         'url',
+        'whatsapp_link',
         'is_read',
         'read_at',
     ];
