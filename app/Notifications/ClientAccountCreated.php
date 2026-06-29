@@ -38,20 +38,11 @@ class ClientAccountCreated extends Notification
 
     public function toDatabase(object $notifiable): array
     {
-        // Generate WhatsApp link with credentials
-        $whatsapp = app(\App\Services\WhatsAppService::class);
-        $whatsappLink = $whatsapp->credentialsLink(
-            $this->subscription->client_phone,
-            $this->subscription->client_email,
-            $this->tempPassword
-        );
-
         return [
             'title' => 'Compte créé',
             'message' => 'Votre compte Green Express a été créé. Vous pouvez maintenant vous connecter.',
             'subscription_id' => $this->subscription->id,
             'url' => route('client.dashboard'),
-            'whatsapp_link' => $whatsappLink,
             'icon' => 'user-plus',
             'color' => 'green',
         ];
