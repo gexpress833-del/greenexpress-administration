@@ -1,137 +1,188 @@
 <x-app-layout>
-    <div class="max-w-3xl mx-auto">
-        {{-- Hero Card inspired by mobile app --}}
-        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-xl mb-6">
-            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-            <div class="absolute bottom-0 left-0 -mb-4 -ml-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+    <style>
+        @keyframes points-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes points-shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 220% center; }
+        }
+        .points-orb {
+            animation: points-float 5s ease-in-out infinite;
+        }
+        .points-shimmer {
+            background: linear-gradient(90deg, #60a5fa, #22c55e, #facc15, #60a5fa);
+            background-size: 220% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: points-shimmer 4s linear infinite;
+        }
+    </style>
 
-            <div class="relative p-6 sm:p-8">
-                <div class="flex items-center justify-between mb-2">
-                    <p class="text-blue-100 text-sm font-medium">Solde de points</p>
-                    <div class="flex items-center gap-1 bg-white/20 rounded-full px-3 py-1 text-xs font-semibold">
-                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                        Actif
-                    </div>
-                </div>
+    @php
+        $maxWeekly = max(!empty($weeklyPoints) ? max($weeklyPoints) : 0, 1);
+        $conversionRate = App\Services\PointService::VALUE_PER_POINT_USD;
+    @endphp
 
-                <div class="mb-6">
-                    <p class="text-4xl sm:text-5xl font-bold tracking-tight">{{ number_format($totalPoints) }}</p>
-                    <p class="text-blue-200 text-sm mt-1">points cumulés</p>
-                </div>
+    <div class="-m-4 lg:-m-8 min-h-screen overflow-hidden bg-slate-950 text-white">
+        <div class="relative min-h-screen">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.24),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(34,197,94,0.18),transparent_34%)]"></div>
+            <div class="absolute inset-0 opacity-[0.06]" style="background-image: linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px); background-size: 42px 42px;"></div>
 
-                <div class="flex items-center gap-4">
-                    <div class="bg-white/15 backdrop-blur rounded-2xl p-4 flex-1">
-                        <p class="text-blue-100 text-xs mb-1">Valeur estimée</p>
-                        <p class="text-xl font-bold">$ {{ number_format($totalValueUsd, 2) }}</p>
-                    </div>
-                    <div class="bg-white/15 backdrop-blur rounded-2xl p-4 flex-1">
-                        <p class="text-blue-100 text-xs mb-1">Aujourd'hui</p>
-                        <p class="text-xl font-bold">+{{ $todayPoints }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Weekly activity chart --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Activité des 7 derniers jours</h2>
-                <span class="text-xs text-gray-400 dark:text-gray-500">Points gagnés</span>
-            </div>
-            @php $maxWeekly = max(!empty($weeklyPoints) ? max($weeklyPoints) : 0, 1); @endphp
-            <div class="flex items-end gap-2 h-32">
-                @foreach($weeklyPoints as $day => $count)
-                    <div class="flex-1 flex flex-col items-center gap-1">
-                        <span class="text-[10px] font-medium text-gray-600 dark:text-gray-300">{{ $count }}</span>
-                        <div class="w-full bg-blue-100 dark:bg-blue-900/30 rounded-t-lg relative overflow-hidden" style="height: {{ $maxWeekly > 0 ? ($count / $maxWeekly) * 100 : 0 }}%;">
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg opacity-90" style="height: 100%;"></div>
+            <div class="relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+                <div class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-blue-200 shadow-lg shadow-blue-950/40">
+                            <span class="h-2 w-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/60"></span>
+                            Programme actif
                         </div>
-                        <span class="text-[10px] text-gray-400 dark:text-gray-500 uppercase">{{ $day }}</span>
+                        <h1 class="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">Mes points</h1>
+                        <p class="mt-2 max-w-2xl text-sm text-slate-300 sm:text-base">Suivez vos points, vos gains estimés et l'historique de vos commandes validées.</p>
                     </div>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Stats Grid --}}
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div class="w-8 h-8 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-2">
-                    <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                    <div class="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-slate-200 shadow-xl backdrop-blur-xl">
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Valeur point</p>
+                        <p class="mt-1 text-lg font-bold text-white">$ {{ number_format($conversionRate, 3) }}</p>
+                    </div>
                 </div>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Points aujourd'hui</p>
-                <p class="text-lg font-bold text-gray-800 dark:text-gray-100">{{ $todayPoints }}</p>
-                <p class="text-[10px] text-gray-400 dark:text-gray-500">~$ {{ number_format($todayValueUsd, 2) }}</p>
-            </div>
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-                <div class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-2">
-                    <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Commissions</p>
-                <p class="text-lg font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($totalCommissionsUsd, 2) }}</p>
-                <p class="text-[10px] text-gray-400 dark:text-gray-500">total gagné</p>
-            </div>
-        </div>
 
-        {{-- How it works --}}
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl p-4 mb-6">
-            <p class="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">Comment ça marche ?</p>
-            <ul class="text-xs text-blue-700 dark:text-blue-300 space-y-1">
-                <li class="flex items-start gap-2">
-                    <span class="w-4 h-4 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center text-[10px] font-bold mt-0.5 shrink-0">1</span>
-                    <span>12 points par commande livrée et validée par le client</span>
-                </li>
-                <li class="flex items-start gap-2">
-                    <span class="w-4 h-4 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center text-[10px] font-bold mt-0.5 shrink-0">2</span>
-                    <span>3 points pour les petites commandes (moins de 5 000 FC)</span>
-                </li>
-                <li class="flex items-start gap-2">
-                    <span class="w-4 h-4 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center text-[10px] font-bold mt-0.5 shrink-0">3</span>
-                    <span>Valeur : 1 point = $ {{ number_format(App\Services\PointService::VALUE_PER_POINT_USD, 3) }}</span>
-                </li>
-            </ul>
-        </div>
+                <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+                    <section class="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/30 backdrop-blur-2xl sm:p-8 lg:p-10">
+                        <div class="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-blue-400/20 blur-3xl"></div>
+                        <div class="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl"></div>
 
-        {{-- History --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Historique des points</h2>
-                <span class="text-xs text-gray-400 dark:text-gray-500">{{ $pointsHistory->total() }} entrées</span>
-            </div>
-            <div class="divide-y divide-gray-50 dark:divide-gray-700">
-                @forelse($pointsHistory as $point)
-                    <div class="px-5 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <div class="relative z-10 flex h-full flex-col justify-between gap-8">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-blue-300">Solde disponible</p>
+                                    <p class="mt-1 text-sm text-slate-300">Points cumulés par vos performances</p>
+                                </div>
+                                <div class="rounded-2xl bg-blue-400/10 p-3 text-blue-200 ring-1 ring-blue-300/20">
+                                    <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.519 4.674c.3.921-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.519-4.674a1 1 0 00-.363-1.118L3.08 10.1c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.516-4.674z"/></svg>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-800 dark:text-gray-100">+{{ $point->points }} points</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $point->description }}</p>
-                                <p class="text-[10px] text-gray-400 dark:text-gray-500">{{ $point->earned_at?->format('d/m/Y H:i') }}</p>
+
+                            <div class="points-orb mx-auto flex w-full max-w-lg flex-col items-center justify-center rounded-[2rem] border border-blue-300/15 bg-slate-950/55 p-6 text-center shadow-2xl shadow-blue-950/50 sm:p-8">
+                                <p class="text-sm font-bold uppercase tracking-[0.22em] text-slate-400">Total points</p>
+                                <p class="points-shimmer mt-3 font-mono text-6xl font-black leading-none tracking-tight sm:text-7xl lg:text-8xl">{{ number_format($totalPoints) }}</p>
+                                <p class="mt-4 rounded-full border border-emerald-300/20 bg-emerald-300/10 px-4 py-2 text-sm font-semibold text-emerald-200">Valeur estimée : $ {{ number_format($totalValueUsd, 2) }}</p>
+                            </div>
+
+                            <div class="grid gap-3 sm:grid-cols-3">
+                                <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-4">
+                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Aujourd'hui</p>
+                                    <p class="mt-2 text-2xl font-black text-emerald-300">+{{ $todayPoints }}</p>
+                                    <p class="mt-1 text-xs text-slate-400">~$ {{ number_format($todayValueUsd, 2) }}</p>
+                                </div>
+                                <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-4">
+                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Commissions</p>
+                                    <p class="mt-2 text-2xl font-black text-yellow-300">$ {{ number_format($totalCommissionsUsd, 2) }}</p>
+                                    <p class="mt-1 text-xs text-slate-400">total gagné</p>
+                                </div>
+                                <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-4">
+                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Entrées</p>
+                                    <p class="mt-2 text-2xl font-black text-white">{{ $pointsHistory->total() }}</p>
+                                    <p class="mt-1 text-xs text-slate-400">historique</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <p class="text-sm font-bold text-blue-600 dark:text-blue-400">$ {{ number_format($point->value_usd, 2) }}</p>
-                            @if($point->order)
-                                <a href="{{ route('agent.orders.show', $point->order) }}" class="text-[10px] text-gray-400 dark:text-gray-500 hover:text-blue-500">Voir commande</a>
-                            @endif
+                    </section>
+
+                    <section class="grid gap-6">
+                        <div class="rounded-[2rem] border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/25 backdrop-blur-2xl sm:p-6">
+                            <div class="mb-5 flex items-center justify-between gap-4">
+                                <div>
+                                    <h2 class="text-lg font-black text-white">Activité récente</h2>
+                                    <p class="text-sm text-slate-400">Points gagnés sur les 7 derniers jours</p>
+                                </div>
+                                <span class="rounded-full bg-blue-400/10 px-3 py-1 text-xs font-bold text-blue-200 ring-1 ring-blue-300/20">7 jours</span>
+                            </div>
+                            <div class="flex h-52 items-end gap-3 rounded-2xl border border-white/10 bg-slate-950/35 p-4">
+                                @foreach($weeklyPoints as $day => $count)
+                                    <div class="flex h-full flex-1 flex-col items-center justify-end gap-2">
+                                        <span class="text-xs font-black text-white">{{ $count }}</span>
+                                        <div class="relative w-full overflow-hidden rounded-t-2xl bg-white/10" style="height: {{ $maxWeekly > 0 ? max(($count / $maxWeekly) * 100, 8) : 8 }}%;">
+                                            <div class="absolute inset-0 rounded-t-2xl bg-gradient-to-t from-blue-500 via-emerald-400 to-yellow-300 shadow-lg shadow-emerald-400/20"></div>
+                                        </div>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ $day }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-                @empty
-                    <div class="px-5 py-8 text-center">
-                        <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+
+                        <div class="rounded-[2rem] border border-emerald-300/15 bg-emerald-300/10 p-5 text-sm leading-relaxed text-emerald-50 shadow-xl shadow-black/20 backdrop-blur-xl sm:p-6">
+                            <div class="mb-4 flex items-center gap-3">
+                                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-300/15 text-emerald-200 ring-1 ring-emerald-200/20">
+                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" /></svg>
+                                </div>
+                                <div>
+                                    <p class="font-black text-white">Comment ça marche ?</p>
+                                    <p class="text-xs text-emerald-200/70">Règles de calcul des points</p>
+                                </div>
+                            </div>
+                            <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+                                <div class="rounded-2xl border border-white/10 bg-slate-950/25 p-3">
+                                    <p class="mb-1 text-xs font-black text-emerald-200">01</p>
+                                    <p>12 points par commande livrée et validée par le client</p>
+                                </div>
+                                <div class="rounded-2xl border border-white/10 bg-slate-950/25 p-3">
+                                    <p class="mb-1 text-xs font-black text-emerald-200">02</p>
+                                    <p>3 points pour les petites commandes de moins de 5 000 FC</p>
+                                </div>
+                                <div class="rounded-2xl border border-white/10 bg-slate-950/25 p-3">
+                                    <p class="mb-1 text-xs font-black text-emerald-200">03</p>
+                                    <p>1 point = $ {{ number_format($conversionRate, 3) }}</p>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Aucun point gagné pour le moment.</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Validez des commandes pour commencer à gagner.</p>
-                    </div>
-                @endforelse
-            </div>
-            @if($pointsHistory->hasPages())
-                <div class="px-5 py-3 border-t border-gray-100 dark:border-gray-700">
-                    {{ $pointsHistory->links() }}
+                    </section>
                 </div>
-            @endif
+
+                <section class="mt-6 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.07] shadow-2xl shadow-black/25 backdrop-blur-2xl">
+                    <div class="flex flex-col gap-2 border-b border-white/10 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                        <div>
+                            <h2 class="text-lg font-black text-white">Historique des points</h2>
+                            <p class="text-sm text-slate-400">Détail de vos points gagnés</p>
+                        </div>
+                        <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-slate-200">{{ $pointsHistory->total() }} entrées</span>
+                    </div>
+                    <div class="divide-y divide-white/10">
+                        @forelse($pointsHistory as $point)
+                            <div class="flex flex-col gap-4 px-5 py-4 transition hover:bg-white/[0.05] sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                                <div class="flex items-start gap-4">
+                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-400/10 text-blue-200 ring-1 ring-blue-300/20">
+                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-base font-black text-white">+{{ $point->points }} points</p>
+                                        <p class="mt-1 text-sm text-slate-300">{{ $point->description }}</p>
+                                        <p class="mt-1 text-xs text-slate-500">{{ $point->earned_at?->format('d/m/Y H:i') }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between gap-4 text-left sm:flex-col sm:items-end sm:text-right">
+                                    <p class="text-base font-black text-emerald-300">$ {{ number_format($point->value_usd, 2) }}</p>
+                                    @if($point->order)
+                                        <a href="{{ route('agent.orders.show', $point->order) }}" class="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-bold text-slate-200 transition hover:border-blue-300/40 hover:text-blue-200">Voir commande</a>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <div class="px-5 py-14 text-center sm:px-6">
+                                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10 text-slate-300 ring-1 ring-white/10">
+                                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
+                                <p class="text-base font-bold text-white">Aucun point gagné pour le moment.</p>
+                                <p class="mt-1 text-sm text-slate-400">Validez des commandes pour commencer à gagner.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                    @if($pointsHistory->hasPages())
+                        <div class="border-t border-white/10 bg-slate-950/35 px-5 py-4 sm:px-6">
+                            {{ $pointsHistory->links() }}
+                        </div>
+                    @endif
+                </section>
+            </div>
         </div>
     </div>
 </x-app-layout>
