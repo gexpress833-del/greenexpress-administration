@@ -4,179 +4,209 @@
 
 @section('content')
 <style>
-@keyframes spin-gold {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+@keyframes soft-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
 }
-@keyframes pulse-gold {
-    0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(234,179,8,0.3); }
-    50% { opacity: 0.85; box-shadow: 0 0 40px rgba(234,179,8,0.6); }
-}
-@keyframes color-shift {
-    0% { filter: hue-rotate(0deg); }
-    50% { filter: hue-rotate(15deg); }
-    100% { filter: hue-rotate(0deg); }
-}
-.gold-ring {
-    animation: spin-gold 8s linear infinite, pulse-gold 3s ease-in-out infinite;
-}
-.gold-text-shimmer {
-    background: linear-gradient(90deg, #fbbf24, #f59e0b, #d97706, #fbbf24);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shimmer 3s linear infinite;
+@keyframes glow-line {
+    0%, 100% { opacity: .45; transform: scaleX(.92); }
+    50% { opacity: 1; transform: scaleX(1); }
 }
 @keyframes shimmer {
     0% { background-position: 0% center; }
     100% { background-position: 200% center; }
+}
+.exchange-orb {
+    animation: soft-float 5s ease-in-out infinite;
+}
+.exchange-shimmer {
+    background: linear-gradient(90deg, #22c55e, #facc15, #16a34a, #22c55e);
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s linear infinite;
+}
+.exchange-glow-line {
+    animation: glow-line 3s ease-in-out infinite;
 }
 .rate-bar {
     transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>
 
-<div class="-m-4 -mt-[calc(1rem+4rem+env(safe-area-inset-top))] lg:-m-8 lg:-mt-[calc(2rem+4rem+env(safe-area-inset-top))] min-h-screen bg-gradient-to-b from-emerald-950 via-emerald-900 to-emerald-950 text-white relative overflow-hidden">
+@php
+    $last = $history->last();
+    $prev = $history->count() > 1 ? $history[$history->count() - 2] : null;
+    $variation = $prev ? round((($last->rate - $prev->rate) / $prev->rate) * 100, 2) : 0;
+    $average = $history->count() ? $history->avg('rate') : $currentRate;
+@endphp
+
+<div class="-m-4 -mt-[calc(1rem+4rem+env(safe-area-inset-top))] lg:-m-8 lg:-mt-[calc(2rem+4rem+env(safe-area-inset-top))] min-h-screen overflow-hidden bg-slate-950 text-white">
     {{-- Motif subtil en arrière-plan --}}
-    <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+    <div class="relative min-h-screen">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,197,94,0.28),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(250,204,21,0.18),transparent_32%)]"></div>
+        <div class="absolute inset-0 opacity-[0.07]" style="background-image: linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px); background-size: 42px 42px;"></div>
 
-    <div class="relative z-10 flex flex-col items-center px-4 pb-12 min-h-screen" style="padding-top: calc(2rem + 4rem + env(safe-area-inset-top));">
-        {{-- En-tête --}}
-        <div class="text-center mb-8">
-            <div class="flex items-center justify-center gap-3 mb-2">
-                <span class="text-2xl">🇺🇸</span>
-                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                </svg>
-                <span class="text-2xl">🇨🇩</span>
-            </div>
-            <h1 class="text-sm font-medium text-emerald-300 uppercase tracking-widest">Taux de Change</h1>
-            <p class="text-xs text-emerald-400/70 mt-1">USD / Franc Congolais</p>
-        </div>
-
-        {{-- Cercle doré animé --}}
-        <div class="relative w-64 h-64 mb-10 mx-auto flex items-center justify-center">
-            {{-- Anneau extérieur tournant (arrière-plan) --}}
-            <div class="absolute inset-0 gold-ring pointer-events-none">
-                <div class="absolute inset-0 rounded-full border-[3px] border-yellow-400/40"
-                     style="background: conic-gradient(from 0deg, rgba(251,191,36,0.08), rgba(251,191,36,0.25), rgba(217,119,6,0.15), rgba(251,191,36,0.08));
-                            box-shadow: 0 0 30px rgba(251,191,36,0.15), inset 0 0 30px rgba(251,191,36,0.05);">
+        <div class="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 pb-10 sm:px-6 lg:px-8" style="padding-top: calc(1.25rem + 4rem + env(safe-area-inset-top));">
+            {{-- En-tête --}}
+            <div class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-200 shadow-lg shadow-emerald-950/40">
+                        <span>🇺🇸</span>
+                        <span class="text-emerald-400">USD</span>
+                        <span class="text-slate-500">/</span>
+                        <span class="text-yellow-300">CDF</span>
+                        <span>🇨🇩</span>
+                    </div>
+                    <h1 class="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">Taux de change</h1>
+                    <p class="mt-2 max-w-2xl text-sm text-slate-300 sm:text-base">Suivi du taux USD vers Franc Congolais utilisé pour les conversions Green Express.</p>
                 </div>
-                {{-- Points décoratifs sur l'anneau (tournent avec) --}}
-                <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1.5 w-3 h-3 bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/60 border border-yellow-300/50"></div>
-                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1.5 w-3 h-3 bg-yellow-500 rounded-full shadow-lg shadow-yellow-500/60 border border-yellow-400/50"></div>
-                <div class="absolute left-0 top-1/2 -translate-x-1.5 -translate-y-1/2 w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"></div>
-                <div class="absolute right-0 top-1/2 translate-x-1.5 -translate-y-1/2 w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"></div>
-            </div>
-
-            {{-- Contenu statique au centre (normal, pas absolute) --}}
-            <div class="relative z-10 w-[13.5rem] h-[13.5rem] rounded-full border border-yellow-500/20 flex items-center justify-center bg-gradient-to-br from-emerald-900/90 to-emerald-950/95 backdrop-blur-sm shadow-2xl"
-                 style="box-shadow: 0 0 25px rgba(0,0,0,0.3), inset 0 0 20px rgba(251,191,36,0.05);">
-                <div class="text-center">
-                    <p class="text-[10px] text-emerald-400/80 uppercase tracking-[0.2em] mb-1 font-medium">1 USD</p>
-                    <p class="text-4xl font-bold gold-text-shimmer font-mono tracking-tight leading-none">
-                        {{ number_format($currentRate, 0, ',', '.') }}
-                    </p>
-                    <p class="text-xs text-yellow-400/70 font-medium mt-1 tracking-wider">FRANCS</p>
+                <div class="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-slate-200 shadow-xl backdrop-blur-xl">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Dernière mise à jour</p>
+                    <p class="mt-1 text-lg font-bold text-white">{{ $last ? $last->created_at->format('d/m/Y') : '--' }}</p>
                 </div>
             </div>
-        </div>
 
-        {{-- Stats --}}
-        <div class="grid grid-cols-3 gap-4 w-full max-w-sm mb-8">
-            @php
-                $last = $history->last();
-                $prev = $history->count() > 1 ? $history[$history->count() - 2] : null;
-                $variation = $prev ? round((($last->rate - $prev->rate) / $prev->rate) * 100, 2) : 0;
-            @endphp
-            <div class="bg-white/5 backdrop-blur rounded-xl p-3 text-center border border-white/10">
-                <p class="text-[10px] text-emerald-300/70 uppercase tracking-wider">Variation</p>
-                <p class="text-lg font-bold {{ $variation >= 0 ? 'text-emerald-400' : 'text-rose-400' }}">
-                    {{ $variation >= 0 ? '+' : '' }}{{ $variation }}%
-                </p>
+            <div class="grid flex-1 gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
+                {{-- Cercle doré animé --}}
+                <section class="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/30 backdrop-blur-2xl sm:p-8 lg:p-10">
+                    <div class="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-emerald-400/20 blur-3xl"></div>
+                    <div class="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>
+
+                    <div class="relative z-10 flex h-full flex-col justify-between gap-8">
+                        <div class="flex items-center justify-between gap-4">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">Conversion actuelle</p>
+                                <p class="mt-1 text-sm text-slate-300">1 Dollar américain équivaut à</p>
+                            </div>
+                            <div class="rounded-2xl bg-emerald-400/10 p-3 text-emerald-200 ring-1 ring-emerald-300/20">
+                                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="exchange-orb mx-auto flex w-full max-w-lg flex-col items-center justify-center rounded-[2rem] border border-emerald-300/15 bg-slate-950/55 p-6 text-center shadow-2xl shadow-emerald-950/50 sm:p-8">
+                            <div class="mb-4 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.22em] text-slate-400">
+                                <span>1 USD</span>
+                                <span class="h-px w-10 bg-emerald-400/60"></span>
+                                <span>CDF</span>
+                            </div>
+                            <p class="exchange-shimmer font-mono text-6xl font-black leading-none tracking-tight sm:text-7xl lg:text-8xl">
+                                {{ number_format($currentRate, 0, ',', '.') }}
+                            </p>
+                            <div class="exchange-glow-line mt-5 h-1 w-48 rounded-full bg-gradient-to-r from-transparent via-emerald-300 to-transparent"></div>
+                            <p class="mt-5 max-w-sm text-sm leading-relaxed text-slate-300">Taux de référence appliqué à l'ensemble des conversions effectuées sur cette plateforme.</p>
+                        </div>
+
+                        <div class="grid gap-3 sm:grid-cols-3">
+                            {{-- Stats --}}
+                            <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-4">
+                                <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Variation</p>
+                                <p class="mt-2 text-2xl font-black {{ $variation >= 0 ? 'text-emerald-300' : 'text-rose-300' }}">{{ $variation >= 0 ? '+' : '' }}{{ $variation }}%</p>
+                            </div>
+                            <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-4">
+                                <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Moyenne</p>
+                                <p class="mt-2 text-2xl font-black text-yellow-300">{{ number_format($average, 0, ',', '.') }}</p>
+                            </div>
+                            <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-4">
+                                <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Devise</p>
+                                <p class="mt-2 text-2xl font-black text-white">FC</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="grid gap-6">
+                    {{-- Graphique historique SVG --}}
+                    <div class="rounded-[2rem] border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/25 backdrop-blur-2xl sm:p-6">
+                        <div class="mb-5 flex items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-lg font-black text-white">Historique</h2>
+                                <p class="text-sm text-slate-400">{{ $history->count() }} dernières valeurs enregistrées</p>
+                            </div>
+                            <div class="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-200 ring-1 ring-emerald-300/20">7 jours</div>
+                        </div>
+
+                        @if($history->count() >= 2)
+                            @php
+                                $rates = $history->pluck('rate')->toArray();
+                                $minRate = min($rates);
+                                $maxRate = max($rates);
+                                $range = $maxRate - $minRate ?: 1;
+                                $count = count($rates);
+                                $width = 420;
+                                $height = 190;
+                                $paddingX = 18;
+                                $paddingY = 22;
+                                $graphW = $width - $paddingX * 2;
+                                $graphH = $height - $paddingY * 2;
+
+                                $points = [];
+                                foreach ($rates as $i => $rate) {
+                                    $x = $paddingX + ($i / ($count - 1)) * $graphW;
+                                    $y = $paddingY + $graphH - (($rate - $minRate) / $range) * $graphH;
+                                    $points[] = "$x,$y";
+                                }
+                                $pointsStr = implode(' ', $points);
+
+                                // Area fill
+                                $areaPoints = $pointsStr . " $width," . ($height - $paddingY) . " $paddingX," . ($height - $paddingY);
+                            @endphp
+                            <svg viewBox="0 0 {{ $width }} {{ $height }}" class="w-full" preserveAspectRatio="xMidYMid meet">
+                                {{-- Dégradé de fond --}}
+                                <defs>
+                                    <linearGradient id="graphGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="rgba(34,197,94,0.35)"/>
+                                        <stop offset="100%" stop-color="rgba(34,197,94,0)"/>
+                                    </linearGradient>
+                                    <filter id="lineGlow" x="-20%" y="-20%" width="140%" height="140%">
+                                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+
+                                {{-- Aire sous la courbe --}}
+                                <polygon points="{{ $areaPoints }}" fill="url(#graphGrad)"/>
+
+                                {{-- Ligne --}}
+                                <polyline points="{{ $pointsStr }}" fill="none" stroke="#34d399" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#lineGlow)"/>
+
+                                {{-- Points --}}
+                                @foreach($rates as $i => $rate)
+                                    @php
+                                        $x = $paddingX + ($i / ($count - 1)) * $graphW;
+                                        $y = $paddingY + $graphH - (($rate - $minRate) / $range) * $graphH;
+                                    @endphp
+                                    <circle cx="{{ $x }}" cy="{{ $y }}" r="5" fill="#facc15" stroke="#0f172a" stroke-width="2"/>
+                                @endforeach
+                            </svg>
+
+                            {{-- Légende X --}}
+                            <div class="mt-3 flex justify-between px-1">
+                                @foreach($history as $item)
+                                    <span class="text-[10px] font-semibold text-slate-400">{{ $item->created_at->format('d/m') }}</span>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="flex min-h-44 items-center justify-center rounded-2xl border border-dashed border-white/15 bg-slate-950/30 text-sm text-slate-400">Historique insuffisant pour afficher le graphique.</div>
+                        @endif
+                    </div>
+
+                    {{-- Info --}}
+                    <div class="rounded-[2rem] border border-yellow-300/15 bg-yellow-300/10 p-5 text-sm leading-relaxed text-yellow-50 shadow-xl shadow-black/20 backdrop-blur-xl sm:p-6">
+                        <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-yellow-300/15 text-yellow-200 ring-1 ring-yellow-200/20">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <p>Actualisé automatiquement par La Direction. Les prix en francs congolais sont recalculés à partir du taux le plus récent enregistré dans l'administration.</p>
+                    </div>
+                </section>
             </div>
-            <div class="bg-white/5 backdrop-blur rounded-xl p-3 text-center border border-white/10">
-                <p class="text-[10px] text-emerald-300/70 uppercase tracking-wider">Moyenne</p>
-                <p class="text-lg font-bold text-yellow-300">
-                    {{ number_format($history->avg('rate'), 0, ',', '.') }}
-                </p>
-            </div>
-            <div class="bg-white/5 backdrop-blur rounded-xl p-3 text-center border border-white/10">
-                <p class="text-[10px] text-emerald-300/70 uppercase tracking-wider">Dernière MàJ</p>
-                <p class="text-lg font-bold text-white">
-                    {{ $last ? $last->created_at->format('d/m') : '--' }}
-                </p>
-            </div>
-        </div>
-
-        {{-- Graphique historique SVG --}}
-        @if($history->count() >= 2)
-        <div class="w-full max-w-sm mb-8">
-            <h2 class="text-xs text-emerald-300/70 uppercase tracking-wider mb-4 text-center">Historique ({{ $history->count() }} jours)</h2>
-            <div class="bg-white/5 backdrop-blur rounded-2xl p-4 border border-white/10">
-                @php
-                    $rates = $history->pluck('rate')->toArray();
-                    $minRate = min($rates);
-                    $maxRate = max($rates);
-                    $range = $maxRate - $minRate ?: 1;
-                    $count = count($rates);
-                    $width = 280;
-                    $height = 120;
-                    $paddingX = 10;
-                    $paddingY = 15;
-                    $graphW = $width - $paddingX * 2;
-                    $graphH = $height - $paddingY * 2;
-
-                    $points = [];
-                    foreach ($rates as $i => $rate) {
-                        $x = $paddingX + ($i / ($count - 1)) * $graphW;
-                        $y = $paddingY + $graphH - (($rate - $minRate) / $range) * $graphH;
-                        $points[] = "$x,$y";
-                    }
-                    $pointsStr = implode(' ', $points);
-
-                    // Area fill
-                    $areaPoints = $pointsStr . " $width," . ($height - $paddingY) . " $paddingX," . ($height - $paddingY);
-                @endphp
-                <svg viewBox="0 0 {{ $width }} {{ $height }}" class="w-full" preserveAspectRatio="xMidYMid meet">
-                    {{-- Dégradé de fond --}}
-                    <defs>
-                        <linearGradient id="graphGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="rgba(251,191,36,0.3)"/>
-                            <stop offset="100%" stop-color="rgba(251,191,36,0)"/>
-                        </linearGradient>
-                    </defs>
-
-                    {{-- Aire sous la courbe --}}
-                    <polygon points="{{ $areaPoints }}" fill="url(#graphGrad)"/>
-
-                    {{-- Ligne --}}
-                    <polyline points="{{ $pointsStr }}" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-
-                    {{-- Points --}}
-                    @foreach($rates as $i => $rate)
-                        @php
-                            $x = $paddingX + ($i / ($count - 1)) * $graphW;
-                            $y = $paddingY + $graphH - (($rate - $minRate) / $range) * $graphH;
-                        @endphp
-                        <circle cx="{{ $x }}" cy="{{ $y }}" r="3" fill="#fbbf24" stroke="#064e3b" stroke-width="1.5"/>
-                    @endforeach
-                </svg>
-
-                {{-- Légende X --}}
-                <div class="flex justify-between mt-2 px-1">
-                    @foreach($history as $item)
-                        <span class="text-[9px] text-emerald-400/60">{{ $item->created_at->format('d/m') }}</span>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-        @endif
-
-        {{-- Info --}}
-        <div class="text-center text-yellow-400/80 text-xs max-w-xs leading-relaxed">
-            Taux de référence appliqué à l'ensemble des conversions effectuées sur cette plateforme.
-            Actualisé automatiquement par La Direction.
         </div>
     </div>
 </div>
