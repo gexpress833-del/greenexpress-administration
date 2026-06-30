@@ -39,6 +39,7 @@ cd /var/www/html && php artisan db:seed --class=AdminSeeder --force --no-interac
 cd /var/www/html && php artisan storage:link --no-interaction || true
 
 # Cache config for production
+cd /var/www/html && php artisan optimize:clear --no-interaction || true
 cd /var/www/html && php artisan config:cache --no-interaction || true
 cd /var/www/html && php artisan route:cache --no-interaction || true
 cd /var/www/html && php artisan view:cache --no-interaction || true

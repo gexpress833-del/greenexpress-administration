@@ -17,7 +17,7 @@
         <link rel="apple-touch-icon" sizes="192x192" href="/logo-192.png">
         <link rel="icon" type="image/png" sizes="192x192" href="/logo-192.png">
 
-        <title>{{ config('app.name', 'Green Express') }}</title>
+        <title>Green Express</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
