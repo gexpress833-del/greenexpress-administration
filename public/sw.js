@@ -1,12 +1,14 @@
-const CACHE_NAME = 'green-express-v5';
-const STATIC_CACHE = 'green-express-static-v5';
-const DYNAMIC_CACHE = 'green-express-dynamic-v5';
+const CACHE_NAME = 'green-express-v6';
+const STATIC_CACHE = 'green-express-static-v6';
+const DYNAMIC_CACHE = 'green-express-dynamic-v6';
 
 const STATIC_ASSETS = [
     '/logo.png',
     '/logo-192.png',
+    '/logo-512.png',
     '/favicon.ico',
-    '/manifest.json'
+    '/manifest.json',
+    '/offline.html'
 ];
 
 // Precache des assets Vite (on les découvre dynamiquement)
@@ -113,17 +115,28 @@ async function cacheFirst(request) {
     return networkResponse;
 }
 
-// Stratégie Network Only pour les pages HTML afin d'éviter les sessions/CSRF obsolètes en PWA
-async function networkOnly(request) {
+// Stratégie Network First pour les pages HTML, avec fallback offline propre
+async function networkFirstWithOfflineFallback(request) {
     try {
-        return await fetch(request);
+        const networkResponse = await fetch(request);
+        if (networkResponse && networkResponse.ok) {
+            return networkResponse;
+        }
     } catch (error) {
-        return new Response('Hors ligne. Veuillez vérifier votre connexion puis relancer Green Express.', {
-            status: 503,
-            statusText: 'Service Unavailable',
-            headers: { 'Content-Type': 'text/plain; charset=UTF-8' }
-        });
+        // offline
     }
+
+    const cache = await caches.open(STATIC_CACHE);
+    const cached = await cache.match('/offline.html');
+    if (cached) {
+        return cached;
+    }
+
+    return new Response('Hors ligne. Veuillez vérifier votre connexion puis relancer Green Express.', {
+        status: 503,
+        statusText: 'Service Unavailable',
+        headers: { 'Content-Type': 'text/plain; charset=UTF-8' }
+    });
 }
 
 // Fetch
@@ -142,7 +155,7 @@ self.addEventListener('fetch', (event) => {
             event.respondWith(staleWhileRevalidate(request));
         }
     } else if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
-        event.respondWith(networkOnly(request));
+        event.respondWith(networkFirstWithOfflineFallback(request));
     }
 });
 

@@ -53,7 +53,14 @@ class SubscriptionController extends Controller
         $subscription->save();
 
         if ($subscription->agent) {
-            $subscription->agent->notify(new SubscriptionActivated($subscription));
+            try {
+                $subscription->agent->notify(new SubscriptionActivated($subscription));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('SubscriptionActivated notification failed', [
+                    'subscription_id' => $subscription->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         app(ActivityLogService::class)->logFromRequest($request, 'subscription_validated', Subscription::class, $subscription->id, 'Admin validated subscription for client '.($subscription->client?->name ?? $subscription->client_name));

@@ -105,10 +105,21 @@ class SubscriptionController extends Controller
                 'password_changed_at' => null,
                 'is_active' => true,
             ]);
+        }
+
+        // Link the client to the subscription (existing or newly created)
+        if ($client && $subscription->client_id !== $client->id) {
             $subscription->update(['client_id' => $client->id]);
         }
 
-        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionPending($subscription)));
+        try {
+            User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionPending($subscription)));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('SubscriptionPending notification failed', [
+                'subscription_id' => $subscription->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         $redirect = redirect()->route('agent.subscriptions.index')
             ->with('success', 'Abonnement créé avec succès. En attente de validation par l\'administrateur.');
@@ -169,8 +180,15 @@ class SubscriptionController extends Controller
             'credentials_generated_at' => now(),
         ]);
 
-        $client->notify(new CredentialsGenerated($subscription));
-        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new CredentialsGenerated($subscription)));
+        try {
+            $client->notify(new CredentialsGenerated($subscription));
+            User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new CredentialsGenerated($subscription)));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('CredentialsGenerated notification failed', [
+                'subscription_id' => $subscription->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         $whatsappLink = $whatsapp->credentialsLink($subscription->client_phone, $client->email, $tempPassword);
 

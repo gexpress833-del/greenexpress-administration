@@ -56,9 +56,16 @@ class SubscriptionController extends Controller
         $subscription->validated_by = null;
         $subscription->save();
 
-        $subscription->client->notify(new SubscriptionRenewed($subscription));
-        $subscription->agent?->notify(new SubscriptionRenewed($subscription));
-        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionRenewed($subscription)));
+        try {
+            $subscription->client->notify(new SubscriptionRenewed($subscription));
+            $subscription->agent?->notify(new SubscriptionRenewed($subscription));
+            User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionRenewed($subscription)));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('SubscriptionRenewed notification failed', [
+                'subscription_id' => $subscription->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('client.subscriptions.index')->with('success', 'Demande de renouvellement envoyée. En attente de validation par l\'administrateur.');
     }
@@ -80,9 +87,16 @@ class SubscriptionController extends Controller
         ]);
 
         $suspension->load('subscription.client', 'subscription.agent');
-        $suspension->subscription->client->notify(new SubscriptionSuspended($suspension));
-        $suspension->subscription->agent?->notify(new SubscriptionSuspended($suspension));
-        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionSuspended($suspension)));
+        try {
+            $suspension->subscription->client->notify(new SubscriptionSuspended($suspension));
+            $suspension->subscription->agent?->notify(new SubscriptionSuspended($suspension));
+            User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionSuspended($suspension)));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('SubscriptionSuspended notification failed', [
+                'subscription_id' => $suspension->subscription_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('client.subscriptions.index')->with('success', 'Demande de suspension envoyée.');
     }
@@ -96,9 +110,16 @@ class SubscriptionController extends Controller
         $subscription->validated_by = null;
         $subscription->save();
 
-        $subscription->client->notify(new SubscriptionReactivated($subscription));
-        $subscription->agent?->notify(new SubscriptionReactivated($subscription));
-        User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionReactivated($subscription)));
+        try {
+            $subscription->client->notify(new SubscriptionReactivated($subscription));
+            $subscription->agent?->notify(new SubscriptionReactivated($subscription));
+            User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionReactivated($subscription)));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('SubscriptionReactivated notification failed', [
+                'subscription_id' => $subscription->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('client.subscriptions.index')->with('success', 'Abonnement réactivé.');
     }
