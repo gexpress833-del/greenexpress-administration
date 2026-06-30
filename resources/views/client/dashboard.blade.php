@@ -1,38 +1,43 @@
-<x-app-layout>
+﻿<x-app-layout>
+    <div class="-m-4 lg:-m-8 min-h-screen overflow-hidden bg-slate-950 text-white">
+        <div class="relative min-h-screen">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,197,94,0.22),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.16),transparent_34%)]"></div>
+            <div class="absolute inset-0 opacity-[0.06]" style="background-image: linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px); background-size: 42px 42px;"></div>
+            <div class="relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
     <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Mon Espace</h1>
-        <span class="text-sm text-gray-500 dark:text-gray-400">{{ now()->format('d/m/Y H:i') }}</span>
+        <h1 class="text-2xl font-bold text-white">Mon Espace</h1>
+        <span class="text-sm text-slate-400">{{ now()->format('d/m/Y H:i') }}</span>
     </div>
 
     @if($activeSubscription && $activeSubscription->remaining_days <= 3 && $activeSubscription->status === 'active')
         <div class="mb-6 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 rounded-lg flex items-center justify-between">
-            <span class="font-medium">Votre abonnement expire dans {{ $activeSubscription->remaining_days }} jour(s). Pensez à le renouveler.</span>
+            <span class="font-medium">Votre abonnement expire dans {{ $activeSubscription->remaining_days }} jour(s). Pensez Ã  le renouveler.</span>
             <a href="{{ route('client.subscriptions.index') }}" class="text-sm font-semibold underline">Voir</a>
         </div>
     @endif
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Abonnement</p>
+        <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
+            <p class="text-sm text-slate-400">Abonnement</p>
             <p class="text-2xl font-bold text-green-700 dark:text-green-400">
                 {{ $activeSubscription ? ucfirst($activeSubscription->status) : 'Aucun' }}
             </p>
             @if($activeSubscription)
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $activeSubscription->remaining_days }} jours restants</p>
+                <p class="text-xs text-slate-400 mt-1">{{ $activeSubscription->remaining_days }} jours restants</p>
             @endif
         </div>
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Total commandes</p>
-            <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">$ {{ number_format($totalSpent, 2) }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ number_format($totalSpentFc, 0, ',', '.') }} FC</p>
+        <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
+            <p class="text-sm text-slate-400">Total commandes</p>
+            <p class="text-2xl font-bold text-white">$ {{ number_format($totalSpent, 2) }}</p>
+            <p class="text-xs text-slate-400 mt-1">{{ number_format($totalSpentFc, 0, ',', '.') }} FC</p>
         </div>
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Commandes</p>
+        <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
+            <p class="text-sm text-slate-400">Commandes</p>
             <p class="text-2xl font-bold text-blue-700 dark:text-blue-400">{{ $totalOrders }}</p>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ $pendingOrders }} en cours / {{ $deliveredOrders }} livrées</p>
+            <p class="text-xs text-slate-500 mt-1">{{ $pendingOrders }} en cours / {{ $deliveredOrders }} livrÃ©es</p>
         </div>
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Livraisons à venir</p>
+        <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
+            <p class="text-sm text-slate-400">Livraisons Ã  venir</p>
             <p class="text-2xl font-bold text-purple-700 dark:text-purple-400">{{ $upcomingDeliveries->count() }}</p>
         </div>
     </div>
@@ -88,10 +93,10 @@
         }
     </style>
 
-    {{-- Détails de l'abonnement actif --}}
+    {{-- DÃ©tails de l'abonnement actif --}}
     @if($activeSubscription)
         <div class="subscription-active-card rounded-2xl p-6 mb-6 overflow-hidden gold-border gold-glow relative">
-            {{-- En-tête avec icône et badge --}}
+            {{-- En-tÃªte avec icÃ´ne et badge --}}
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center">
                     <div class="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center mr-4 shadow-lg">
@@ -101,7 +106,7 @@
                     </div>
                     <div>
                         <h2 class="text-xl font-bold text-white">Mon abonnement en cours</h2>
-                        <p class="text-green-100 text-sm">Plan actif et validé</p>
+                        <p class="text-green-100 text-sm">Plan actif et validÃ©</p>
                     </div>
                 </div>
                 <span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-gradient-to-r from-amber-500 to-yellow-400 text-white border-2 border-yellow-300 shadow-lg shadow-amber-500/50 gold-pulse ml-4 shrink-0">
@@ -128,7 +133,7 @@
                     <p class="text-2xl font-bold text-white shimmer-text">{{ $activeSubscription->type_label }}</p>
                 </div>
 
-                {{-- Prix payé --}}
+                {{-- Prix payÃ© --}}
                 <div class="float-card bg-gradient-to-br from-amber-500 to-yellow-600 rounded-xl p-4 shadow-lg backdrop-blur-sm border border-yellow-400/50 hover:scale-105 transition-transform duration-300" style="animation-delay: 0.5s;">
                     <div class="flex items-center mb-2">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-300 to-amber-500 flex items-center justify-center mr-3 shadow-lg">
@@ -136,13 +141,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <p class="text-xs text-amber-100 uppercase tracking-wide font-medium">Prix payé</p>
+                        <p class="text-xs text-amber-100 uppercase tracking-wide font-medium">Prix payÃ©</p>
                     </div>
                     <p class="text-3xl font-bold text-white">$ {{ number_format($activeSubscription->price, 2) }}</p>
                     <p class="text-sm text-yellow-200 font-medium">{{ number_format($activeSubscription->price_fc, 0, ',', '.') }} FC</p>
                 </div>
 
-                {{-- Date de début --}}
+                {{-- Date de dÃ©but --}}
                 <div class="float-card bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl p-4 shadow-lg backdrop-blur-sm border border-indigo-400/30 hover:scale-105 transition-transform duration-300" style="animation-delay: 1s;">
                     <div class="flex items-center mb-2">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-400 to-indigo-600 flex items-center justify-center mr-3 shadow-lg">
@@ -150,9 +155,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <p class="text-xs text-indigo-200 uppercase tracking-wide font-medium">Début</p>
+                        <p class="text-xs text-indigo-200 uppercase tracking-wide font-medium">DÃ©but</p>
                     </div>
-                    <p class="text-xl font-bold text-white">{{ $activeSubscription->start_date?->format('d/m/Y') ?? 'Non définie' }}</p>
+                    <p class="text-xl font-bold text-white">{{ $activeSubscription->start_date?->format('d/m/Y') ?? 'Non dÃ©finie' }}</p>
                 </div>
 
                 {{-- Date d'expiration --}}
@@ -165,18 +170,18 @@
                         </div>
                         <p class="text-xs text-rose-200 uppercase tracking-wide font-medium">Expiration</p>
                     </div>
-                    <p class="text-xl font-bold text-white">{{ $activeSubscription->end_date?->format('d/m/Y') ?? 'Non définie' }}</p>
+                    <p class="text-xl font-bold text-white">{{ $activeSubscription->end_date?->format('d/m/Y') ?? 'Non dÃ©finie' }}</p>
                     <p class="text-sm text-yellow-300 font-bold mt-1">{{ $activeSubscription->remaining_days }} jours restants</p>
                 </div>
             </div>
 
-            {{-- Footer avec informations supplémentaires --}}
+            {{-- Footer avec informations supplÃ©mentaires --}}
             <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 flex items-center justify-between">
                 <div class="text-sm text-white">
-                    <span class="font-medium">Durée totale:</span> <span class="text-green-200 font-semibold">{{ $activeSubscription->total_days }} jours</span>
+                    <span class="font-medium">DurÃ©e totale:</span> <span class="text-green-200 font-semibold">{{ $activeSubscription->total_days }} jours</span>
                     @if($activeSubscription->admin_validated_at)
                         <span class="mx-2 text-green-300">|</span>
-                        <span class="font-medium">Validé le:</span> <span class="text-green-200">{{ $activeSubscription->admin_validated_at->format('d/m/Y') }}</span>
+                        <span class="font-medium">ValidÃ© le:</span> <span class="text-green-200">{{ $activeSubscription->admin_validated_at->format('d/m/Y') }}</span>
                     @endif
                 </div>
                 <a href="{{ route('client.subscriptions.index') }}" class="inline-flex items-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-semibold rounded-lg transition-all backdrop-blur-sm">
@@ -195,19 +200,19 @@
                 </svg>
                 <div>
                     <p class="font-semibold text-amber-800 dark:text-amber-200">Vous n'avez pas d'abonnement actif</p>
-                    <p class="text-sm text-amber-700 dark:text-amber-300">Contactez un agent pour souscrire à un abonnement</p>
+                    <p class="text-sm text-amber-700 dark:text-amber-300">Contactez un agent pour souscrire Ã  un abonnement</p>
                 </div>
             </div>
         </div>
     @endif
 
-    {{-- Total payé pour tous les abonnements --}}
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 border border-gray-100 dark:border-gray-700 mb-6">
+    {{-- Total payÃ© pour tous les abonnements --}}
+    <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl mb-6">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Total payé pour les abonnements</p>
+                <p class="text-sm text-slate-400">Total payÃ© pour les abonnements</p>
                 <p class="text-2xl font-bold text-green-700 dark:text-green-400">$ {{ number_format($totalSubscriptionSpent, 2) }}</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ number_format($totalSubscriptionSpentFc, 0, ',', '.') }} FC</p>
+                <p class="text-sm text-slate-400">{{ number_format($totalSubscriptionSpentFc, 0, ',', '.') }} FC</p>
             </div>
             <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -218,19 +223,19 @@
     </div>
 
     @if($upcomingDeliveries->count() > 0)
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mb-6">
-            <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Prochaines livraisons</h2>
+        <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.07] shadow-2xl shadow-black/20 backdrop-blur-2xl mb-6">
+            <div class="px-6 py-4 border-b border-white/10">
+                <h2 class="text-lg font-semibold text-white">Prochaines livraisons</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
-                    <thead class="bg-gray-50 dark:bg-gray-800/50"><tr><th class="px-4 py-2 text-left text-gray-500 dark:text-gray-400">Code</th><th class="px-4 py-2 text-left text-gray-500 dark:text-gray-400">Date</th><th class="px-4 py-2 text-left text-gray-500 dark:text-gray-400">Adresse</th><th class="px-4 py-2 text-left text-gray-500 dark:text-gray-400">Statut</th></tr></thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    <thead class="bg-slate-950/45"><tr><th class="px-4 py-2 text-left text-slate-400">Code</th><th class="px-4 py-2 text-left text-slate-400">Date</th><th class="px-4 py-2 text-left text-slate-400">Adresse</th><th class="px-4 py-2 text-left text-slate-400">Statut</th></tr></thead>
+                    <tbody class="divide-y divide-white/10">
                         @foreach($upcomingDeliveries as $order)
                             <tr>
-                                <td class="px-4 py-2 font-medium text-gray-800 dark:text-gray-100">{{ $order->code }}</td>
-                                <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ $order->delivery_date?->format('d/m/Y') }}</td>
-                                <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ $order->delivery_address }}</td>
+                                <td class="px-4 py-2 font-medium text-white">{{ $order->code }}</td>
+                                <td class="px-4 py-2 text-slate-300">{{ $order->delivery_date?->format('d/m/Y') }}</td>
+                                <td class="px-4 py-2 text-slate-300">{{ $order->delivery_address }}</td>
                                 <td class="px-4 py-2"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $order->status_color_class }}">{{ $order->status }}</span></td>
                             </tr>
                         @endforeach
@@ -240,24 +245,24 @@
         </div>
     @endif
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Commandes récentes</h2>
+    <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.07] shadow-2xl shadow-black/20 backdrop-blur-2xl">
+        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-white">Commandes rÃ©centes</h2>
             <a href="{{ route('client.subscriptions.index') }}" class="text-sm text-green-600 dark:text-green-400 hover:underline">Mes abonnements</a>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
-                <thead class="bg-gray-50 dark:bg-gray-800/50"><tr><th class="px-4 py-2 text-left text-gray-500 dark:text-gray-400">Code</th><th class="px-4 py-2 text-left text-gray-500 dark:text-gray-400">Date livraison</th><th class="px-4 py-2 text-left text-gray-500 dark:text-gray-400">Total</th><th class="px-4 py-2 text-left text-gray-500 dark:text-gray-400">Statut</th></tr></thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <thead class="bg-slate-950/45"><tr><th class="px-4 py-2 text-left text-slate-400">Code</th><th class="px-4 py-2 text-left text-slate-400">Date livraison</th><th class="px-4 py-2 text-left text-slate-400">Total</th><th class="px-4 py-2 text-left text-slate-400">Statut</th></tr></thead>
+                <tbody class="divide-y divide-white/10">
                     @forelse($recentOrders as $order)
                         <tr>
-                            <td class="px-4 py-2 font-medium text-gray-800 dark:text-gray-100">{{ $order->code }}</td>
-                            <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ $order->delivery_date?->format('d/m/Y') }}</td>
-                            <td class="px-4 py-2 text-gray-600 dark:text-gray-300">$ {{ number_format($order->total_amount, 2) }}<br><span class="text-xs text-gray-400 dark:text-gray-500">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</span></td>
+                            <td class="px-4 py-2 font-medium text-white">{{ $order->code }}</td>
+                            <td class="px-4 py-2 text-slate-300">{{ $order->delivery_date?->format('d/m/Y') }}</td>
+                            <td class="px-4 py-2 text-slate-300">$ {{ number_format($order->total_amount, 2) }}<br><span class="text-xs text-slate-500">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</span></td>
                             <td class="px-4 py-2"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $order->status_color_class }}">{{ $order->status }}</span></td>
                         </tr>
                     @empty
-                        <tr><td class="px-4 py-2 text-gray-500 dark:text-gray-400" colspan="4">Aucune commande</td></tr>
+                        <tr><td class="px-4 py-2 text-slate-400" colspan="4">Aucune commande</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -292,7 +297,7 @@
                                 <div>
                                     <p class="font-semibold text-white">{{ $subscription->type_label }}</p>
                                     <p class="text-xs text-gray-400">
-                                        {{ $subscription->start_date?->format('d/m/Y') ?? '-' }} → {{ $subscription->end_date?->format('d/m/Y') ?? '-' }}
+                                        {{ $subscription->start_date?->format('d/m/Y') ?? '-' }} â†’ {{ $subscription->end_date?->format('d/m/Y') ?? '-' }}
                                     </p>
                                 </div>
                             </div>
@@ -303,12 +308,12 @@
 
                         <div class="grid grid-cols-3 gap-4 pt-3 border-t border-gray-700">
                             <div>
-                                <p class="text-xs text-gray-500 uppercase tracking-wide">Prix payé</p>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide">Prix payÃ©</p>
                                 <p class="text-lg font-bold text-white">$ {{ number_format($subscription->price, 2) }}</p>
                                 <p class="text-xs text-gray-400">{{ number_format($subscription->price_fc, 0, ',', '.') }} FC</p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500 uppercase tracking-wide">Durée</p>
+                                <p class="text-xs text-gray-500 uppercase tracking-wide">DurÃ©e</p>
                                 <p class="text-lg font-bold text-white">{{ $subscription->total_days }} jours</p>
                                 @if($subscription->remaining_days > 0)
                                     <p class="text-xs text-green-400">{{ $subscription->remaining_days }} restants</p>
@@ -321,7 +326,7 @@
                                         Actuellement actif
                                     </span>
                                 @else
-                                    <span class="text-xs text-gray-500">Abonnement terminé</span>
+                                    <span class="text-xs text-gray-500">Abonnement terminÃ©</span>
                                 @endif
                             </div>
                         </div>
@@ -330,4 +335,8 @@
             </div>
         </div>
     @endif
+            </div>
+        </div>
+    </div>
 </x-app-layout>
+
