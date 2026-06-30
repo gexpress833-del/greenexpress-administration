@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionSuspension;
@@ -37,7 +36,6 @@ class SubscriptionController extends Controller
     {
         abort_unless($subscription->client_id === $request->user()->id, 403);
 
-        // Check if subscription has ended before allowing renewal
         if ($subscription->end_date && $subscription->end_date->gt(now())) {
             return redirect()->route('client.subscriptions.index')
                 ->with('error', 'Le renouvellement n\'est possible qu\'après la fin de l\'abonnement en cours.');
@@ -47,11 +45,10 @@ class SubscriptionController extends Controller
             'type' => ['required', 'in:weekly,monthly'],
         ]);
 
-        // Weekly: 5 business days, Monthly: 20 business days
         $days = $data['type'] === 'weekly' ? 5 : 20;
         $subscription->type = $data['type'];
-        $subscription->start_date = null; // Will be set on validation
-        $subscription->end_date = null; // Will be calculated on validation
+        $subscription->start_date = null;
+        $subscription->end_date = null;
         $subscription->total_days = $days;
         $subscription->remaining_days = $days;
         $subscription->status = 'pending';

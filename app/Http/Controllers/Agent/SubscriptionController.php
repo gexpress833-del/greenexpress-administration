@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Agent;
 
-use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
@@ -60,16 +59,20 @@ class SubscriptionController extends Controller
         if ($subscriptionType) {
             $totalDays = $subscriptionType->duration_days;
         } else {
-            // Weekly: 5 business days (Monday-Friday), Monthly: 20 business days (4 weeks)
             $map = ['weekly' => 5, 'monthly' => 20];
             $totalDays = $map[$data['type'] ?? 'monthly'] ?? 20;
         }
+        $existingClient = User::where('email', $data['client_email'])->first();
+        if (! $existingClient && User::where('phone', $data['client_phone'])->exists()) {
+            return redirect()->route('agent.subscriptions.index')
+                ->with('error', 'Un utilisateur avec ce numéro de téléphone existe déjà. Utilisez un autre numéro.');
+        }
+
         $price = (float) $data['price'];
         $currencyService = app(CurrencyService::class);
         $priceFc = $data['currency'] === 'fc' ? $price : $currencyService->usdToFc($price);
         $priceUsd = $data['currency'] === 'usd' ? $price : $currencyService->fcToUsd($price);
 
-        // Store requested start date, actual dates will be calculated on validation
         $subscription = Subscription::create([
             'agent_id' => $request->user()->id,
             'client_name' => $data['client_name'],
@@ -77,9 +80,9 @@ class SubscriptionController extends Controller
             'client_email' => $data['client_email'],
             'subscription_type_id' => $subscriptionType ? $subscriptionType->id : null,
             'type' => $subscriptionType ? $subscriptionType->slug : ($data['type'] ?? null),
-            'start_date' => $data['start_date'], // Requested start date
-            'end_date' => null, // Will be calculated on validation
-            'total_days' => $totalDays, // Duration in business days
+            'start_date' => $data['start_date'],
+            'end_date' => null,
+            'total_days' => $totalDays,
             'remaining_days' => $totalDays,
             'price' => $priceUsd,
             'currency' => $data['currency'],
@@ -89,7 +92,7 @@ class SubscriptionController extends Controller
 
         $subscription->load('agent');
         // Ensure a client user exists for this subscription (tests expect user creation at store)
-        $client = User::where('email', $subscription->client_email)->first();
+        $client = $existingClient;
         $whatsappLink = null;
         if (! $client) {
             $tempPassword = Str::random(10);
@@ -105,7 +108,6 @@ class SubscriptionController extends Controller
             $subscription->update(['client_id' => $client->id]);
         }
 
-        // Notify admins about pending subscription
         User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionPending($subscription)));
 
         $redirect = redirect()->route('agent.subscriptions.index')

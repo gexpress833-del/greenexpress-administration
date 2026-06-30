@@ -83,6 +83,25 @@ class DeliveryController extends Controller
             ->with('success', 'Livraison prise en charge.');
     }
 
+    public function deliver(Request $request, Delivery $delivery)
+    {
+        abort_unless($delivery->livreur_id === $request->user()->id, 403);
+
+        $order = $delivery->order;
+
+        $delivery->status = 'delivered';
+        $delivery->delivered_at = now();
+        $delivery->save();
+
+        $order->status = 'delivered';
+        $order->save();
+
+        app(ActivityLogService::class)->logFromRequest($request, 'delivery_delivered', Delivery::class, $delivery->id, 'Livreur marked delivery as delivered for order '.$order->code);
+
+        return redirect()->route('livreur.deliveries.index')
+            ->with('success', 'Livraison marquée comme livrée.');
+    }
+
     public function validateQrForm(Request $request, DeliveryService $deliveryService)
     {
         $request->validate([

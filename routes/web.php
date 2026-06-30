@@ -39,6 +39,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
     // Notifications
@@ -94,6 +95,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::get('/deliveries', [App\Http\Controllers\Livreur\DeliveryController::class, 'index'])->name('deliveries.index');
         Route::get('/deliveries/{delivery}', [App\Http\Controllers\Livreur\DeliveryController::class, 'show'])->name('deliveries.show');
         Route::post('/deliveries/{delivery}/assign', [App\Http\Controllers\Livreur\DeliveryController::class, 'assign'])->name('deliveries.assign');
+        Route::post('/deliveries/{delivery}/deliver', [App\Http\Controllers\Livreur\DeliveryController::class, 'deliver'])->name('deliveries.deliver');
         Route::get('/delivery-validate', [App\Http\Controllers\Livreur\DeliveryController::class, 'validateQrForm'])->name('deliveries.validate-qr-form');
         Route::post('/deliveries/{delivery}/validate-by-code', [App\Http\Controllers\Livreur\DeliveryController::class, 'validateByCode'])->name('deliveries.validate-by-code');
         Route::post('/deliveries/{delivery}/notify', [App\Http\Controllers\Livreur\DeliveryController::class, 'notifyClient'])->name('deliveries.notify');
