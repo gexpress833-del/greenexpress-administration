@@ -5,7 +5,7 @@ services:
     plan: free
     envVars:
       - key: APP_NAME
-        value: GreenExpress
+        value: Green Express
       - key: APP_ENV
         value: production
       - key: APP_DEBUG

@@ -1,10 +1,8 @@
-const CACHE_NAME = 'green-express-v4';
-const STATIC_CACHE = 'green-express-static-v4';
-const DYNAMIC_CACHE = 'green-express-dynamic-v4';
+const CACHE_NAME = 'green-express-v5';
+const STATIC_CACHE = 'green-express-static-v5';
+const DYNAMIC_CACHE = 'green-express-dynamic-v5';
 
 const STATIC_ASSETS = [
-    '/',
-    '/login',
     '/logo.png',
     '/logo-192.png',
     '/favicon.ico',
@@ -73,9 +71,7 @@ function isStaticAsset(url) {
            url.pathname === '/manifest.json' ||
            url.pathname === '/logo.png' ||
            url.pathname === '/logo-192.png' ||
-           url.pathname === '/favicon.ico' ||
-           url.pathname === '/' ||
-           url.pathname === '/login';
+           url.pathname === '/favicon.ico';
 }
 
 function isApiRequest(url) {
@@ -117,30 +113,15 @@ async function cacheFirst(request) {
     return networkResponse;
 }
 
-// Stratégie Network First pour les pages HTML
-async function networkFirst(request) {
-    const cache = await caches.open(DYNAMIC_CACHE);
-
+// Stratégie Network Only pour les pages HTML afin d'éviter les sessions/CSRF obsolètes en PWA
+async function networkOnly(request) {
     try {
-        const networkResponse = await fetch(request);
-        if (networkResponse && networkResponse.status === 200 && !networkResponse.redirected) {
-            cache.put(request, networkResponse.clone());
-        }
-        return networkResponse;
+        return await fetch(request);
     } catch (error) {
-        const cached = await cache.match(request);
-        if (cached && !cached.redirected) return cached;
-
-        // Offline fallback
-        if (request.mode === 'navigate') {
-            const offlinePage = await cache.match('/');
-            if (offlinePage && !offlinePage.redirected) return offlinePage;
-        }
-
-        return new Response('Hors ligne', {
+        return new Response('Hors ligne. Veuillez vérifier votre connexion puis relancer Green Express.', {
             status: 503,
             statusText: 'Service Unavailable',
-            headers: { 'Content-Type': 'text/plain' }
+            headers: { 'Content-Type': 'text/plain; charset=UTF-8' }
         });
     }
 }
@@ -161,7 +142,7 @@ self.addEventListener('fetch', (event) => {
             event.respondWith(staleWhileRevalidate(request));
         }
     } else if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
-        event.respondWith(networkFirst(request));
+        event.respondWith(networkOnly(request));
     }
 });
 
