@@ -192,6 +192,18 @@ class SubscriptionController extends Controller
                 ->with('error', 'L\'abonnement doit être validé par l\'administrateur avant de générer les identifiants.');
         }
 
+        if ($subscription->hasCredentialsGenerated()) {
+            $subscription->load(['client', 'agent', 'subscriptionType']);
+
+            $pdf = Pdf::loadView('pdf.subscription-receipt', [
+                'subscription' => $subscription,
+                'client' => $subscription->client,
+                'temporaryPassword' => null,
+            ]);
+
+            return $pdf->download('recu-abonnement-'.$subscription->id.'.pdf');
+        }
+
         $client = $subscription->client;
 
         if (! $client) {

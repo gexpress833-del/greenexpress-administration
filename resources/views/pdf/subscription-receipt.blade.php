@@ -81,23 +81,29 @@
         </tr>
     </table>
 
-    <div class="credentials">
-        <div class="title" style="margin-top: 0;">Identifiants de connexion client</div>
-        <table class="grid" style="margin-bottom: 0;">
-            <tr>
-                <td class="label">Identifiant</td>
-                <td>{{ $client->email }}</td>
-            </tr>
-            <tr>
-                <td class="label">Mot de passe temporaire</td>
-                <td><strong>{{ $temporaryPassword }}</strong></td>
-            </tr>
-        </table>
-    </div>
+    @if($temporaryPassword)
+        <div class="credentials">
+            <div class="title" style="margin-top: 0;">Identifiants de connexion client</div>
+            <table class="grid" style="margin-bottom: 0;">
+                <tr>
+                    <td class="label">Identifiant</td>
+                    <td>{{ $client->email }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Mot de passe temporaire</td>
+                    <td><strong>{{ $temporaryPassword }}</strong></td>
+                </tr>
+            </table>
+        </div>
 
-    <div class="warning">
-        Ce mot de passe est temporaire. Le client doit le changer à sa première connexion pour sécuriser son compte.
-    </div>
+        <div class="warning">
+            Ce mot de passe est temporaire. Le client doit le changer à sa première connexion pour sécuriser son compte.
+        </div>
+    @else
+        <div class="warning">
+            Les identifiants ont déjà été générés. Pour des raisons de sécurité, ce reçu ne réaffiche pas le mot de passe temporaire.
+        </div>
+    @endif
 
     <div class="footer">
         Green Express vous remercie pour votre confiance.

@@ -47,8 +47,8 @@
                                     <div x-show="!editing" class="space-y-1">
                                         <form method="POST" action="{{ route('agent.subscriptions.generate-credentials', $sub) }}" class="inline">
                                             @csrf
-                                            <button type="submit" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm font-medium" onclick="return confirm('Générer un reçu avec de nouveaux identifiants temporaires pour ce client ?')">
-                                                {{ $sub->hasCredentialsGenerated() ? 'Regénérer reçu + identifiants' : 'Générer reçu + identifiants' }}
+                                            <button type="submit" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm font-medium" onclick="return confirm('{{ $sub->hasCredentialsGenerated() ? 'Télécharger le reçu de paiement ?' : 'Générer le reçu avec les identifiants temporaires ?' }}')">
+                                                {{ $sub->hasCredentialsGenerated() ? 'Télécharger reçu' : 'Générer reçu + identifiants' }}
                                             </button>
                                         </form>
                                         <button @click="editing = true" type="button" class="block text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">Modifier email/tél.</button>
