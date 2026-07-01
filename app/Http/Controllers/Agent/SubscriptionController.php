@@ -127,6 +127,7 @@ class SubscriptionController extends Controller
         $priceFc = $data['currency'] === 'fc' ? $price : $currencyService->usdToFc($price);
         $priceUsd = $data['currency'] === 'usd' ? $price : $currencyService->fcToUsd($price);
         $dates = DateHelper::calculateSubscriptionDates($data['start_date'], $totalDays);
+        $legacyType = $totalDays <= 5 ? 'weekly' : 'monthly';
 
         try {
             $subscription = Subscription::create([
@@ -136,7 +137,7 @@ class SubscriptionController extends Controller
                 'client_phone' => $data['client_phone'],
                 'client_email' => $data['client_email'],
                 'subscription_type_id' => $subscriptionType ? $subscriptionType->id : null,
-                'type' => $subscriptionType ? $subscriptionType->slug : ($data['type'] ?? null),
+                'type' => $legacyType,
                 'start_date' => $dates['start_date'],
                 'end_date' => $dates['end_date'],
                 'total_days' => $dates['total_days'],
@@ -154,7 +155,7 @@ class SubscriptionController extends Controller
             ]);
 
             return redirect()->route('agent.subscriptions.index')
-                ->with('error', 'Impossible de créer l’abonnement : '.Str::limit($e->getMessage(), 220));
+                ->with('error', 'Impossible de créer l’abonnement. Veuillez réessayer ou contacter l’administrateur.');
         }
 
         $subscription->load('agent');
