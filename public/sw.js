@@ -1,14 +1,13 @@
-const CACHE_NAME = 'green-express-v6';
-const STATIC_CACHE = 'green-express-static-v6';
-const DYNAMIC_CACHE = 'green-express-dynamic-v6';
+const CACHE_NAME = 'green-express-v7';
+const STATIC_CACHE = 'green-express-static-v7';
+const DYNAMIC_CACHE = 'green-express-dynamic-v7';
 
 const STATIC_ASSETS = [
     '/logo.png',
     '/logo-192.png',
     '/logo-512.png',
     '/favicon.ico',
-    '/manifest.json',
-    '/offline.html'
+    '/manifest.json'
 ];
 
 // Precache des assets Vite (on les découvre dynamiquement)
@@ -79,8 +78,8 @@ function isStaticAsset(url) {
 function isApiRequest(url) {
     return url.pathname.startsWith('/api/') ||
            url.pathname.startsWith('/sanctum/') ||
-           url.search.includes('_token=') ||
-           url.search.includes('livewire');
+           url.search.indexOf('_token=') !== -1 ||
+           url.search.indexOf('livewire') !== -1;
 }
 
 function isExternal(url) {
@@ -115,33 +114,9 @@ async function cacheFirst(request) {
     return networkResponse;
 }
 
-// Stratégie Network First pour les pages HTML, avec fallback offline propre
-async function networkFirstWithOfflineFallback(request) {
-    try {
-        const networkResponse = await fetch(request);
-        if (networkResponse && networkResponse.ok) {
-            return networkResponse;
-        }
-    } catch (error) {
-        // offline
-    }
-
-    const cache = await caches.open(STATIC_CACHE);
-    const cached = await cache.match('/offline.html');
-    if (cached) {
-        return cached;
-    }
-
-    return new Response('Hors ligne. Veuillez vérifier votre connexion puis relancer Green Express.', {
-        status: 503,
-        statusText: 'Service Unavailable',
-        headers: { 'Content-Type': 'text/plain; charset=UTF-8' }
-    });
-}
-
-// Fetch
+// Fetch : on n'intercepte que les assets statiques pour éviter les faux hors-ligne
 self.addEventListener('fetch', (event) => {
-    const { request } = event;
+    const request = event.request;
     const url = new URL(request.url);
 
     if (request.method !== 'GET') return;
@@ -154,8 +129,6 @@ self.addEventListener('fetch', (event) => {
         } else {
             event.respondWith(staleWhileRevalidate(request));
         }
-    } else if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
-        event.respondWith(networkFirstWithOfflineFallback(request));
     }
 });
 
