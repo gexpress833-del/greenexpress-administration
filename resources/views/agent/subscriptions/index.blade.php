@@ -43,11 +43,13 @@
                                 </span>
                             </td>
                             <td class="px-6 py-3" x-data="{ editing: false }">
-                                @if($sub->status === 'active' && !$sub->hasCredentialsGenerated())
+                                @if($sub->status === 'active')
                                     <div x-show="!editing" class="space-y-1">
                                         <form method="POST" action="{{ route('agent.subscriptions.generate-credentials', $sub) }}" class="inline">
                                             @csrf
-                                            <button type="submit" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm font-medium" onclick="return confirm('Générer les identifiants pour ce client ?')">Générer identifiants</button>
+                                            <button type="submit" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm font-medium" onclick="return confirm('Générer un reçu avec de nouveaux identifiants temporaires pour ce client ?')">
+                                                {{ $sub->hasCredentialsGenerated() ? 'Regénérer reçu + identifiants' : 'Générer reçu + identifiants' }}
+                                            </button>
                                         </form>
                                         <button @click="editing = true" type="button" class="block text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">Modifier email/tél.</button>
                                     </div>
@@ -60,8 +62,6 @@
                                             <button @click="editing = false" type="button" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Annuler</button>
                                         </div>
                                     </form>
-                                @elseif($sub->hasCredentialsGenerated())
-                                    <span class="text-xs text-gray-400">Identifiants envoyés</span>
                                 @else
                                     <span class="text-xs text-gray-400">En attente de validation</span>
                                 @endif

@@ -94,7 +94,7 @@ class Subscription extends Model
 
     public function hasCredentialsGenerated(): bool
     {
-        return $this->client_id !== null;
+        return $this->credentials_generated_at !== null;
     }
 
     public function getStatusColorClassAttribute(): string

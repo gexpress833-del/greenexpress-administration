@@ -11,6 +11,7 @@ use App\Notifications\CredentialsGenerated;
 use App\Notifications\SubscriptionPending;
 use App\Services\CurrencyService;
 use App\Services\WhatsAppService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -191,38 +192,40 @@ class SubscriptionController extends Controller
                 ->with('error', 'L\'abonnement doit être validé par l\'administrateur avant de générer les identifiants.');
         }
 
-        if ($subscription->hasCredentialsGenerated()) {
-            return redirect()->route('agent.subscriptions.index')
-                ->with('error', 'Les identifiants ont déjà été générés pour cet abonnement.');
+        $client = $subscription->client;
+
+        if (! $client) {
+            $client = User::where('email', $subscription->client_email)
+                ->orWhere('phone', $subscription->client_phone)
+                ->first();
         }
 
-        if ($subscription->client_id !== null) {
-            return redirect()->route('agent.subscriptions.index')
-                ->with('error', 'Ce client possède déjà un compte.');
+        if (! $client) {
+            $client = User::create([
+                'name' => $subscription->client_name,
+                'email' => $subscription->client_email,
+                'phone' => $subscription->client_phone,
+                'role' => 'client',
+                'password' => Hash::make(Str::random(32)),
+                'password_changed_at' => null,
+                'is_active' => true,
+            ]);
         }
 
-        $existingUser = User::where('email', $subscription->client_email)->first();
-        if ($existingUser) {
+        if ($client->role !== 'client') {
             return redirect()->route('agent.subscriptions.index')
-                ->with('error', 'Un utilisateur avec cet email existe déjà. Modifiez l\'email via le lien "Modifier email/tél.".');
-        }
-
-        $existingPhone = User::where('phone', $subscription->client_phone)->first();
-        if ($existingPhone) {
-            return redirect()->route('agent.subscriptions.index')
-                ->with('error', 'Un utilisateur avec ce numéro de téléphone existe déjà. Modifiez le téléphone via le lien "Modifier email/tél.".');
+                ->with('error', 'Ce compte existe déjà mais ce n’est pas un compte client.');
         }
 
         $tempPassword = Str::random(10);
-        $client = User::create([
+        $client->forceFill([
             'name' => $subscription->client_name,
             'email' => $subscription->client_email,
             'phone' => $subscription->client_phone,
-            'role' => 'client',
             'password' => Hash::make($tempPassword),
             'password_changed_at' => null,
             'is_active' => true,
-        ]);
+        ])->save();
 
         $subscription->update([
             'client_id' => $client->id,
@@ -239,11 +242,15 @@ class SubscriptionController extends Controller
             ]);
         }
 
-        $whatsappLink = $whatsapp->credentialsLink($subscription->client_phone, $client->email, $tempPassword);
+        $subscription->load(['client', 'agent', 'subscriptionType']);
 
-        return redirect()->route('agent.subscriptions.index')
-            ->with('success', 'Identifiants générés. Email: '.$client->email.' | Mot de passe temporaire: '.$tempPassword)
-            ->with('whatsapp_link', $whatsappLink);
+        $pdf = Pdf::loadView('pdf.subscription-receipt', [
+            'subscription' => $subscription,
+            'client' => $client,
+            'temporaryPassword' => $tempPassword,
+        ]);
+
+        return $pdf->download('recu-abonnement-'.$subscription->id.'.pdf');
     }
 
     public function updateClientInfo(Request $request, Subscription $subscription)
