@@ -63,23 +63,39 @@ class SubscriptionController extends Controller
             $map = ['weekly' => 5, 'monthly' => 20];
             $totalDays = $map[$data['type'] ?? 'monthly'] ?? 20;
         }
-        $client = User::where('email', $data['client_email'])->first();
-        if (! $client && User::where('phone', $data['client_phone'])->exists()) {
+        $client = User::withTrashed()->where('email', $data['client_email'])->first();
+        if ($client && $client->trashed()) {
+            $client->restore();
+        }
+
+        $phoneOwner = User::withTrashed()->where('phone', $data['client_phone'])->first();
+        if ($phoneOwner && (! $client || $phoneOwner->id !== $client->id)) {
             return redirect()->route('agent.subscriptions.index')
                 ->with('error', 'Un utilisateur avec ce numéro de téléphone existe déjà. Utilisez un autre numéro.');
         }
 
         if (! $client) {
-            $tempPassword = Str::random(10);
-            $client = User::create([
-                'name' => $data['client_name'],
-                'email' => $data['client_email'],
-                'phone' => $data['client_phone'],
-                'role' => 'client',
-                'password' => Hash::make($tempPassword),
-                'password_changed_at' => null,
-                'is_active' => true,
-            ]);
+            try {
+                $tempPassword = Str::random(10);
+                $client = User::create([
+                    'name' => $data['client_name'],
+                    'email' => $data['client_email'],
+                    'phone' => $data['client_phone'],
+                    'role' => 'client',
+                    'password' => Hash::make($tempPassword),
+                    'password_changed_at' => null,
+                    'is_active' => true,
+                ]);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Client creation failed during subscription store', [
+                    'email' => $data['client_email'],
+                    'phone' => $data['client_phone'],
+                    'error' => $e->getMessage(),
+                ]);
+
+                return redirect()->route('agent.subscriptions.index')
+                    ->with('error', 'Impossible de créer le compte client. Vérifiez que l’email et le téléphone ne sont pas déjà utilisés.');
+            }
         }
 
         $price = (float) $data['price'];
@@ -88,23 +104,34 @@ class SubscriptionController extends Controller
         $priceUsd = $data['currency'] === 'usd' ? $price : $currencyService->fcToUsd($price);
         $dates = DateHelper::calculateSubscriptionDates($data['start_date'], $totalDays);
 
-        $subscription = Subscription::create([
-            'client_id' => $client->id,
-            'agent_id' => $request->user()->id,
-            'client_name' => $data['client_name'],
-            'client_phone' => $data['client_phone'],
-            'client_email' => $data['client_email'],
-            'subscription_type_id' => $subscriptionType ? $subscriptionType->id : null,
-            'type' => $subscriptionType ? $subscriptionType->slug : ($data['type'] ?? null),
-            'start_date' => $dates['start_date'],
-            'end_date' => $dates['end_date'],
-            'total_days' => $dates['total_days'],
-            'remaining_days' => $dates['remaining_days'],
-            'price' => $priceUsd,
-            'currency' => $data['currency'],
-            'price_fc' => $priceFc,
-            'status' => 'pending',
-        ]);
+        try {
+            $subscription = Subscription::create([
+                'client_id' => $client->id,
+                'agent_id' => $request->user()->id,
+                'client_name' => $data['client_name'],
+                'client_phone' => $data['client_phone'],
+                'client_email' => $data['client_email'],
+                'subscription_type_id' => $subscriptionType ? $subscriptionType->id : null,
+                'type' => $subscriptionType ? $subscriptionType->slug : ($data['type'] ?? null),
+                'start_date' => $dates['start_date'],
+                'end_date' => $dates['end_date'],
+                'total_days' => $dates['total_days'],
+                'remaining_days' => $dates['remaining_days'],
+                'price' => $priceUsd,
+                'currency' => $data['currency'],
+                'price_fc' => $priceFc,
+                'status' => 'pending',
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Subscription creation failed', [
+                'client_id' => $client->id,
+                'agent_id' => $request->user()->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->route('agent.subscriptions.index')
+                ->with('error', 'Impossible de créer l’abonnement. Veuillez réessayer ou contacter l’administrateur.');
+        }
 
         $subscription->load('agent');
         $whatsappLink = null;
