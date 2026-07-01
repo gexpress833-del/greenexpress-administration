@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Agent;
 
+use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionType;
@@ -72,6 +73,7 @@ class SubscriptionController extends Controller
         $currencyService = app(CurrencyService::class);
         $priceFc = $data['currency'] === 'fc' ? $price : $currencyService->usdToFc($price);
         $priceUsd = $data['currency'] === 'usd' ? $price : $currencyService->fcToUsd($price);
+        $dates = DateHelper::calculateSubscriptionDates($data['start_date'], $totalDays);
 
         $subscription = Subscription::create([
             'agent_id' => $request->user()->id,
@@ -80,10 +82,10 @@ class SubscriptionController extends Controller
             'client_email' => $data['client_email'],
             'subscription_type_id' => $subscriptionType ? $subscriptionType->id : null,
             'type' => $subscriptionType ? $subscriptionType->slug : ($data['type'] ?? null),
-            'start_date' => $data['start_date'],
-            'end_date' => null,
-            'total_days' => $totalDays,
-            'remaining_days' => $totalDays,
+            'start_date' => $dates['start_date'],
+            'end_date' => $dates['end_date'],
+            'total_days' => $dates['total_days'],
+            'remaining_days' => $dates['remaining_days'],
             'price' => $priceUsd,
             'currency' => $data['currency'],
             'price_fc' => $priceFc,
