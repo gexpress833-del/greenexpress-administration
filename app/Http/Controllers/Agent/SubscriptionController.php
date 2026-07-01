@@ -63,10 +63,23 @@ class SubscriptionController extends Controller
             $map = ['weekly' => 5, 'monthly' => 20];
             $totalDays = $map[$data['type'] ?? 'monthly'] ?? 20;
         }
-        $existingClient = User::where('email', $data['client_email'])->first();
-        if (! $existingClient && User::where('phone', $data['client_phone'])->exists()) {
+        $client = User::where('email', $data['client_email'])->first();
+        if (! $client && User::where('phone', $data['client_phone'])->exists()) {
             return redirect()->route('agent.subscriptions.index')
                 ->with('error', 'Un utilisateur avec ce numéro de téléphone existe déjà. Utilisez un autre numéro.');
+        }
+
+        if (! $client) {
+            $tempPassword = Str::random(10);
+            $client = User::create([
+                'name' => $data['client_name'],
+                'email' => $data['client_email'],
+                'phone' => $data['client_phone'],
+                'role' => 'client',
+                'password' => Hash::make($tempPassword),
+                'password_changed_at' => null,
+                'is_active' => true,
+            ]);
         }
 
         $price = (float) $data['price'];
@@ -76,6 +89,7 @@ class SubscriptionController extends Controller
         $dates = DateHelper::calculateSubscriptionDates($data['start_date'], $totalDays);
 
         $subscription = Subscription::create([
+            'client_id' => $client->id,
             'agent_id' => $request->user()->id,
             'client_name' => $data['client_name'],
             'client_phone' => $data['client_phone'],
@@ -93,26 +107,7 @@ class SubscriptionController extends Controller
         ]);
 
         $subscription->load('agent');
-        // Ensure a client user exists for this subscription (tests expect user creation at store)
-        $client = $existingClient;
         $whatsappLink = null;
-        if (! $client) {
-            $tempPassword = Str::random(10);
-            $client = User::create([
-                'name' => $subscription->client_name,
-                'email' => $subscription->client_email,
-                'phone' => $subscription->client_phone,
-                'role' => 'client',
-                'password' => Hash::make($tempPassword),
-                'password_changed_at' => null,
-                'is_active' => true,
-            ]);
-        }
-
-        // Link the client to the subscription (existing or newly created)
-        if ($client && $subscription->client_id !== $client->id) {
-            $subscription->update(['client_id' => $client->id]);
-        }
 
         try {
             User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionPending($subscription)));
