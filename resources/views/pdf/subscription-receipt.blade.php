@@ -170,12 +170,6 @@
                 </div>
             @endif
 
-            <table class="signature">
-                <tr>
-                    <td><div class="signature-line">Signature client</div></td>
-                    <td class="right"><div class="signature-line">Cachet / Signature Green Express</div></td>
-                </tr>
-            </table>
         </div>
 
         <div class="footer">
