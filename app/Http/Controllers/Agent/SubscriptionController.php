@@ -154,7 +154,7 @@ class SubscriptionController extends Controller
             ]);
 
             return redirect()->route('agent.subscriptions.index')
-                ->with('error', 'Impossible de créer l’abonnement. Veuillez réessayer ou contacter l’administrateur.');
+                ->with('error', 'Impossible de créer l’abonnement : '.Str::limit($e->getMessage(), 220));
         }
 
         $subscription->load('agent');
