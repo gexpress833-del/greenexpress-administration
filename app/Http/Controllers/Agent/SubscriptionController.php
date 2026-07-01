@@ -64,14 +64,38 @@ class SubscriptionController extends Controller
             $totalDays = $map[$data['type'] ?? 'monthly'] ?? 20;
         }
         $client = User::withTrashed()->where('email', $data['client_email'])->first();
+        $phoneOwner = User::withTrashed()->where('phone', $data['client_phone'])->first();
+
+        if ($client && $phoneOwner && $phoneOwner->id !== $client->id) {
+            return redirect()->route('agent.subscriptions.index')
+                ->with('error', 'Cet email et ce numéro de téléphone appartiennent à deux comptes différents.');
+        }
+
+        if (! $client && $phoneOwner) {
+            if ($phoneOwner->role !== 'client') {
+                return redirect()->route('agent.subscriptions.index')
+                    ->with('error', 'Ce numéro de téléphone appartient déjà à un compte non-client. Utilisez un autre numéro.');
+            }
+
+            $client = $phoneOwner;
+        }
+
         if ($client && $client->trashed()) {
             $client->restore();
         }
 
-        $phoneOwner = User::withTrashed()->where('phone', $data['client_phone'])->first();
-        if ($phoneOwner && (! $client || $phoneOwner->id !== $client->id)) {
+        if ($client && $client->role !== 'client') {
             return redirect()->route('agent.subscriptions.index')
-                ->with('error', 'Un utilisateur avec ce numéro de téléphone existe déjà. Utilisez un autre numéro.');
+                ->with('error', 'Ce compte existe déjà mais ce n’est pas un compte client. Utilisez un autre email ou téléphone.');
+        }
+
+        if ($client && $client->role === 'client') {
+            $client->fill([
+                'name' => $data['client_name'],
+                'email' => $data['client_email'],
+                'phone' => $data['client_phone'],
+                'is_active' => true,
+            ])->save();
         }
 
         if (! $client) {
