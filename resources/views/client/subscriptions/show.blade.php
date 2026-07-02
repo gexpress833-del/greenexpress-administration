@@ -52,6 +52,59 @@
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Menu de la semaine</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="border border-green-200 dark:border-green-800 rounded-lg p-4 bg-green-50 dark:bg-green-900/20">
+                    <div class="text-xs font-bold text-green-700 dark:text-green-300 uppercase mb-1">Aujourd'hui</div>
+                    <div class="text-sm text-gray-800 dark:text-gray-100">
+                        @if($todayOrder && $todayOrder->items->first())
+                            {{ $todayOrder->items->first()->meal->name }}
+                        @else
+                            Aucun repas prévu
+                        @endif
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        @if($todayOrder)
+                            Livraison : {{ ucfirst($todayOrder->delivery?->status ?? 'en attente') }}
+                        @endif
+                    </div>
+                </div>
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    <div class="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase mb-1">Demain</div>
+                    <div class="text-sm text-gray-800 dark:text-gray-100">
+                        @if($tomorrowOrder && $tomorrowOrder->items->first())
+                            {{ $tomorrowOrder->items->first()->meal->name }}
+                        @else
+                            Aucun repas prévu
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mt-6 mb-4">Historique des repas</h2>
+            @forelse($history as $order)
+                <div class="border border-gray-100 dark:border-gray-700 rounded-lg p-3 mb-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 dark:text-gray-400">{{ $order->delivery_date?->format('d/m/Y') }}</span>
+                        <span class="text-gray-800 dark:text-gray-100">
+                            @if($order->items->first())
+                                {{ $order->items->first()->meal->name }}
+                            @else
+                                Non défini
+                            @endif
+                        </span>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span class="text-gray-500 dark:text-gray-400">Statut</span>
+                        <span class="text-gray-800 dark:text-gray-100">{{ ucfirst($order->delivery?->status ?? 'en attente') }}</span>
+                    </div>
+                </div>
+            @empty
+                <p class="text-sm text-gray-500 dark:text-gray-400">Aucun repas dans l'historique</p>
+            @endforelse
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Suspensions</h2>
             @forelse($subscription->suspensions as $sus)
                 <div class="border border-gray-100 dark:border-gray-700 rounded-lg p-3 mb-2 text-sm">

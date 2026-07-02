@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Delivery;
+use App\Models\DeliveryPoint;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -53,5 +54,36 @@ class DeliveryController extends Controller
         $order->save();
 
         return redirect()->route('admin.deliveries.index')->with('success', 'Livraison assignée.');
+    }
+
+    public function penalize(Request $request, Delivery $delivery)
+    {
+        $data = $request->validate([
+            'points' => ['required', 'integer', 'min:1'],
+            'description' => ['required', 'string', 'max:255'],
+        ]);
+
+        if (! $delivery->livreur_id) {
+            return redirect()->route('admin.deliveries.index')
+                ->with('error', 'Cette livraison n\'est pas assignée à un livreur.');
+        }
+
+        $total = $delivery->livreur->deliveryPoints()->sum('points');
+        $requested = (int) $data['points'];
+
+        if ($total - $requested < 0) {
+            return redirect()->route('admin.deliveries.index')
+                ->with('error', 'Solde insuffisant. Le livreur possède seulement '.$total.' point(s).');
+        }
+
+        DeliveryPoint::create([
+            'delivery_id' => $delivery->id,
+            'livreur_id' => $delivery->livreur_id,
+            'points' => -$requested,
+            'description' => $data['description'],
+        ]);
+
+        return redirect()->route('admin.deliveries.index')
+            ->with('success', $requested.' point(s) retiré(s) au livreur.');
     }
 }

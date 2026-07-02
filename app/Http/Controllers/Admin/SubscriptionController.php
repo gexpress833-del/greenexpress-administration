@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Notifications\SubscriptionActivated;
 use App\Services\ActivityLogService;
+use App\Services\SubscriptionDeliveryService;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 
@@ -51,6 +52,10 @@ class SubscriptionController extends Controller
         $subscription->total_days = $dates['total_days'];
         $subscription->remaining_days = $dates['remaining_days'];
         $subscription->save();
+
+        $deliveryService = app(SubscriptionDeliveryService::class);
+        $deliveryService->rewardAgent($subscription);
+        $deliveryService->generateDailyOrders($subscription);
 
         if ($subscription->agent) {
             try {

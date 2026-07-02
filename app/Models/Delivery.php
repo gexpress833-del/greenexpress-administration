@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['order_id', 'livreur_id', 'delivery_code', 'status', 'picked_up_at', 'delivered_at', 'notes'])]
 class Delivery extends Model
@@ -28,6 +29,16 @@ class Delivery extends Model
     public function livreur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'livreur_id');
+    }
+
+    public function deliveryPoints(): HasMany
+    {
+        return $this->hasMany(DeliveryPoint::class);
+    }
+
+    public function hasDeliveryPoints(): bool
+    {
+        return $this->deliveryPoints()->exists();
     }
 
     public function getStatusColorClassAttribute(): string

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Livreur;
 use App\Events\OrderValidatedByClient;
 use App\Http\Controllers\Controller;
 use App\Models\Delivery;
+use App\Models\DeliveryPoint;
 use App\Models\Order;
 use App\Models\User;
 use App\Notifications\DeliveryAssigned;
@@ -88,13 +89,19 @@ class DeliveryController extends Controller
         abort_unless($delivery->livreur_id === $request->user()->id, 403);
 
         $order = $delivery->order;
+        $wasAlreadyDelivered = $delivery->status === 'delivered';
 
         $delivery->status = 'delivered';
         $delivery->delivered_at = now();
         $delivery->save();
 
         $order->status = 'delivered';
+        $order->delivered_at = now();
         $order->save();
+
+        if (! $wasAlreadyDelivered && $delivery->livreur_id) {
+            $this->creditDeliveryPoints($delivery, 7, 'Points gagnés pour livraison effectuée');
+        }
 
         app(ActivityLogService::class)->logFromRequest($request, 'delivery_delivered', Delivery::class, $delivery->id, 'Livreur marked delivery as delivered for order '.$order->code);
 
@@ -257,5 +264,19 @@ class DeliveryController extends Controller
         if ($order->agent) {
             $order->agent->notify(new DeliveryValidated($order, $method));
         }
+    }
+
+    private function creditDeliveryPoints(Delivery $delivery, int $points, string $description): void
+    {
+        if ($delivery->deliveryPoints()->where('points', '>', 0)->exists()) {
+            return;
+        }
+
+        DeliveryPoint::create([
+            'delivery_id' => $delivery->id,
+            'livreur_id' => $delivery->livreur_id,
+            'points' => $points,
+            'description' => $description,
+        ]);
     }
 }

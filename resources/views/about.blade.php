@@ -27,7 +27,7 @@
         </div>
         <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">Green Express</h1>
         <p class="text-base text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-            Une infrastructure alimentaire conçue pour simpler l'accès au bien-manger, un repas à la fois.
+            Une infrastructure alimentaire conçue pour simplifier l'accès au bien-manger, un repas à la fois.
         </p>
     </div>
 
@@ -56,15 +56,15 @@
                 <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-3">
                     <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0 2 2 0 00-4 0z"/></svg>
                 </div>
-                <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Logistique optimisée</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Un réseau de livreurs structuré et géolocalisé, garantissant une distribution rapide et une traçabilité complète de chaque commande.</p>
+                <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Logistique et livraisons validées</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Un réseau de livreurs structuré et géolocalisé. Chaque repas livré est confirmé sur la plateforme, ce qui déclenche automatiquement la récompense en points du livreur.</p>
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
                 <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-3">
-                    <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9a2 2 0 11-4 0 2 2 0 014 0zm-4 4a2 2 0 11-4 0 2 2 0 014 0zm4 4a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 </div>
-                <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Abonnements adaptatifs</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Des formules flexibles qui évoluent avec vos besoins, pour une planification hebdomadaire ou mensuelle sans contrainte.</p>
+                <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Abonnements avec menu hebdomadaire</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Chaque abonnement définit un menu précis du lundi au vendredi. Les commandes et livraisons journalières sont générées automatiquement après validation par l'administrateur.</p>
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
                 <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-3">
@@ -84,7 +84,7 @@
                 Green Express est le fruit d'une conviction : l'alimentation de qualité ne devrait pas être un privilège géographique ou économique. Partant de ce constat, nous avons construit une plateforme qui connecte des chefs talentueux, des livreurs engagés et des clients exigeants dans un écosystème vertueux.
             </p>
             <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-[15px]">
-                Au fil des itérations, notre modèle s'est affiné. De la simple livraison de repas, nous sommes passés à une infrastructure complète de gestion alimentaire, intégrant la planification des menus, le suivi des abonnements, la gestion des commissions et un système de change en temps réel. Chaque fonctionnalité reflète une attention méticuleuse portée aux besoins réels de nos utilisateurs.
+                Au fil des itérations, notre modèle s'est affiné. De la simple livraison de repas, nous sommes passés à une infrastructure complète de gestion alimentaire : planification hebdomadaire des menus, abonnements avec génération automatique des commandes journalières, suivi des livraisons, système de change en temps réel et programme de points pour agents et livreurs. Chaque fonctionnalité reflète une attention méticuleuse portée aux besoins réels de nos utilisateurs.
             </p>
         </div>
     </section>
@@ -111,7 +111,7 @@
                 <div class="w-2 h-2 mt-2 rounded-full bg-emerald-500 shrink-0"></div>
                 <div>
                     <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Développement communautaire</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Nous créons des opportunités de revenus pour nos agents et livreurs, en transformant chaque partenaire en acteur à part entière de notre réussite.</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Nous créons des opportunités de revenus pour nos agents et livreurs. Un programme de points récompense les abonnements validés et les livraisons confirmées, tandis que l'administrateur peut appliquer des ajustements en cas de problème.</p>
                 </div>
             </div>
             <div class="flex items-start gap-4 bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">

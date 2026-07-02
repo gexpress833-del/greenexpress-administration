@@ -62,6 +62,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::post('/subscriptions/{subscription}/reject', [SubscriptionController::class, 'reject'])->name('subscriptions.reject');
         Route::resource('subscription-types', SubscriptionTypeController::class)->except(['show']);
         Route::resource('deliveries', DeliveryController::class)->only(['index', 'create', 'store']);
+        Route::post('/deliveries/{delivery}/penalize', [DeliveryController::class, 'penalize'])->name('deliveries.penalize');
         Route::resource('exchange-rates', ExchangeRateController::class)->only(['index', 'store']);
         Route::resource('commissions', CommissionController::class)->only(['index']);
         Route::resource('withdrawals', WithdrawalController::class)->only(['index', 'update']);

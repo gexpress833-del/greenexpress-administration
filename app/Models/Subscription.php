@@ -57,6 +57,16 @@ class Subscription extends Model
         return $this->belongsTo(User::class, 'agent_id');
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'subscription_id');
+    }
+
+    public function agentPoints(): HasMany
+    {
+        return $this->hasMany(AgentPoint::class);
+    }
+
     public function validator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'validated_by');

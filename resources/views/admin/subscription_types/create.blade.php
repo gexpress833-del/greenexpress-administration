@@ -44,10 +44,27 @@
                 </div>
             </div>
 
+            <div class="mb-6">
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Menu hebdomadaire</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    @foreach(['monday' => 'Lundi', 'tuesday' => 'Mardi', 'wednesday' => 'Mercredi', 'thursday' => 'Jeudi', 'friday' => 'Vendredi'] as $day => $label)
+                        <div>
+                            <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">{{ $label }}</label>
+                            <select name="{{ $day }}_meal_id" class="block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 text-sm">
+                                <option value="">Aucun plat</option>
+                                @foreach($meals as $meal)
+                                    <option value="{{ $meal->id }}" {{ old($day.'_meal_id') == $meal->id ? 'selected' : '' }}>{{ $meal->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
                     {{-- display_order is assigned automatically --}}
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-3">Ordre d'affichage : automatique 
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-3">Ordre d'affichage : automatique
                         <span class="ml-1 text-xs text-gray-400" title="L'ordre est généré automatiquement à la création">&#9432;</span>
                     </p>
                 </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Meal;
 use App\Models\SubscriptionType;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -18,7 +19,8 @@ class SubscriptionTypeController extends Controller
 
     public function create()
     {
-        return view('admin.subscription_types.create');
+        $meals = Meal::where('status', 'available')->orderBy('name')->get();
+        return view('admin.subscription_types.create', compact('meals'));
     }
 
     public function store(Request $request)
@@ -31,6 +33,11 @@ class SubscriptionTypeController extends Controller
             'price_fc' => 'nullable|numeric|min:0',
             'duration_days' => 'required|integer|min:1',
             'is_active' => 'boolean',
+            'monday_meal_id' => 'nullable|exists:meals,id',
+            'tuesday_meal_id' => 'nullable|exists:meals,id',
+            'wednesday_meal_id' => 'nullable|exists:meals,id',
+            'thursday_meal_id' => 'nullable|exists:meals,id',
+            'friday_meal_id' => 'nullable|exists:meals,id',
             // display_order is computed automatically
         ]);
 
@@ -68,7 +75,8 @@ class SubscriptionTypeController extends Controller
 
     public function edit(SubscriptionType $subscriptionType)
     {
-        return view('admin.subscription_types.edit', compact('subscriptionType'));
+        $meals = Meal::where('status', 'available')->orderBy('name')->get();
+        return view('admin.subscription_types.edit', compact('subscriptionType', 'meals'));
     }
 
     public function update(Request $request, SubscriptionType $subscriptionType)
@@ -82,6 +90,11 @@ class SubscriptionTypeController extends Controller
             'duration_days' => 'required|integer|min:1',
             'is_active' => 'boolean',
             'display_order' => 'nullable|integer',
+            'monday_meal_id' => 'nullable|exists:meals,id',
+            'tuesday_meal_id' => 'nullable|exists:meals,id',
+            'wednesday_meal_id' => 'nullable|exists:meals,id',
+            'thursday_meal_id' => 'nullable|exists:meals,id',
+            'friday_meal_id' => 'nullable|exists:meals,id',
         ]);
 
         $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']);

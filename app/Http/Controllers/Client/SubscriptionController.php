@@ -27,9 +27,31 @@ class SubscriptionController extends Controller
     {
         abort_unless($subscription->client_id === $request->user()->id, 403);
 
-        $subscription->load(['agent', 'suspensions']);
+        $subscription->load(['agent', 'suspensions', 'subscriptionType', 'orders.items.meal', 'orders.delivery']);
 
-        return view('client.subscriptions.show', compact('subscription'));
+        $today = now()->startOfDay();
+        $tomorrow = $today->copy()->addDay();
+
+        $todayOrder = $subscription->orders
+            ->where('delivery_date', '>=', $today)
+            ->where('delivery_date', '<', $today->copy()->addDay())
+            ->first();
+
+        $tomorrowOrder = $subscription->orders
+            ->where('delivery_date', '>=', $tomorrow)
+            ->where('delivery_date', '<', $tomorrow->copy()->addDay())
+            ->first();
+
+        $history = $subscription->orders
+            ->where('delivery_date', '<', $today)
+            ->sortByDesc('delivery_date');
+
+        return view('client.subscriptions.show', compact(
+            'subscription',
+            'todayOrder',
+            'tomorrowOrder',
+            'history'
+        ));
     }
 
     public function renew(Request $request, Subscription $subscription)
