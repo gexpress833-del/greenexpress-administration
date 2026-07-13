@@ -1,0 +1,70 @@
+services:
+  - type: web
+    name: greenexpress
+    runtime: docker
+    plan: free
+    envVars:
+      - key: APP_NAME
+        value: Green Express
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_LOCALE
+        value: fr
+      - key: APP_FALLBACK_LOCALE
+        value: en
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        value: https://greenexpress-administration.onrender.com
+      - key: ASSET_URL
+        value: https://greenexpress-administration.onrender.com
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        value: aws-0-eu-west-1.pooler.supabase.com
+      - key: DB_PORT
+        value: 6543
+      - key: DB_DATABASE
+        value: postgres
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: ADMIN_NAME
+        value: Administrateur
+      - key: ADMIN_EMAIL
+        value: admin@greenexpress.cd
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: DB_SSLMODE
+        value: require
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: PAYMENT_URL
+        value: ''
+      - key: MAIL_MAILER
+        value: brevo
+      - key: BREVO_API_KEY
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        value: gexpress833@gmail.com
+      - key: MAIL_FROM_NAME
+        value: Green Express
+      - key: SCHEDULE_SECRET
+        sync: false
