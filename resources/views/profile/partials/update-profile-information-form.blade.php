@@ -37,7 +37,7 @@
                         </label>
                         <input id="avatar-upload-fallback" type="file" accept="image/*" @change="openCropper($event)" class="hidden">
                         @if ($user->avatar)
-                            <button type="button" @click="removeAvatar()" class="inline-flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/50 transition">
+                            <button type="button" @click="showDeleteModal = true" class="inline-flex items-center gap-2 px-4 py-2 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/50 transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                 Supprimer
                             </button>
@@ -53,7 +53,7 @@
             </div>
 
             {{-- Modal de cadrage --}}
-            <div x-show="showModal" x-transition.opacity style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" @keydown.escape.window="closeModal()" @click="closeModal()">
+            <div x-show="showModal" x-transition.opacity style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm" @keydown.escape.window="closeModal()" @click="closeModal()">
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4 border border-gray-100 dark:border-gray-700" @click.stop>
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recadrer la photo</h3>
                     <div class="h-80 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
@@ -79,6 +79,32 @@
                                 Appliquer
                             </button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Modal de confirmation de suppression --}}
+            <div x-show="showDeleteModal" x-transition.opacity style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm" @keydown.escape.window="showDeleteModal = false" @click="showDeleteModal = false">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 border border-gray-100 dark:border-gray-700" @click.stop>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
+                            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Supprimer la photo ?</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Cette action est irréversible.</p>
+                        </div>
+                    </div>
+                    <div class="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 mb-5">
+                        <p class="text-sm text-red-700 dark:text-red-300">Votre photo de profil sera définitivement supprimée et remplacée par vos initiales.</p>
+                    </div>
+                    <div class="flex gap-3 justify-end">
+                        <button type="button" @click="showDeleteModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                            Annuler
+                        </button>
+                        <button type="button" @click="confirmRemoveAvatar()" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700 transition shadow-lg shadow-red-600/20">
+                            Oui, supprimer
+                        </button>
                     </div>
                 </div>
             </div>
@@ -160,6 +186,7 @@
     function avatarCropper() {
         return {
             showModal: false,
+            showDeleteModal: false,
             cropper: null,
             croppedPreview: null,
             cropError: '',
@@ -241,10 +268,12 @@
                     reader.readAsDataURL(blob);
                 }, 'image/jpeg', 0.9);
             },
-            removeAvatar() {
+            confirmRemoveAvatar() {
                 this.croppedPreview = null;
                 this.$refs.croppedInput.value = '';
                 this.$refs.removeInput.value = '1';
+                this.showDeleteModal = false;
+                this.$root.closest('form').submit();
             }
         }
     }
