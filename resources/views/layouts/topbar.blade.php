@@ -41,6 +41,15 @@
                 </a>
             @endif
 
+            @if(auth()->user()->isLivreur())
+                <a href="{{ route('livreur.points.index') }}" class="flex items-center gap-1 sm:gap-1.5 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 rounded-full pl-1.5 pr-2 sm:pl-2 sm:pr-3 py-1 transition" title="Voir mes points de livraison">
+                    <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shrink-0">
+                        <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.519 4.674c.3.921-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.519-4.674a1 1 0 00-.363-1.118L3.08 10.1c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.516-4.674z"/></svg>
+                    </div>
+                    <span class="text-[10px] sm:text-xs font-bold text-emerald-700 dark:text-emerald-300 leading-none">{{ \App\Models\DeliveryPoint::where('livreur_id', auth()->id())->sum('points') ?: 0 }}<span class="hidden sm:inline"> pts</span></span>
+                </a>
+            @endif
+
             <div class="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-3 border-l border-gray-200 dark:border-gray-700">
                 <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 sm:gap-2.5 group min-w-0" title="Mon profil">
                     @if(auth()->user()->avatar)
