@@ -56,8 +56,8 @@
             <div x-show="showModal" x-transition.opacity style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" @keydown.escape.window="closeModal()" @click="closeModal()">
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4 border border-gray-100 dark:border-gray-700" @click.stop>
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recadrer la photo</h3>
-                    <div class="max-h-80 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                        <img x-ref="cropperImage" class="max-w-full" style="display: block;">
+                    <div class="h-80 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                        <img x-ref="cropperImage" class="max-w-full max-h-full object-contain" style="display: block;">
                     </div>
                     <div class="flex items-center justify-between gap-3 mt-5">
                         <div class="flex gap-2">
