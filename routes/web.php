@@ -98,7 +98,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
     // Admin routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-        Route::resource('users', UserController::class)->except(['show']);
+        Route::resource('users', UserController::class);
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('meals', MealController::class)->except(['show']);
         Route::post('/meals/{meal}/toggle-status', [MealController::class, 'toggleStatus'])->name('meals.toggle-status');

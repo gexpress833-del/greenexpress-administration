@@ -34,15 +34,19 @@
                     @forelse($users as $user)
                         <tr>
                             <td class="px-6 py-3">
-                                @if ($user->avatar)
-                                    <img src="{{ $user->avatar }}" alt="Avatar" class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600">
-                                @else
-                                    <div class="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-sm font-bold text-green-600 dark:text-green-400 border border-gray-200 dark:border-gray-600">
-                                        {{ strtoupper(substr($user->name, 0, 1)) }}
-                                    </div>
-                                @endif
+                                <a href="{{ route('admin.users.show', $user) }}" class="hover:underline">
+                                    @if ($user->avatar)
+                                        <img src="{{ $user->avatar }}" alt="Avatar" class="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-600">
+                                    @else
+                                        <div class="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-sm font-bold text-green-600 dark:text-green-400 border border-gray-200 dark:border-gray-600">
+                                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                                        </div>
+                                    @endif
+                                </a>
                             </td>
-                            <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $user->name }}</td>
+                            <td class="px-6 py-3 text-gray-800 dark:text-gray-100">
+                                <a href="{{ route('admin.users.show', $user) }}" class="hover:underline font-medium">{{ $user->name }}</a>
+                            </td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $user->email }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $user->phone }}</td>
                             <td class="px-6 py-3 uppercase text-gray-800 dark:text-gray-100">{{ $user->role }}</td>
@@ -52,6 +56,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-3 space-x-2">
+                                <a href="{{ route('admin.users.show', $user) }}" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm">Voir</a>
                                 <a href="{{ route('admin.users.edit', $user) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">Modifier</a>
                             </td>
                         </tr>

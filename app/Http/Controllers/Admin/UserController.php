@@ -50,6 +50,38 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Utilisateur créé.');
     }
 
+    public function show(User $user)
+    {
+        $user->load([
+            'ordersAsAgent' => fn ($q) => $q->latest()->limit(10),
+            'ordersAsClient' => fn ($q) => $q->latest()->limit(10),
+            'subscriptions' => fn ($q) => $q->latest()->limit(10),
+            'agentSubscriptions' => fn ($q) => $q->latest()->limit(10),
+            'deliveries' => fn ($q) => $q->latest()->limit(10),
+            'withdrawals' => fn ($q) => $q->latest()->limit(10),
+        ]);
+
+        $stats = match ($user->role) {
+            'agent' => [
+                'orders_count' => $user->ordersAsAgent()->count(),
+                'delivered_count' => $user->ordersAsAgent()->where('status', 'delivered')->count(),
+                'subscriptions_count' => $user->agentSubscriptions()->count(),
+                'withdrawals_count' => $user->withdrawals()->count(),
+            ],
+            'livreur' => [
+                'deliveries_count' => $user->deliveries()->count(),
+                'delivered_count' => $user->deliveries()->where('status', 'delivered')->count(),
+            ],
+            'client' => [
+                'orders_count' => $user->ordersAsClient()->count(),
+                'subscriptions_count' => $user->subscriptions()->count(),
+            ],
+            default => [],
+        };
+
+        return view('admin.users.show', compact('user', 'stats'));
+    }
+
     public function edit(User $user)
     {
         return view('admin.users.edit', compact('user'));
