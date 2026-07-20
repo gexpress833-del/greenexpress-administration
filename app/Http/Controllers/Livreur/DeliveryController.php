@@ -16,6 +16,7 @@ use App\Services\DeliveryService;
 use App\Services\NotificationService;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DeliveryController extends Controller
 {
@@ -184,40 +185,57 @@ class DeliveryController extends Controller
         $order->refresh();
 
         if (! $alreadyValidated) {
-            OrderValidatedByClient::dispatch($order);
+            try {
+                OrderValidatedByClient::dispatch($order);
 
-            // Points crédités uniquement au livreur assigné
-            if ($delivery->livreur_id) {
-                $this->creditDeliveryPoints($delivery, 7, 'Points gagnés pour livraison validée par le client (QR)');
-                app(NotificationService::class)->livreurDeliveryValidated($request->user(), $delivery, (bool) $order->subscription_id);
-            }
-
-            // Notifier admin et agent
-            $this->notifyDeliveryValidated($order, 'QR scan');
-
-            // Notifier le client que sa commande est livrée
-            if ($order->client_id) {
-                $client = User::find($order->client_id);
-                if ($client) {
-                    app(NotificationService::class)->clientOrderDelivered($client, $order);
+                if ($delivery->livreur_id) {
+                    $this->creditDeliveryPoints($delivery, 7, 'Points gagnés pour livraison validée par le client (QR)');
+                    app(NotificationService::class)->livreurDeliveryValidated($request->user(), $delivery, (bool) $order->subscription_id);
                 }
-            }
 
-            app(ActivityLogService::class)->logFromRequest($request, 'delivery_validated_by_qr', Order::class, $order->id, 'Livreur validated delivery by QR scan for order '.$order->code);
+                $this->notifyDeliveryValidated($order, 'QR scan');
+
+                if ($order->client_id) {
+                    $client = User::find($order->client_id);
+                    if ($client) {
+                        app(NotificationService::class)->clientOrderDelivered($client, $order);
+                    }
+                }
+
+                app(ActivityLogService::class)->logFromRequest($request, 'delivery_validated_by_qr', Order::class, $order->id, 'Livreur validated delivery by QR scan for order '.$order->code);
+            } catch (\Throwable $exception) {
+                Log::error('Post-validation processing failed after QR validation.', [
+                    'delivery_id' => $delivery->id,
+                    'order_id' => $order->id,
+                    'exception' => $exception,
+                ]);
+            }
         }
 
         if ($order->agent?->phone) {
-            $whatsappLink = app(WhatsAppService::class)->commissionCreditedLink(
-                $order->agent->phone,
-                $order->code,
-                0.00,
-                'daily_commission'
-            );
+            try {
+                $whatsappLink = app(WhatsAppService::class)->commissionCreditedLink(
+                    $order->agent->phone,
+                    $order->code,
+                    0.00,
+                    'daily_commission'
+                );
+            } catch (\Throwable $exception) {
+                Log::error('WhatsApp link generation failed after QR validation.', [
+                    'delivery_id' => $delivery->id,
+                    'order_id' => $order->id,
+                    'exception' => $exception,
+                ]);
+                $whatsappLink = null;
+            }
 
-            return redirect()->route('livreur.deliveries.show', $delivery)
+            $redirect = redirect()->route('livreur.deliveries.show', $delivery)
                 ->with('reward', 'Livraison validée par QR ! Vous recevez 7 points.')
-                ->with('whatsapp_link', $whatsappLink)
                 ->with('validation_code', $request->code);
+
+            return $whatsappLink
+                ? $redirect->with('whatsapp_link', $whatsappLink)
+                : $redirect;
         }
 
         return redirect()->route('livreur.deliveries.show', $delivery)
@@ -260,39 +278,55 @@ class DeliveryController extends Controller
                 ->with('success', $result['message']);
         }
 
-        // Dispatcher l'event pour créditer points, badges, etc.
-        OrderValidatedByClient::dispatch($order);
+        try {
+            OrderValidatedByClient::dispatch($order);
 
-        // Points crédités uniquement au livreur assigné
-        if ($delivery->livreur_id) {
-            $this->creditDeliveryPoints($delivery, 7, 'Points gagnés pour livraison validée par le client');
-            app(NotificationService::class)->livreurDeliveryValidated($request->user(), $delivery, (bool) $order->subscription_id);
-        }
-
-        // Notifier admin et agent
-        $this->notifyDeliveryValidated($order, 'code client');
-
-        // Notifier le client que sa commande est livrée
-        if ($order->client_id) {
-            $client = User::find($order->client_id);
-            if ($client) {
-                app(NotificationService::class)->clientOrderDelivered($client, $order);
+            if ($delivery->livreur_id) {
+                $this->creditDeliveryPoints($delivery, 7, 'Points gagnés pour livraison validée par le client');
+                app(NotificationService::class)->livreurDeliveryValidated($request->user(), $delivery, (bool) $order->subscription_id);
             }
-        }
 
-        app(ActivityLogService::class)->logFromRequest($request, 'delivery_validated_by_client', Order::class, $order->id, 'Livreur validated delivery by client code for order '.$order->code);
+            $this->notifyDeliveryValidated($order, 'code client');
+
+            if ($order->client_id) {
+                $client = User::find($order->client_id);
+                if ($client) {
+                    app(NotificationService::class)->clientOrderDelivered($client, $order);
+                }
+            }
+
+            app(ActivityLogService::class)->logFromRequest($request, 'delivery_validated_by_client', Order::class, $order->id, 'Livreur validated delivery by client code for order '.$order->code);
+        } catch (\Throwable $exception) {
+            Log::error('Post-validation processing failed after client code validation.', [
+                'delivery_id' => $delivery->id,
+                'order_id' => $order->id,
+                'exception' => $exception,
+            ]);
+        }
 
         if ($order->agent?->phone) {
-            $whatsappLink = app(WhatsAppService::class)->commissionCreditedLink(
-                $order->agent->phone,
-                $order->code,
-                0.00,
-                'daily_commission'
-            );
+            try {
+                $whatsappLink = app(WhatsAppService::class)->commissionCreditedLink(
+                    $order->agent->phone,
+                    $order->code,
+                    0.00,
+                    'daily_commission'
+                );
+            } catch (\Throwable $exception) {
+                Log::error('WhatsApp link generation failed after client code validation.', [
+                    'delivery_id' => $delivery->id,
+                    'order_id' => $order->id,
+                    'exception' => $exception,
+                ]);
+                $whatsappLink = null;
+            }
 
-            return redirect()->route('livreur.deliveries.show', $delivery)
-                ->with('reward', 'Livraison validée ! Vous recevez 7 points de livraison.')
-                ->with('whatsapp_link', $whatsappLink);
+            $redirect = redirect()->route('livreur.deliveries.show', $delivery)
+                ->with('reward', 'Livraison validée ! Vous recevez 7 points de livraison.');
+
+            return $whatsappLink
+                ? $redirect->with('whatsapp_link', $whatsappLink)
+                : $redirect;
         }
 
         return redirect()->route('livreur.deliveries.show', $delivery)
