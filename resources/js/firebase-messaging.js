@@ -54,13 +54,18 @@ async function startNotifications() {
     const button = document.querySelector('[data-fcm-enable]');
     const panel = button?.closest('[data-fcm-permission-panel]');
 
-    if (!button || !('Notification' in window) || !('serviceWorker' in navigator)) {
+    if (!button || !('serviceWorker' in navigator)) {
         panel?.remove();
         return;
     }
 
     if (detectPlatform() === 'ios' && !isIosPwa()) {
         setButtonState(button, 'Installer la PWA pour activer les notifications', true);
+        return;
+    }
+
+    if (!('Notification' in window)) {
+        panel?.remove();
         return;
     }
 
