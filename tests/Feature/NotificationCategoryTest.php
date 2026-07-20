@@ -72,16 +72,16 @@ class NotificationCategoryTest extends TestCase
             'total_days' => 30,
         ]);
 
-        app(NotificationService::class)->agentSubscriptionValidated($agent, $subscription, 50);
+        app(NotificationService::class)->agentSubscriptionValidated($agent, $subscription);
 
         $this->assertDatabaseHas('app_notifications', [
             'user_id' => $agent->id,
-            'category' => 'reward',
+            'category' => 'information',
             'type' => 'subscription_validated',
         ]);
 
         $notif = Notification::where('user_id', $agent->id)->first();
-        $this->assertStringContainsString('50 points', $notif->message);
+        $this->assertStringContainsString('points sont crédités uniquement après validation', $notif->message);
     }
 
     public function test_agent_receives_renewal_notification(): void

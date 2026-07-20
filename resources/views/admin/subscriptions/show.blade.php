@@ -1,4 +1,16 @@
 <x-app-layout>
+    @if(session('success'))
+        <div role="status" class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-200">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div role="alert" class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="mb-6 flex items-center justify-between">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Abonnement #{{ $subscription->id }}</h1>
         <x-back-button :href="route('admin.subscriptions.index')" />

@@ -43,6 +43,10 @@ class SubscriptionController extends Controller
 
     public function update(Request $request, Subscription $subscription)
     {
+        $request->validate([
+            'status' => ['required', 'in:active'],
+        ]);
+
         $validationDate = now();
         $requestedStartDate = $subscription->start_date ? Carbon::parse($subscription->start_date) : null;
         $actualStartDate = ($requestedStartDate && $requestedStartDate->lt($validationDate))
@@ -86,8 +90,7 @@ class SubscriptionController extends Controller
             if ($isRenewal) {
                 $notificationService->agentSubscriptionRenewed($subscription->agent, $subscription);
             } else {
-                $points = $subscription->total_days <= 7 ? 25 : 50;
-                $notificationService->agentSubscriptionValidated($subscription->agent, $subscription, $points);
+                $notificationService->agentSubscriptionValidated($subscription->agent, $subscription);
             }
         }
 

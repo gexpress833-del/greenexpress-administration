@@ -30,6 +30,7 @@ class AdminFeatureTest extends TestCase
             ->patch(route('admin.subscriptions.update', $sub), ['status' => 'active']);
 
         $response->assertRedirect(route('admin.subscriptions.show', $sub));
+        $response->assertSessionHas('success', 'Abonnement validé avec succès.');
         $response->assertSessionHas('whatsapp_link');
         $this->assertStringStartsWith('https://wa.me/243777777777?text=', session('whatsapp_link'));
 

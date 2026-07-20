@@ -82,25 +82,17 @@ class NotificationService
     }
 
     /**
-     * 2. Agent: Validation de l'abonnement (≤5 jours = 25 pts, >5 jours = 50 pts)
+     * 2. Agent: Validation de l'abonnement.
      */
-    public function agentSubscriptionValidated(User $agent, Subscription $subscription, int $points): void
+    public function agentSubscriptionValidated(User $agent, Subscription $subscription): void
     {
         $clientName = $subscription->client?->name ?? $subscription->client_name;
 
-        if ($points <= 25) {
-            $title = '🏅 Parrainage validé !';
-            $message = "Félicitations ! L'abonnement de {$clientName} a été validé. Vous venez de recevoir {$points} points de récompense. Continuez à parrainer de nouveaux clients pour augmenter vos gains.";
-        } else {
-            $title = '🏆 Excellent travail !';
-            $message = "Votre client {$clientName} a finalisé son abonnement. Grâce à cette souscription de plus de cinq jours, vous recevez {$points} points. Merci pour votre engagement envers Green Express.";
-        }
-
         $this->notify(
             $agent,
-            'reward',
-            $title,
-            $message,
+            'information',
+            '✅ Abonnement validé',
+            "L'abonnement de {$clientName} a été validé. Les points sont crédités uniquement après validation de chaque commande livrée.",
             'subscription_validated',
             route('agent.subscriptions.index'),
         );
