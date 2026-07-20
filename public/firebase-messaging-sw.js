@@ -12,16 +12,22 @@ fetch('/firebase-config')
         messaging = firebase.messaging();
 
         messaging.onBackgroundMessage((payload) => {
-            const title = payload.notification?.title || payload.data?.title || 'Green Express';
-            const body = payload.notification?.body || payload.data?.body || '';
-            const url = payload.data?.url || payload.fcmOptions?.link || '/notifications';
+            const data = payload.data || {};
+            const title = data.title || 'Green Express';
+            const body = data.body || '';
+            const url = data.url || '/notifications';
+            const tag = data.tag || 'green-express';
 
             self.registration.showNotification(title, {
                 body,
-                icon: '/logo-192.png',
-                badge: '/logo-192.png',
-                data: { url },
-                tag: payload.data?.notification_id || 'green-express-notification',
+                icon: data.icon || '/logo-192.png',
+                badge: data.badge || '/logo-192.png',
+                tag,
+                data: { url, notification_id: data.notification_id },
+                actions: [
+                    { action: 'open', title: 'Voir' },
+                    { action: 'close', title: 'Fermer' },
+                ],
             });
         });
     })
@@ -29,6 +35,9 @@ fetch('/firebase-config')
 
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
+
+    if (event.action === 'close') return;
+
     const targetUrl = new URL(event.notification.data?.url || '/notifications', self.location.origin).href;
 
     event.waitUntil(

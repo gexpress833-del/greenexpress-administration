@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendFcmNotification;
 use App\Models\AgentReward;
 use App\Models\Badge;
 use App\Models\Delivery;
@@ -30,7 +31,7 @@ class NotificationService
         ]);
 
         try {
-            app(FcmService::class)->sendNotification($notification);
+            SendFcmNotification::dispatch($notification);
         } catch (\Throwable $exception) {
             Log::warning('FCM notification dispatch failed.', [
                 'notification_id' => $notification->id,
@@ -61,7 +62,7 @@ class NotificationService
                     ]);
 
                     try {
-                        app(FcmService::class)->sendNotification($notification);
+                        SendFcmNotification::dispatch($notification);
                     } catch (\Throwable $exception) {
                         Log::warning('FCM broadcast notification failed.', [
                             'notification_id' => $notification->id,

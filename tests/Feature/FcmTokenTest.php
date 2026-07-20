@@ -2,9 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\SendFcmNotification;
 use App\Models\FcmToken;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class FcmTokenTest extends TestCase
@@ -69,5 +72,49 @@ class FcmTokenTest extends TestCase
             ->assertOk();
 
         $this->assertDatabaseMissing('fcm_tokens', ['revoked_at' => null]);
+    }
+
+    public function test_user_can_register_multiple_device_tokens(): void
+    {
+        $user = User::factory()->agent()->create();
+
+        $this->actingAs($user)->postJson(route('notifications.fcm-token.store'), [
+            'token' => str_repeat('device-a-', 8),
+            'platform' => 'android',
+            'device_id' => 'device-a',
+        ])->assertOk();
+
+        $this->actingAs($user)->postJson(route('notifications.fcm-token.store'), [
+            'token' => str_repeat('device-b-', 8),
+            'platform' => 'web',
+            'device_id' => 'device-b',
+        ])->assertOk();
+
+        $this->assertDatabaseCount('fcm_tokens', 2);
+    }
+
+    public function test_notification_service_dispatches_fcm_job(): void
+    {
+        Queue::fake();
+
+        $user = User::factory()->agent()->create();
+        FcmToken::create([
+            'user_id' => $user->id,
+            'token' => str_repeat('queue-token-', 8),
+            'token_hash' => hash('sha256', str_repeat('queue-token-', 8)),
+            'platform' => 'web',
+            'last_used_at' => now(),
+        ]);
+
+        app(NotificationService::class)->notify(
+            $user,
+            'information',
+            'Test',
+            'Bonjour depuis Green Express',
+            'test',
+            '/dashboard',
+        );
+
+        Queue::assertPushed(SendFcmNotification::class);
     }
 }

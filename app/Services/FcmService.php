@@ -12,6 +12,12 @@ use RuntimeException;
 
 class FcmService
 {
+    public const NOTIFICATION_TAG = 'green-express';
+
+    public const NOTIFICATION_ICON = '/logo-192.png';
+
+    public const NOTIFICATION_BADGE = '/logo-192.png';
+
     public function registerToken(User $user, string $token, ?string $platform = null, ?string $deviceId = null): FcmToken
     {
         $tokenHash = hash('sha256', $token);
@@ -38,7 +44,22 @@ class FcmService
 
     public function sendNotification(Notification $notification): void
     {
-        $tokens = $notification->user->fcmTokens()->whereNull('revoked_at')->get();
+        $this->sendToUser(
+            $notification->user,
+            $notification->title,
+            $notification->message,
+            $notification->url ?? route('notifications.history'),
+            [
+                'notification_id' => (string) $notification->id,
+                'type' => (string) ($notification->type ?? 'custom'),
+                'category' => (string) ($notification->category ?? 'information'),
+            ],
+        );
+    }
+
+    public function sendToUser(User $user, string $title, string $body, string $url = '/notifications', array $extraData = []): void
+    {
+        $tokens = $user->fcmTokens()->whereNull('revoked_at')->get();
         if ($tokens->isEmpty()) {
             return;
         }
@@ -50,19 +71,42 @@ class FcmService
         }
 
         $accessToken = $this->accessToken($credentials);
-        $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
+        $endpoint = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
 
         foreach ($tokens as $token) {
+            $data = array_merge([
+                'title' => $title,
+                'body' => $body,
+                'url' => $url,
+                'icon' => self::NOTIFICATION_ICON,
+                'badge' => self::NOTIFICATION_BADGE,
+                'sound' => 'default',
+                'tag' => self::NOTIFICATION_TAG,
+            ], $extraData);
+
             try {
-                Http::withToken($accessToken)->post($url, [
+                Http::withToken($accessToken)->post($endpoint, [
                     'message' => [
                         'token' => $token->token,
-                        'data' => [
-                            'title' => $notification->title,
-                            'body' => $notification->message,
-                            'notification_id' => (string) $notification->id,
-                            'url' => $notification->url ?? route('notifications.history'),
-                            'type' => (string) ($notification->type ?? 'custom'),
+                        'data' => $data,
+                        'android' => [
+                            'notification' => [
+                                'icon' => self::NOTIFICATION_ICON,
+                                'color' => '#16a34a',
+                                'tag' => self::NOTIFICATION_TAG,
+                                'click_action' => $url,
+                            ],
+                        ],
+                        'apns' => [
+                            'payload' => [
+                                'aps' => [
+                                    'sound' => 'default',
+                                    'badge' => 1,
+                                ],
+                            ],
+                        ],
+                        'fcm_options' => [
+                            'analytics_label' => $extraData['type'] ?? 'custom',
                         ],
                     ],
                 ])->throw();
@@ -74,7 +118,6 @@ class FcmService
                 }
 
                 Log::warning('FCM notification delivery failed.', [
-                    'notification_id' => $notification->id,
                     'token_id' => $token->id,
                     'status' => $exception->response?->status(),
                 ]);

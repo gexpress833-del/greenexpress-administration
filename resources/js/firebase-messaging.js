@@ -101,8 +101,9 @@ async function startNotifications() {
         const title = payload.data?.title || 'Green Express';
         const notification = new Notification(title, {
             body: payload.data?.body || '',
-            icon: '/logo-192.png',
-            tag: payload.data?.notification_id || 'green-express-notification',
+            icon: payload.data?.icon || '/logo-192.png',
+            badge: payload.data?.badge || '/logo-192.png',
+            tag: payload.data?.tag || 'green-express',
         });
 
         notification.onclick = () => {
