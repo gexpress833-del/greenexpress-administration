@@ -75,13 +75,7 @@ async function startNotifications() {
     }
 
     if (Notification.permission === 'granted') {
-        setButtonState(button, 'Activation...');
-        try {
-            await enableNotifications(button, panel);
-        } catch (error) {
-            console.warn('FCM auto-enable failed:', error);
-            setButtonState(button, 'Réessayer');
-        }
+        panel?.remove();
         return;
     }
 
