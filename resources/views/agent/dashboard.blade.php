@@ -33,12 +33,7 @@
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Solde disponible</p>
             <p class="text-2xl font-bold text-purple-700">$ {{ number_format($availableBalance, 2) }}</p>
-            <p class="text-xs text-slate-400 mt-1">Min retrait : $ 10.00</p>
-        </div>
-        <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
-            <p class="text-sm text-slate-400">Plafond commission</p>
-            <p class="text-2xl font-bold text-amber-600">$ {{ number_format($dailyCapRemaining, 2) }}</p>
-            <p class="text-xs text-slate-400 mt-1">restant sur $ {{ number_format($dailyCap, 2) }}</p>
+            <p class="text-xs text-slate-400 mt-1">{{ number_format($availablePoints) }} points · minimum $ 5.00</p>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Bonus repas aujourd'hui</p>
@@ -65,20 +60,10 @@
         </div>
 
         <div class="rounded-[2rem] border border-white/10 bg-white/[0.07] p-6 shadow-2xl shadow-black/20 backdrop-blur-2xl">
-            <h2 class="text-lg font-semibold text-white mb-4">Commissions journalières (7 derniers jours)</h2>
-            <div class="space-y-3">
-                @forelse($commissionsByDate as $commission)
-                    <div class="flex items-center justify-between py-2 border-b border-gray-50 dark:border-gray-700">
-                        <div>
-                            <p class="text-sm font-medium text-white">{{ $commission->calculated_for_date?->format('d/m/Y') ?? $commission->created_at->format('d/m/Y') }}</p>
-                            <p class="text-xs text-slate-400">{{ $commission->description }}</p>
-                        </div>
-                        <p class="text-sm font-bold text-green-700">$ {{ number_format($commission->amount_usd, 2) }}</p>
-                    </div>
-                @empty
-                    <p class="text-sm text-slate-400">Aucune commission pour le moment.</p>
-                @endforelse
-            </div>
+            <h2 class="text-lg font-semibold text-white mb-4">Conversion des points</h2>
+            <p class="text-sm text-slate-300">Chaque commande validée vous rapporte 12 points.</p>
+            <p class="mt-2 text-sm text-slate-400">1 point vaut $ 0,025. Le retrait est disponible dès 200 points, soit $ 5.00.</p>
+            <a href="{{ route('agent.withdrawals.index') }}" class="mt-4 inline-flex rounded-xl bg-emerald-500 px-4 py-2 text-sm font-bold text-slate-950">Convertir mes points</a>
         </div>
     </div>
 

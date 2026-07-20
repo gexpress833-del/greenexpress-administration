@@ -189,7 +189,7 @@ class DeliveryController extends Controller
                 OrderValidatedByClient::dispatch($order);
 
                 if ($delivery->livreur_id) {
-                    $this->creditDeliveryPoints($delivery, 7, 'Points gagnés pour livraison validée par le client (QR)');
+                    $this->creditDeliveryPoints($delivery, 15, 'Points gagnés pour livraison validée par le client (QR)');
                     app(NotificationService::class)->livreurDeliveryValidated($request->user(), $delivery, (bool) $order->subscription_id);
                 }
 
@@ -230,7 +230,7 @@ class DeliveryController extends Controller
             }
 
             $redirect = redirect()->route('livreur.deliveries.show', $delivery)
-                ->with('reward', 'Livraison validée par QR ! Vous recevez 7 points.')
+                ->with('reward', 'Livraison validée par QR ! Vous recevez 15 points.')
                 ->with('validation_code', $request->code);
 
             return $whatsappLink
@@ -239,7 +239,7 @@ class DeliveryController extends Controller
         }
 
         return redirect()->route('livreur.deliveries.show', $delivery)
-            ->with('reward', 'Livraison validée par QR ! Vous recevez 7 points.')
+            ->with('reward', 'Livraison validée par QR ! Vous recevez 15 points.')
             ->with('validation_code', $request->code);
     }
 
@@ -282,7 +282,7 @@ class DeliveryController extends Controller
             OrderValidatedByClient::dispatch($order);
 
             if ($delivery->livreur_id) {
-                $this->creditDeliveryPoints($delivery, 7, 'Points gagnés pour livraison validée par le client');
+                $this->creditDeliveryPoints($delivery, 15, 'Points gagnés pour livraison validée par le client');
                 app(NotificationService::class)->livreurDeliveryValidated($request->user(), $delivery, (bool) $order->subscription_id);
             }
 
@@ -322,7 +322,7 @@ class DeliveryController extends Controller
             }
 
             $redirect = redirect()->route('livreur.deliveries.show', $delivery)
-                ->with('reward', 'Livraison validée ! Vous recevez 7 points de livraison.');
+                ->with('reward', 'Livraison validée ! Vous recevez 15 points de livraison.');
 
             return $whatsappLink
                 ? $redirect->with('whatsapp_link', $whatsappLink)
@@ -330,7 +330,7 @@ class DeliveryController extends Controller
         }
 
         return redirect()->route('livreur.deliveries.show', $delivery)
-            ->with('reward', 'Livraison validée ! Vous recevez 7 points de livraison.');
+            ->with('reward', 'Livraison validée ! Vous recevez 15 points de livraison.');
     }
 
     public function notifyClient(Request $request, Delivery $delivery)

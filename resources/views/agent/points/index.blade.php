@@ -75,11 +75,6 @@
                                     <p class="mt-1 text-xs text-slate-400">~$ {{ number_format($todayValueUsd, 2) }}</p>
                                 </div>
                                 <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-4">
-                                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Commissions</p>
-                                    <p class="mt-2 text-2xl font-black text-yellow-300">$ {{ number_format($totalCommissionsUsd, 2) }}</p>
-                                    <p class="mt-1 text-xs text-slate-400">total gagné</p>
-                                </div>
-                                <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-4">
                                     <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Entrées</p>
                                     <p class="mt-2 text-2xl font-black text-white">{{ $pointsHistory->total() }}</p>
                                     <p class="mt-1 text-xs text-slate-400">historique</p>
@@ -127,7 +122,7 @@
                                 </div>
                                 <div class="rounded-2xl border border-white/10 bg-slate-950/25 p-3">
                                     <p class="mb-1 text-xs font-black text-emerald-200">02</p>
-                                    <p>3 points pour les petites commandes de moins de 5 000 FC</p>
+                                    <p>1 point vaut $ 0,025 et le retrait commence à 200 points</p>
                                 </div>
                                 <div class="rounded-2xl border border-white/10 bg-slate-950/25 p-3">
                                     <p class="mb-1 text-xs font-black text-emerald-200">03</p>

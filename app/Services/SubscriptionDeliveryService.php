@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Helpers\DateHelper;
-use App\Models\AgentPoint;
 use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -15,24 +14,7 @@ use Illuminate\Support\Str;
 
 class SubscriptionDeliveryService
 {
-    public function rewardAgent(Subscription $subscription): void
-    {
-        if ($subscription->agentPoints()->exists()) {
-            return;
-        }
-
-        $points = $subscription->total_days <= 7 ? 25 : 50;
-
-        AgentPoint::create([
-            'agent_id' => $subscription->agent_id,
-            'subscription_id' => $subscription->id,
-            'order_id' => null,
-            'points' => $points,
-            'value_usd' => 0,
-            'description' => "Points gagnés pour la création d'un abonnement {$subscription->type_label}",
-            'earned_at' => now(),
-        ]);
-    }
+    public function rewardAgent(Subscription $subscription): void {}
 
     public function generateDailyOrders(Subscription $subscription): void
     {

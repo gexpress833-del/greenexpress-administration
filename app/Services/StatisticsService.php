@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Commission;
 use App\Models\Order;
 use App\Models\Subscription;
 use App\Models\User;
@@ -35,20 +34,15 @@ class StatisticsService
             ? round(($cancelledOrders / $totalOrders) * 100, 2)
             : 0;
 
-        $commissionsPaid = (float) Commission::where('type', 'daily_commission')
-            ->whereBetween('created_at', [$start, $end])
-            ->sum('amount_usd');
-
         $withdrawalsPaid = (float) Withdrawal::whereIn('status', ['approved', 'paid'])
             ->whereBetween('created_at', [$start, $end])
             ->sum('amount_usd');
 
-        $profitEstimate = round($totalRevenue * 0.25 - $commissionsPaid, 2); // estimation marge 25%
+        $profitEstimate = round($totalRevenue * 0.25 - $withdrawalsPaid, 2);
 
         $topAgents = User::where('role', 'agent')
             ->where('is_active', true)
             ->withCount(['ordersAsAgent' => fn ($q) => $q->where('status', 'delivered')->whereNotNull('client_validated_at')->whereBetween('client_validated_at', [$start, $end])])
-            ->withSum(['commissions' => fn ($q) => $q->where('type', 'daily_commission')->whereBetween('created_at', [$start, $end])], 'amount_usd')
             ->orderByDesc('orders_as_agent_count')
             ->take(10)
             ->get();
@@ -120,7 +114,7 @@ class StatisticsService
             'financial' => [
                 'total_revenue_usd' => $totalRevenue,
                 'avg_delivery_cost' => $avgDeliveryCost,
-                'commissions_paid' => $commissionsPaid,
+                'commissions_paid' => 0,
                 'withdrawals_paid' => $withdrawalsPaid,
                 'profit_estimate' => $profitEstimate,
             ],
@@ -152,10 +146,7 @@ class StatisticsService
 
         $ordersCount = (clone $validatedQuery)->count();
         $totalRevenue = (float) (clone $validatedQuery)->sum('total_amount');
-        $totalCommissions = (float) Commission::where('agent_id', $agentId)
-            ->where('type', 'daily_commission')
-            ->whereBetween('created_at', [$start, $end])
-            ->sum('amount_usd');
+        $totalCommissions = 0;
         $totalPoints = DB::table('agent_points')->where('agent_id', $agentId)->sum('points') ?: 0;
 
         $dailyTrend = [];

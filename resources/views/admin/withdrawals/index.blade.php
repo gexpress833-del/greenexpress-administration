@@ -7,8 +7,8 @@
                 <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-rose-400/20 bg-rose-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-rose-200">Administration</div>
-                        <h1 class="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">Retraits agents</h1>
-                        <p class="mt-2 max-w-2xl text-sm text-slate-300 sm:text-base">Validez ou rejetez les demandes de retrait depuis une interface claire et rapide.</p>
+                        <h1 class="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">Retraits points</h1>
+                        <p class="mt-2 max-w-2xl text-sm text-slate-300 sm:text-base">Validez les conversions de points des agents et livreurs vers Mobile Money.</p>
                     </div>
                     <span class="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-bold text-slate-200 shadow-xl backdrop-blur-xl">{{ $withdrawals->total() }} demande(s)</span>
                 </div>
@@ -18,12 +18,22 @@
                         @forelse($withdrawals as $w)
                             <div class="grid gap-4 px-5 py-5 transition hover:bg-white/[0.05] lg:grid-cols-[1.2fr_1fr_1fr_1fr_1.2fr] lg:items-center sm:px-6">
                                 <div>
-                                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Agent</p>
-                                    <p class="mt-1 text-base font-black text-white">{{ $w->agent->name }}</p>
+                                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Bénéficiaire</p>
+                                    <p class="mt-1 text-base font-black text-white">{{ ($w->user ?? $w->agent)?->name }}</p>
+                                    <p class="text-xs text-slate-400">{{ ($w->user ?? $w->agent)?->role }}</p>
                                 </div>
                                 <div>
                                     <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">USD</p>
                                     <p class="mt-1 text-lg font-black text-white">$ {{ number_format($w->amount_usd, 2) }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Points</p>
+                                    <p class="mt-1 text-lg font-black text-yellow-300">{{ number_format($w->points) }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Mobile Money</p>
+                                    <p class="mt-1 text-sm font-black text-white">{{ $w->mobile_money_operator }}</p>
+                                    <p class="text-xs text-slate-400">{{ $w->mobile_money_number }}</p>
                                 </div>
                                 <div>
                                     <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">FC</p>

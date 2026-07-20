@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Commission;
 use App\Models\Order;
 use App\Models\Subscription;
 use App\Models\SubscriptionSuspension;
@@ -187,12 +186,11 @@ class AdminFeatureTest extends TestCase
         $this->assertDatabaseHas('meals', ['name' => 'Poulet rôti']);
     }
 
-    public function test_admin_can_view_commissions_index(): void
+    public function test_admin_can_view_points_withdrawals_index(): void
     {
         $admin = $this->admin();
-        Commission::factory()->count(2)->create();
 
-        $this->actingAs($admin)->get(route('admin.commissions.index'))->assertStatus(200);
+        $this->actingAs($admin)->get(route('admin.withdrawals.index'))->assertStatus(200);
     }
 
     public function test_non_admin_cannot_access_admin_routes(): void

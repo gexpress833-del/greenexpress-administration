@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Commission;
+use App\Models\AgentPoint;
 use App\Models\Meal;
 use App\Models\Order;
 use App\Models\Subscription;
@@ -183,46 +183,51 @@ class AgentFeatureTest extends TestCase
         $this->assertStringContainsString(rawurlencode('wa.client@example.com'), $link);
     }
 
-    public function test_agent_can_view_commissions_and_withdrawals(): void
+    public function test_agent_can_view_points_and_withdrawals(): void
     {
         $agent = $this->agent();
-        Commission::factory()->create(['agent_id' => $agent->id]);
 
-        $this->actingAs($agent)->get(route('agent.commissions.index'))->assertStatus(200);
+        $this->actingAs($agent)->get(route('agent.points.index'))->assertStatus(200);
         $this->actingAs($agent)->get(route('agent.withdrawals.index'))->assertStatus(200);
     }
 
     public function test_agent_can_request_withdrawal_within_balance(): void
     {
         $agent = $this->agent();
-        Commission::factory()->create([
+        AgentPoint::create([
             'agent_id' => $agent->id,
-            'amount_usd' => 20,
-            'type' => 'daily_commission',  // Must match getAvailableBalance() filter
+            'points' => 400,
+            'value_usd' => 10,
+            'description' => 'Test points',
+            'earned_at' => now(),
         ]);
 
-        $response = $this->actingAs($agent)->post(route('agent.withdrawals.store'), ['amount_usd' => 10]);
-        $response->assertStatus(302);
+        $response = $this->actingAs($agent)->post(route('agent.withdrawals.store'), [
+            'points' => 200,
+            'mobile_money_operator' => 'Operateur libre',
+            'mobile_money_number' => '0990000000',
+        ]);
 
-        // Manually check the location header
-        $location = $response->headers->get('Location');
-        $this->assertEquals(route('agent.withdrawals.index'), $location, "Expected redirect to {$location}");
-
-        $this->assertDatabaseHas('withdrawals', ['agent_id' => $agent->id, 'amount_usd' => 10]);
+        $response->assertRedirect(route('agent.withdrawals.index'));
+        $this->assertDatabaseHas('withdrawals', ['user_id' => $agent->id, 'points' => 200, 'amount_usd' => 5]);
     }
 
     public function test_agent_cannot_withdraw_more_than_balance(): void
     {
         $agent = $this->agent();
-        Commission::factory()->create([
+        AgentPoint::create([
             'agent_id' => $agent->id,
-            'amount_usd' => 5,
-            'type' => 'daily_commission',  // Must match getAvailableBalance() filter
+            'points' => 200,
+            'value_usd' => 5,
+            'description' => 'Test points',
+            'earned_at' => now(),
         ]);
 
         $this->actingAs($agent)->post(route('agent.withdrawals.store'), [
-            'amount_usd' => 100,
-        ])->assertSessionHasErrors('amount_usd');
+            'points' => 400,
+            'mobile_money_operator' => 'Operateur libre',
+            'mobile_money_number' => '0990000000',
+        ])->assertSessionHasErrors('points');
     }
 
     public function test_non_agent_cannot_access_agent_routes(): void

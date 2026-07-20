@@ -7,21 +7,24 @@ use App\Models\Order;
 
 class PointService
 {
-    public const POINTS_PER_ORDER = 12;
+    public const AGENT_POINTS_PER_ORDER = 12;
 
-    public const POINTS_FOR_SMALL_ORDER = 3;
+    public const LIVREUR_POINTS_PER_ORDER = 15;
 
-    public const SMALL_ORDER_LIMIT_FC = 5000;
+    public const VALUE_PER_POINT_USD = 0.025;
 
-    public const VALUE_PER_POINT_USD = 0.025; // 12 pts = 0.30$
+    public static function pointsPerOrderFor(string $role): int
+    {
+        return match ($role) {
+            'agent' => self::AGENT_POINTS_PER_ORDER,
+            'livreur' => self::LIVREUR_POINTS_PER_ORDER,
+            default => 0,
+        };
+    }
 
     public function creditForOrder(Order $order): ?AgentPoint
     {
         if ($order->status !== 'delivered' || $order->client_validated_at === null || ! $order->agent_id) {
-            return null;
-        }
-
-        if ($order->subscription_id !== null) {
             return null;
         }
 
@@ -33,9 +36,7 @@ class PointService
             return $existingPoint;
         }
 
-        $points = $order->total_amount_fc < self::SMALL_ORDER_LIMIT_FC
-            ? self::POINTS_FOR_SMALL_ORDER
-            : self::POINTS_PER_ORDER;
+        $points = self::AGENT_POINTS_PER_ORDER;
         $valueUsd = round($points * self::VALUE_PER_POINT_USD, 2);
 
         return AgentPoint::create([

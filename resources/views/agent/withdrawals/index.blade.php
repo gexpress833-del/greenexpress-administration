@@ -1,7 +1,7 @@
 ﻿<x-app-layout>
     @php
-        $canWithdraw = $available >= 10;
-        $totalWithdrawn = $withdrawals->sum('amount_usd');
+        $canWithdraw = $available >= 5;
+        $totalWithdrawn = $withdrawals->whereIn('status', ['approved', 'paid'])->sum('amount_usd');
         $pendingCount = $withdrawals->where('status', 'pending')->count();
     @endphp
     <div class="-m-4 lg:-m-8 min-h-screen overflow-hidden bg-slate-950 text-white">
@@ -16,7 +16,7 @@
                         Espace agent
                     </div>
                     <h1 class="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">Retraits</h1>
-                    <p class="mt-2 max-w-2xl text-sm text-slate-300 sm:text-base">Retirez vos commissions et suivez l’historique de vos demandes.</p>
+                    <p class="mt-2 max-w-2xl text-sm text-slate-300 sm:text-base">Convertissez vos points en argent et recevez votre retrait sur n’importe quel opérateur Mobile Money.</p>
                 </div>
 
                 <section class="relative mb-6 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.07] p-6 shadow-2xl shadow-black/30 backdrop-blur-2xl sm:p-8 lg:p-10">
@@ -28,24 +28,26 @@
                             <div>
                                 <p class="text-xs font-bold uppercase tracking-[0.25em] text-emerald-300">Solde disponible pour retrait</p>
                                 <p class="mt-3 font-mono text-6xl font-black leading-none tracking-tight text-white sm:text-7xl lg:text-8xl">$ {{ number_format($available, 2) }}</p>
-                                <p class="mt-3 text-sm text-slate-300">Minimum requis : <span class="font-bold text-white">$ 10.00</span></p>
+                                <p class="mt-3 text-sm text-slate-300">{{ number_format($availablePoints) }} points disponibles · 1 point = $ 0,025</p>
                             </div>
 
                             <div class="w-full max-w-md">
                                 @if($canWithdraw)
                                     <form method="POST" action="{{ route('agent.withdrawals.store') }}" class="grid gap-3">
                                         @csrf
-                                        <label class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Montant à retirer (USD)</label>
-                                        <div class="flex gap-3">
-                                            <input type="number" step="0.01" name="amount_usd" min="10" max="{{ $available }}" required placeholder="Ex: 25.00" class="flex-1 rounded-2xl border-white/10 bg-slate-950/60 px-4 py-3 text-white shadow-sm focus:border-emerald-400 focus:ring-emerald-400">
-                                            <button type="submit" class="rounded-2xl bg-emerald-500 px-6 py-3 font-black text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400">Demander</button>
+                                        <label class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Points à convertir</label>
+                                        <input type="number" name="points" min="200" max="{{ $availablePoints }}" required placeholder="Ex: 200" class="rounded-2xl border-white/10 bg-slate-950/60 px-4 py-3 text-white shadow-sm focus:border-emerald-400 focus:ring-emerald-400">
+                                        <div class="grid gap-3 sm:grid-cols-2">
+                                            <input type="text" name="mobile_money_operator" required placeholder="Opérateur Mobile Money" class="rounded-2xl border-white/10 bg-slate-950/60 px-4 py-3 text-white shadow-sm focus:border-emerald-400 focus:ring-emerald-400">
+                                            <input type="text" name="mobile_money_number" required placeholder="Numéro Mobile Money" class="rounded-2xl border-white/10 bg-slate-950/60 px-4 py-3 text-white shadow-sm focus:border-emerald-400 focus:ring-emerald-400">
                                         </div>
-                                        <p class="text-xs text-slate-500">Maximum autorisé : $ {{ number_format($available, 2) }}</p>
+                                        <button type="submit" class="rounded-2xl bg-emerald-500 px-6 py-3 font-black text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400">Convertir et demander</button>
+                                        <p class="text-xs text-slate-500">Minimum : 200 points = $ 5.00 · maximum : {{ number_format($availablePoints) }} points</p>
                                     </form>
                                 @else
                                     <div class="rounded-2xl border border-rose-300/20 bg-rose-300/10 p-5">
                                         <p class="text-sm font-bold text-rose-100">Solde insuffisant</p>
-                                        <p class="mt-1 text-xs text-rose-200/80">Vous avez besoin d’au moins $ 10.00 pour demander un retrait.</p>
+                                        <p class="mt-1 text-xs text-rose-200/80">Vous avez besoin d’au moins 200 points, soit $ 5.00, pour demander un retrait.</p>
                                     </div>
                                 @endif
                             </div>
@@ -64,7 +66,7 @@
                     </div>
                     <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-4 shadow-xl backdrop-blur-2xl">
                         <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Seuil minimum</p>
-                        <p class="mt-2 text-2xl font-black text-emerald-300">$ 10.00</p>
+                        <p class="mt-2 text-2xl font-black text-emerald-300">$ 5.00</p>
                     </div>
                 </div>
 

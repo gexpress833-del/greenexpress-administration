@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Enums\PeriodType;
-use App\Models\Commission;
 use App\Models\LeaderboardEntry;
 use App\Models\Order;
 use App\Models\User;
@@ -40,13 +39,6 @@ class LeaderboardService
             ->groupBy('agent_id')
             ->pluck('total', 'agent_id');
 
-        // Métrique : commissions
-        $commissionsData = Commission::where('type', 'daily_commission')
-            ->whereBetween('calculated_for_date', [$start, $end])
-            ->selectRaw('agent_id, sum(amount_usd) as total')
-            ->groupBy('agent_id')
-            ->pluck('total', 'agent_id');
-
         // Métrique : points
         $pointsData = DB::table('agent_points')
             ->whereBetween('earned_at', [$start, $end])
@@ -56,7 +48,6 @@ class LeaderboardService
 
         $metrics = [
             'orders' => $ordersData,
-            'commission' => $commissionsData,
             'points' => $pointsData,
         ];
 

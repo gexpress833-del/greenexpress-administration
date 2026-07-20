@@ -19,15 +19,16 @@ class WithdrawalRequested extends Notification
 
     public function toDatabase(object $notifiable): array
     {
-        $agentName = $this->withdrawal->agent->name;
+        $user = $this->withdrawal->user ?? $this->withdrawal->agent;
+        $userName = $user?->name ?? 'Utilisateur';
         $amount = number_format($this->withdrawal->amount_usd, 2);
 
         if ($notifiable->isAdmin()) {
             return [
                 'title' => 'Nouvelle demande de retrait',
-                'message' => "{$agentName} a demandé un retrait de \${$amount}.",
+                'message' => "{$userName} a demandé un retrait de \${$amount}.",
                 'withdrawal_id' => $this->withdrawal->id,
-                'url' => route('admin.withdrawals.show', $this->withdrawal),
+                'url' => route('admin.withdrawals.index'),
                 'icon' => 'banknote',
                 'color' => 'purple',
             ];
@@ -37,7 +38,7 @@ class WithdrawalRequested extends Notification
             'title' => 'Demande de retrait envoyée',
             'message' => "Votre demande de retrait de \${$amount} a été envoyée et est en attente de validation.",
             'withdrawal_id' => $this->withdrawal->id,
-            'url' => route('agent.withdrawals.index'),
+            'url' => $user?->isLivreur() ? route('livreur.withdrawals.index') : route('agent.withdrawals.index'),
             'icon' => 'banknote',
             'color' => 'purple',
         ];

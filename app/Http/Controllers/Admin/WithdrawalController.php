@@ -12,7 +12,7 @@ class WithdrawalController extends Controller
 {
     public function index()
     {
-        $withdrawals = Withdrawal::with('agent')->latest()->paginate(20);
+        $withdrawals = Withdrawal::with(['user', 'agent'])->latest()->paginate(20);
 
         return view('admin.withdrawals.index', compact('withdrawals'));
     }
@@ -30,9 +30,10 @@ class WithdrawalController extends Controller
         $redirect = redirect()->route('admin.withdrawals.index')
             ->with('success', 'Statut mis à jour.');
 
-        if (in_array($request->status, ['approved', 'paid']) && $withdrawal->agent->phone) {
+        $recipient = $withdrawal->user ?? $withdrawal->agent;
+        if (in_array($request->status, ['approved', 'paid']) && $recipient?->phone) {
             $whatsappLink = app(WhatsAppService::class)->withdrawalApprovedLink(
-                $withdrawal->agent->phone,
+                $recipient->phone,
                 (float) $withdrawal->amount_usd
             );
             $redirect->with('whatsapp_link', $whatsappLink);

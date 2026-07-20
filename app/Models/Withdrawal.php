@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['agent_id', 'amount_usd', 'amount_fc', 'status', 'notes', 'processed_by', 'processed_at'])]
+#[Fillable(['user_id', 'agent_id', 'points', 'amount_usd', 'amount_fc', 'mobile_money_operator', 'mobile_money_number', 'status', 'notes', 'processed_by', 'processed_at'])]
 class Withdrawal extends Model
 {
     use HasFactory;
@@ -15,10 +15,16 @@ class Withdrawal extends Model
     protected function casts(): array
     {
         return [
+            'points' => 'integer',
             'amount_usd' => 'decimal:2',
             'amount_fc' => 'decimal:2',
             'processed_at' => 'datetime',
         ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function agent(): BelongsTo

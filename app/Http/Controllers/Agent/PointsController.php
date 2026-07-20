@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use App\Models\AgentPoint;
-use App\Models\Commission;
 use App\Services\PointService;
 use Illuminate\Http\Request;
 
@@ -32,18 +31,13 @@ class PointsController extends Controller
                 ->sum('points') ?: 0;
         }
 
-        $totalCommissionsUsd = Commission::where('agent_id', $user->id)
-            ->where('type', 'daily_commission')
-            ->sum('amount_usd') ?: 0;
-
         return view('agent.points.index', compact(
             'totalPoints',
             'todayPoints',
             'totalValueUsd',
             'todayValueUsd',
             'pointsHistory',
-            'weeklyPoints',
-            'totalCommissionsUsd'
+            'weeklyPoints'
         ));
     }
 }

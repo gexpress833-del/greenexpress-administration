@@ -51,12 +51,12 @@
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Profit estimé</p>
             <p class="text-2xl font-bold text-blue-700">$ {{ number_format($kpi['financial']['profit_estimate'], 2) }}</p>
-            <p class="text-xs text-slate-400 mt-1">Marge 25% — Commissions déduites</p>
+            <p class="text-xs text-slate-400 mt-1">Marge 25% — retraits de points déduits</p>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
-            <p class="text-sm text-slate-400">Commissions versées</p>
-            <p class="text-2xl font-bold text-purple-700">$ {{ number_format($kpi['financial']['commissions_paid'], 2) }}</p>
-            <p class="text-xs text-slate-400 mt-1">Retraits : $ {{ number_format($kpi['financial']['withdrawals_paid'], 2) }}</p>
+            <p class="text-sm text-slate-400">Retraits de points</p>
+            <p class="text-2xl font-bold text-purple-700">$ {{ number_format($kpi['financial']['withdrawals_paid'], 2) }}</p>
+            <p class="text-xs text-slate-400 mt-1">Paiements Mobile Money : $ {{ number_format($kpi['financial']['withdrawals_paid'], 2) }}</p>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Coût moyen livraison</p>

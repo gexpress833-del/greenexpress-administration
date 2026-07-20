@@ -3,7 +3,6 @@
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\CommissionController;
 use App\Http\Controllers\Admin\ComplaintController;
 use App\Http\Controllers\Admin\DeliveryController;
 use App\Http\Controllers\Admin\ExchangeRateController;
@@ -33,7 +32,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::match(['get', 'post'], '/internal/schedule-run', function () {
+Route::post('/internal/schedule-run', function () {
     $configuredSecret = config('services.schedule.secret');
     $providedSecret = request()->bearerToken() ?? request()->query('token');
 
@@ -93,7 +92,6 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::resource('deliveries', DeliveryController::class)->only(['index', 'create', 'store']);
         Route::post('/deliveries/{delivery}/penalize', [DeliveryController::class, 'penalize'])->name('deliveries.penalize');
         Route::resource('exchange-rates', ExchangeRateController::class)->only(['index', 'store']);
-        Route::resource('commissions', CommissionController::class)->only(['index']);
         Route::resource('withdrawals', WithdrawalController::class)->only(['index', 'update']);
         Route::get('/suspensions', [SubscriptionSuspensionController::class, 'index'])->name('suspensions.index');
         Route::post('/suspensions/{suspension}/accept', [SubscriptionSuspensionController::class, 'accept'])->name('suspensions.accept');
@@ -113,7 +111,6 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::post('/subscriptions/{subscription}/update-client-info', [App\Http\Controllers\Agent\SubscriptionController::class, 'updateClientInfo'])->name('subscriptions.update-client-info');
         Route::get('/receipt/{order}', [ReceiptController::class, 'show'])->name('receipt.show');
         Route::get('/receipt/{order}/pdf', [ReceiptController::class, 'pdf'])->name('receipt.pdf');
-        Route::get('/commissions', [App\Http\Controllers\Agent\CommissionController::class, 'index'])->name('commissions.index');
         Route::get('/points', [PointsController::class, 'index'])->name('points.index');
         Route::get('/withdrawals', [App\Http\Controllers\Agent\WithdrawalController::class, 'index'])->name('withdrawals.index');
         Route::post('/withdrawals', [App\Http\Controllers\Agent\WithdrawalController::class, 'store'])->name('withdrawals.store');
@@ -130,6 +127,8 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::post('/deliveries/{delivery}/validate-by-code', [App\Http\Controllers\Livreur\DeliveryController::class, 'validateByCode'])->name('deliveries.validate-by-code');
         Route::post('/deliveries/{delivery}/notify', [App\Http\Controllers\Livreur\DeliveryController::class, 'notifyClient'])->name('deliveries.notify');
         Route::get('/points', [App\Http\Controllers\Livreur\PointsController::class, 'index'])->name('points.index');
+        Route::get('/withdrawals', [App\Http\Controllers\Livreur\WithdrawalController::class, 'index'])->name('withdrawals.index');
+        Route::post('/withdrawals', [App\Http\Controllers\Livreur\WithdrawalController::class, 'store'])->name('withdrawals.store');
     });
 
     // Cuisinier routes

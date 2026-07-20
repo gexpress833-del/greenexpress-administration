@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\AgentPoint;
 use App\Models\Order;
 use App\Models\Subscription;
 use App\Models\User;
@@ -138,7 +137,7 @@ class SubscriptionRenewalTest extends TestCase
         $this->actingAs($admin)
             ->patch(route('admin.subscriptions.update', $newSub), ['status' => 'active']);
 
-        $this->assertDatabaseHas('agent_points', [
+        $this->assertDatabaseMissing('agent_points', [
             'subscription_id' => $newSub->id,
             'agent_id' => $oldSub->agent_id,
         ]);
@@ -158,17 +157,13 @@ class SubscriptionRenewalTest extends TestCase
         $this->actingAs($admin)
             ->patch(route('admin.subscriptions.update', $sub), ['status' => 'active']);
 
-        $this->assertDatabaseHas('agent_points', [
+        $this->assertDatabaseMissing('agent_points', [
             'subscription_id' => $sub->id,
             'agent_id' => $sub->agent_id,
         ]);
-
-        $point = AgentPoint::where('subscription_id', $sub->id)->first();
-        $this->assertNotNull($point);
-        $this->assertEquals(50, $point->points);
     }
 
-    public function test_agent_does_not_receive_per_order_points_for_subscription_orders(): void
+    public function test_agent_receives_fixed_points_for_validated_subscription_orders(): void
     {
         $agent = User::factory()->agent()->create();
         $client = User::factory()->client()->create();
@@ -189,10 +184,11 @@ class SubscriptionRenewalTest extends TestCase
 
         $result = app(PointService::class)->creditForOrder($order);
 
-        $this->assertNull($result, 'Agent should not receive per-order points for subscription orders');
-        $this->assertDatabaseMissing('agent_points', [
+        $this->assertNotNull($result);
+        $this->assertDatabaseHas('agent_points', [
             'order_id' => $order->id,
             'agent_id' => $agent->id,
+            'points' => 12,
         ]);
     }
 }

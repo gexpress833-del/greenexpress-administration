@@ -3,17 +3,16 @@
 namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
-use App\Models\Commission;
 use App\Models\Order;
 use App\Models\Withdrawal;
-use App\Services\CommissionService;
 use App\Services\PointService;
+use App\Services\PointWithdrawalService;
 use App\Services\RewardService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request, PointService $pointService, CommissionService $commissionService, RewardService $rewardService)
+    public function index(Request $request, PointService $pointService, PointWithdrawalService $withdrawalService, RewardService $rewardService)
     {
         $user = $request->user();
 
@@ -27,22 +26,9 @@ class DashboardController extends Controller
 
         $totalPoints = $pointService->getTotalPoints($user->id);
         $todayPoints = $pointService->getTodayPoints($user->id);
-        $totalCommissions = Commission::where('agent_id', $user->id)->where('type', 'daily_commission')->sum('amount_usd');
-        $availableBalance = $commissionService->getAvailableBalance($user->id);
-        $pendingWithdrawals = Withdrawal::where('agent_id', $user->id)->where('status', 'pending')->count();
-
-        $todayCommissionUsd = (float) Commission::where('agent_id', $user->id)
-            ->where('type', 'daily_commission')
-            ->whereDate('calculated_for_date', today())
-            ->sum('amount_usd');
-        $dailyCap = CommissionService::DAILY_CAP_USD;
-        $dailyCapRemaining = max(0, $dailyCap - $todayCommissionUsd);
-
-        $commissionsByDate = Commission::where('agent_id', $user->id)
-            ->where('type', 'daily_commission')
-            ->latest('calculated_for_date')
-            ->take(7)
-            ->get();
+        $availablePoints = $withdrawalService->availablePoints($user);
+        $availableBalance = round($availablePoints * PointService::VALUE_PER_POINT_USD, 2);
+        $pendingWithdrawals = Withdrawal::where('user_id', $user->id)->where('status', 'pending')->count();
 
         $weeklyOrders = [];
         for ($i = 6; $i >= 0; $i--) {
@@ -74,9 +60,9 @@ class DashboardController extends Controller
         $todayRewards = $rewardService->getTodayRewardCount($user->id);
 
         return view('agent.dashboard', compact(
-            'todayOrders', 'totalOrders', 'totalPoints', 'todayPoints', 'totalCommissions', 'availableBalance',
-            'pendingWithdrawals', 'commissionsByDate', 'weeklyOrders',
-            'recentOrders', 'topClients', 'todayCommissionUsd', 'dailyCap', 'dailyCapRemaining',
+            'todayOrders', 'totalOrders', 'totalPoints', 'todayPoints', 'availableBalance',
+            'availablePoints', 'pendingWithdrawals', 'weeklyOrders',
+            'recentOrders', 'topClients',
             'badges', 'todayRewards'
         ));
     }
