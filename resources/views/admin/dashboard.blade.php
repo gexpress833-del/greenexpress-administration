@@ -37,6 +37,21 @@
         </button>
     </form>
 
+    <div class="mb-6 flex flex-wrap gap-2">
+        <a href="{{ route('admin.reports.statistics', ['start' => $start->format('Y-m-d'), 'end' => $end->format('Y-m-d')]) }}"
+           class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold py-2 px-4 rounded-lg transition">
+            📊 Exporter Statistiques (PDF)
+        </a>
+        <a href="{{ route('admin.reports.financial', ['start' => $start->format('Y-m-d'), 'end' => $end->format('Y-m-d')]) }}"
+           class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold py-2 px-4 rounded-lg transition">
+            💰 Exporter États Financiers (PDF)
+        </a>
+        <a href="{{ route('admin.reports.sales', ['period' => 'month']) }}"
+           class="inline-flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-semibold py-2 px-4 rounded-lg transition">
+            📦 Rapport Ventes (PDF)
+        </a>
+    </div>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Chiffre d'affaires validé</p>

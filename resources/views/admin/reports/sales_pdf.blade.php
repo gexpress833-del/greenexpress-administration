@@ -59,7 +59,6 @@
                 </tr>
             </thead>
             <tbody>
-                @php $orders = App\Models\Order::with(['agent', 'client'])->whereBetween('created_at', [$start, $end])->get(); @endphp
                 @foreach($orders as $o)
                     <tr>
                         <td>{{ $o->code ?? $o->id }}</td>

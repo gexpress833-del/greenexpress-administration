@@ -120,6 +120,8 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity_logs.index');
         // Reports
         Route::get('/reports/sales', [ReportController::class, 'exportSales'])->name('reports.sales');
+        Route::get('/reports/statistics', [ReportController::class, 'exportStatistics'])->name('reports.statistics');
+        Route::get('/reports/financial', [ReportController::class, 'exportFinancial'])->name('reports.financial');
     });
 
     // Agent routes
