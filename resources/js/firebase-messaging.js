@@ -113,7 +113,10 @@ async function enableNotifications(button, panel) {
     const app = initializeApp(config.firebase);
     const messaging = getMessaging(app);
 
-    const registration = await navigator.serviceWorker.ready;
+    const registration = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Service worker non disponible')), 5000)),
+    ]);
 
     const token = await getToken(messaging, {
         vapidKey: config.vapid_key,
@@ -147,6 +150,8 @@ async function enableNotifications(button, panel) {
     });
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => startNotifications().catch((error) => console.warn('FCM non disponible:', error)));
+} else {
     startNotifications().catch((error) => console.warn('FCM non disponible:', error));
-});
+}
