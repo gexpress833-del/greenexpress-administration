@@ -41,7 +41,6 @@ class MigrateFromRenderToSupabase extends Command
             'subscriptions',
             'subscription_suspensions',
             'deliveries',
-            'commissions',
             'withdrawals',
             'delivery_reviews',
             'complaints',

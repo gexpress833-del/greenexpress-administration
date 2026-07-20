@@ -231,16 +231,15 @@
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
-                    <thead class="bg-slate-950/45"><tr><th class="px-6 py-3 text-left text-slate-400">Nom</th><th class="px-6 py-3 text-left text-slate-400">Commandes</th><th class="px-6 py-3 text-left text-slate-400">Commissions</th></tr></thead>
+                    <thead class="bg-slate-950/45"><tr><th class="px-6 py-3 text-left text-slate-400">Nom</th><th class="px-6 py-3 text-left text-slate-400">Commandes</th></tr></thead>
                     <tbody class="divide-y divide-white/10">
                         @forelse($kpi['top_agents'] as $agent)
                             <tr>
                                 <td class="px-6 py-3 font-medium">{{ $agent->name }}</td>
                                 <td class="px-6 py-3">{{ $agent->orders_as_agent_count }}</td>
-                                <td class="px-6 py-3">$ {{ number_format($agent->commissions_sum_amount_usd ?? 0, 2) }}</td>
                             </tr>
                         @empty
-                            <tr><td class="px-6 py-3 text-slate-400" colspan="3">Aucun agent</td></tr>
+                            <tr><td class="px-6 py-3 text-slate-400" colspan="2">Aucun agent</td></tr>
                         @endforelse
                     </tbody>
                 </table>

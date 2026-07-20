@@ -129,30 +129,6 @@ class WhatsAppService
     }
 
     /**
-     * Message de crédit de commission pour un agent.
-     */
-    public function commissionCreditedMessage(string $orderCode, float $amountUsd, string $type): string
-    {
-        $typeLabels = ['points' => 'Points', 'bonus_meal' => 'Bonus repas', 'commission_5' => 'Commission 5%', 'commission_10' => 'Commission 10%', 'daily_commission' => 'Commission journalière'];
-        $label = $typeLabels[$type] ?? $type;
-
-        return "Bonjour,\n\n"
-            ."Une progression liée à la commande {$orderCode} a été enregistrée sur votre compte agent.\n"
-            ."Type : {$label}\n"
-            .'Montant estimé : $'.number_format($amountUsd, 2)."\n\n"
-            ."Le suivi définitif reste disponible dans votre espace agent.\n"
-            ."Merci pour votre travail.\nGreen Express";
-    }
-
-    /**
-     * Lien WhatsApp de crédit de commission.
-     */
-    public function commissionCreditedLink(string $phone, string $orderCode, float $amountUsd, string $type): string
-    {
-        return $this->link($phone, $this->commissionCreditedMessage($orderCode, $amountUsd, $type));
-    }
-
-    /**
      * Nettoie un numéro de téléphone pour le format wa.me (chiffres uniquement).
      */
     public function normalizePhone(string $phone): string

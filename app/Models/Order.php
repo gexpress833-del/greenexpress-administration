@@ -62,11 +62,6 @@ class Order extends Model
         return $this->hasOne(Delivery::class);
     }
 
-    public function commission(): HasOne
-    {
-        return $this->hasOne(Commission::class);
-    }
-
     public function agentPoints(): HasMany
     {
         return $this->hasMany(AgentPoint::class);

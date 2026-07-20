@@ -104,7 +104,7 @@
                 <div class="w-2 h-2 mt-2 rounded-full bg-emerald-500 shrink-0"></div>
                 <div>
                     <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Transparence économique</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Taux de change affichés en temps réel, tarification claire, commissions accessibles — aucune opacité n'a sa place ici.</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Taux de change affichés en temps réel, tarification claire — aucune opacité n'a sa place ici.</p>
                 </div>
             </div>
             <div class="flex items-start gap-4 bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">

@@ -65,7 +65,6 @@ class AgentFeatureTest extends TestCase
         $this->assertEquals(30, (float) $order->total_amount);
         $this->assertCount(1, $order->items);
         $this->assertNotNull($order->client_validation_code);
-        $this->assertDatabaseMissing('commissions', ['order_id' => $order->id]);
     }
 
     public function test_agent_order_store_requires_items(): void

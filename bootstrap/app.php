@@ -3,7 +3,6 @@
 use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\ForceUtf8ContentType;
 use App\Http\Middleware\RoleMiddleware;
-use App\Jobs\CalculateDailyCommissions;
 use App\Jobs\SendDailyDeliveryCodes;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -17,7 +16,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withSchedule(function ($schedule) {
-        $schedule->job(new CalculateDailyCommissions)->dailyAt('23:59');
         $schedule->job(new SendDailyDeliveryCodes)->dailyAt('08:00');
     })
     ->withMiddleware(function (Middleware $middleware): void {

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Commission;
 use App\Models\Order;
 use App\Models\Subscription;
 use App\Models\User;
@@ -123,13 +122,6 @@ class ReportController extends Controller
         $totalRevenue = (float) $validatedOrders->sum(fn ($o) => (float) $o->total_amount);
         $totalRevenueFc = (float) $validatedOrders->sum(fn ($o) => (float) $o->total_amount_fc);
 
-        $commissions = Commission::whereBetween('created_at', [$start, $end])
-            ->with(['agent', 'order'])
-            ->orderBy('created_at')
-            ->get();
-
-        $totalCommissions = (float) $commissions->sum(fn ($c) => (float) $c->amount_usd);
-
         $withdrawals = Withdrawal::whereBetween('created_at', [$start, $end])
             ->with(['user', 'agent'])
             ->orderBy('created_at')
@@ -143,7 +135,7 @@ class ReportController extends Controller
             ->sum('price');
 
         $totalIncome = $totalRevenue + $subscriptionsRevenue;
-        $totalExpenses = $totalCommissions + $withdrawalsPaid;
+        $totalExpenses = $withdrawalsPaid;
         $netProfit = $totalIncome - $totalExpenses;
 
         $data = [
@@ -152,8 +144,6 @@ class ReportController extends Controller
             'validatedOrders' => $validatedOrders,
             'totalRevenue' => $totalRevenue,
             'totalRevenueFc' => $totalRevenueFc,
-            'commissions' => $commissions,
-            'totalCommissions' => $totalCommissions,
             'withdrawals' => $withdrawals,
             'withdrawalsPaid' => $withdrawalsPaid,
             'withdrawalsPending' => $withdrawalsPending,

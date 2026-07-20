@@ -114,7 +114,6 @@ class StatisticsService
             'financial' => [
                 'total_revenue_usd' => $totalRevenue,
                 'avg_delivery_cost' => $avgDeliveryCost,
-                'commissions_paid' => 0,
                 'withdrawals_paid' => $withdrawalsPaid,
                 'profit_estimate' => $profitEstimate,
             ],
@@ -146,7 +145,6 @@ class StatisticsService
 
         $ordersCount = (clone $validatedQuery)->count();
         $totalRevenue = (float) (clone $validatedQuery)->sum('total_amount');
-        $totalCommissions = 0;
         $totalPoints = DB::table('agent_points')->where('agent_id', $agentId)->sum('points') ?: 0;
 
         $dailyTrend = [];
@@ -162,7 +160,6 @@ class StatisticsService
         return [
             'orders_count' => $ordersCount,
             'total_revenue' => $totalRevenue,
-            'total_commissions' => $totalCommissions,
             'total_points' => (int) $totalPoints,
             'daily_trend' => $dailyTrend,
         ];

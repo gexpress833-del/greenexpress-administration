@@ -78,10 +78,6 @@
             <td class="amount">$ {{ number_format($totalIncome, 2) }}</td>
         </tr>
         <tr>
-            <td>Commissions versées aux agents</td>
-            <td class="amount">$ {{ number_format($totalCommissions, 2) }}</td>
-        </tr>
-        <tr>
             <td>Retraits de points payés</td>
             <td class="amount">$ {{ number_format($withdrawalsPaid, 2) }}</td>
         </tr>
@@ -123,34 +119,6 @@
                 </tr>
             @empty
                 <tr><td colspan="6" style="color:#94a3b8;">Aucune commande livrée sur cette période</td></tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    <div class="section-title">Commissions versées</div>
-    <table class="data">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Agent</th>
-                <th>Commande</th>
-                <th>Type</th>
-                <th style="text-align:right;">Points</th>
-                <th style="text-align:right;">Montant USD</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($commissions as $c)
-                <tr>
-                    <td>{{ $c->created_at->format('d/m/Y') }}</td>
-                    <td>{{ $c->agent?->name ?? 'N/A' }}</td>
-                    <td>{{ $c->order?->code ?? '—' }}</td>
-                    <td>{{ $c->type }}</td>
-                    <td style="text-align:right;">{{ $c->points }}</td>
-                    <td style="text-align:right;">$ {{ number_format((float) $c->amount_usd, 2) }}</td>
-                </tr>
-            @empty
-                <tr><td colspan="6" style="color:#94a3b8;">Aucune commission sur cette période</td></tr>
             @endforelse
         </tbody>
     </table>

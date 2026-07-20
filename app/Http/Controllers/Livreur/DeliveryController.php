@@ -217,32 +217,6 @@ class DeliveryController extends Controller
             }
         }
 
-        if ($order->agent?->phone) {
-            try {
-                $whatsappLink = app(WhatsAppService::class)->commissionCreditedLink(
-                    $order->agent->phone,
-                    $order->code,
-                    0.00,
-                    'daily_commission'
-                );
-            } catch (\Throwable $exception) {
-                Log::error('WhatsApp link generation failed after QR validation.', [
-                    'delivery_id' => $delivery->id,
-                    'order_id' => $order->id,
-                    'exception' => $exception,
-                ]);
-                $whatsappLink = null;
-            }
-
-            $redirect = redirect()->route('livreur.deliveries.show', $delivery)
-                ->with('reward', 'Livraison validée par QR ! Vous recevez 15 points.')
-                ->with('validation_code', $request->code);
-
-            return $whatsappLink
-                ? $redirect->with('whatsapp_link', $whatsappLink)
-                : $redirect;
-        }
-
         return redirect()->route('livreur.deliveries.show', $delivery)
             ->with('reward', 'Livraison validée par QR ! Vous recevez 15 points.')
             ->with('validation_code', $request->code);
@@ -311,31 +285,6 @@ class DeliveryController extends Controller
                 'order_id' => $order->id,
                 'exception' => $exception,
             ]);
-        }
-
-        if ($order->agent?->phone) {
-            try {
-                $whatsappLink = app(WhatsAppService::class)->commissionCreditedLink(
-                    $order->agent->phone,
-                    $order->code,
-                    0.00,
-                    'daily_commission'
-                );
-            } catch (\Throwable $exception) {
-                Log::error('WhatsApp link generation failed after client code validation.', [
-                    'delivery_id' => $delivery->id,
-                    'order_id' => $order->id,
-                    'exception' => $exception,
-                ]);
-                $whatsappLink = null;
-            }
-
-            $redirect = redirect()->route('livreur.deliveries.show', $delivery)
-                ->with('reward', 'Livraison validée ! Vous recevez 15 points de livraison.');
-
-            return $whatsappLink
-                ? $redirect->with('whatsapp_link', $whatsappLink)
-                : $redirect;
         }
 
         return redirect()->route('livreur.deliveries.show', $delivery)

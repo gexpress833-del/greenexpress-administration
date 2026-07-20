@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use App\Models\Commission;
 use App\Models\Delivery;
 use App\Models\Meal;
 use App\Models\Order;
@@ -197,17 +196,6 @@ class DatabaseSeeder extends Seeder
             'currency' => 'usd',
             'price_fc' => 50.00 * $rate,
             'status' => 'active',
-        ]);
-
-        // Commission
-        Commission::create([
-            'agent_id' => $agent->id,
-            'order_id' => $order1->id,
-            'type' => 'points',
-            'points' => 12,
-            'amount_usd' => 1.50,
-            'amount_fc' => 4200,
-            'description' => 'Points gagnés pour la commande '.$order1->code,
         ]);
 
         // Withdrawal

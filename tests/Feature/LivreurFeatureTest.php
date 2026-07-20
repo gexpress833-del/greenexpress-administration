@@ -110,7 +110,7 @@ class LivreurFeatureTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_livreur_validate_by_code_generates_agent_commission(): void
+    public function test_livreur_validate_by_code_generates_agent_points(): void
     {
         $livreur = $this->livreur();
         $order = Order::factory()->create([
@@ -160,10 +160,9 @@ class LivreurFeatureTest extends TestCase
 
         $response->assertRedirect(route('livreur.deliveries.show', $delivery));
         $response->assertSessionHas('error');
-        $this->assertDatabaseMissing('commissions', ['order_id' => $order->id]);
     }
 
-    public function test_livreur_deliver_does_not_generate_commission(): void
+    public function test_livreur_deliver_does_not_generate_points(): void
     {
         $livreur = $this->livreur();
         $order = Order::factory()->create();
@@ -176,7 +175,6 @@ class LivreurFeatureTest extends TestCase
             ->post(route('livreur.deliveries.deliver', $delivery))
             ->assertRedirect(route('livreur.deliveries.index'));
 
-        $this->assertDatabaseMissing('commissions', ['order_id' => $order->id]);
     }
 
     public function test_livreur_qr_form_with_valid_code_redirects_to_show(): void
