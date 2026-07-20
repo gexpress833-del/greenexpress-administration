@@ -1,9 +1,6 @@
-importScripts('https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/11.6.0/firebase-messaging-compat.js');
-
-const CACHE_NAME = 'green-express-v12';
-const STATIC_CACHE = 'green-express-static-v12';
-const DYNAMIC_CACHE = 'green-express-dynamic-v12';
+const CACHE_NAME = 'green-express-v13';
+const STATIC_CACHE = 'green-express-static-v13';
+const DYNAMIC_CACHE = 'green-express-dynamic-v13';
 
 const STATIC_ASSETS = [
     '/logo.png',
@@ -148,36 +145,37 @@ self.addEventListener('fetch', (event) => {
     }
 });
 
-// Firebase Messaging background handler
-fetch('/firebase-config')
-    .then((response) => response.json())
-    .then((config) => {
-        if (!config.enabled) return;
+self.addEventListener('push', (event) => {
+    let payload = {};
 
-        firebase.initializeApp(config.firebase);
-        const messaging = firebase.messaging();
+    try {
+        if (event.data) {
+            payload = event.data.json();
+        }
+    } catch (e) {
+        console.warn('Unable to parse push payload:', e);
+    }
 
-        messaging.onBackgroundMessage((payload) => {
-            const data = payload.data || {};
-            const title = data.title || 'Green Express';
-            const body = data.body || '';
-            const url = data.url || '/notifications';
-            const tag = data.tag || 'green-express';
+    const data = payload.data || payload.notification || payload || {};
+    const title = data.title || payload.title || 'Green Express';
+    const body = data.body || payload.body || '';
+    const url = data.url || '/notifications';
+    const tag = data.tag || 'green-express';
 
-            self.registration.showNotification(title, {
-                body,
-                icon: data.icon || '/logo-192.png',
-                badge: data.badge || '/logo-192.png',
-                tag,
-                data: { url, notification_id: data.notification_id },
-                actions: [
-                    { action: 'open', title: 'Voir' },
-                    { action: 'close', title: 'Fermer' },
-                ],
-            });
-        });
-    })
-    .catch(() => {});
+    event.waitUntil(
+        self.registration.showNotification(title, {
+            body,
+            icon: data.icon || '/logo-192.png',
+            badge: data.badge || '/logo-192.png',
+            tag,
+            data: { url, notification_id: data.notification_id },
+            actions: [
+                { action: 'open', title: 'Voir' },
+                { action: 'close', title: 'Fermer' },
+            ],
+        }),
+    );
+});
 
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
