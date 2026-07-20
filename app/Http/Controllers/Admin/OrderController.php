@@ -8,11 +8,13 @@ use App\Models\User;
 use App\Notifications\NewOrderForCuisinier;
 use App\Notifications\NewOrderForDelivery;
 use App\Notifications\OrderStatusUpdated;
+use App\Services\NotificationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use chillerlan\QRCode\Output\QRGdImagePNG;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -52,30 +54,63 @@ class OrderController extends Controller
         }
         $order->save();
 
-        // Notifier l'agent du changement de statut
-        if ($order->agent && $oldStatus !== $request->status) {
-            $order->agent->notify(new OrderStatusUpdated($order, $oldStatus));
-        }
+        $notificationService = app(NotificationService::class);
 
-        // Notifier tous les livreurs quand la commande est validée par l'admin
-        if ($request->status === 'confirmed' && $oldStatus !== 'confirmed') {
-            $livreurs = User::where('role', 'livreur')->get();
-            foreach ($livreurs as $livreur) {
-                $livreur->notify(new NewOrderForDelivery($order));
+        try {
+            // Notifier l'agent du changement de statut (database + FCM)
+            if ($order->agent && $oldStatus !== $request->status) {
+                $order->agent->notify(new OrderStatusUpdated($order, $oldStatus));
+
+                $notificationService->notify(
+                    $order->agent,
+                    'order',
+                    'Commande '.($request->status === 'confirmed' ? 'validée' : 'mise à jour'),
+                    "Votre commande {$order->code} est maintenant « {$request->status} ».",
+                    'order_status_updated',
+                    route('agent.orders.show', $order),
+                );
             }
-        }
 
-        // Notifier tous les cuisiniers quand la commande est validée par l'admin
-        if ($request->status === 'confirmed' && $oldStatus !== 'confirmed') {
-            $cuisiniers = User::where('role', 'cuisinier')->get();
-            $notificationService = app(NotificationService::class);
-            foreach ($cuisiniers as $cuisinier) {
-                $cuisinier->notify(new NewOrderForCuisinier($order));
-                $notificationService->cuisinierNewOrder($cuisinier, $order);
+            // Notifier tous les livreurs quand la commande est validée par l'admin
+            if ($request->status === 'confirmed' && $oldStatus !== 'confirmed') {
+                $livreurs = User::where('role', 'livreur')->get();
+                foreach ($livreurs as $livreur) {
+                    $livreur->notify(new NewOrderForDelivery($order));
+
+                    $notificationService->notify(
+                        $livreur,
+                        'delivery',
+                        'Nouvelle livraison disponible',
+                        "La commande {$order->code} a été validée. Vous pouvez la prendre en charge.",
+                        'new_order_for_delivery',
+                        route('livreur.deliveries.index'),
+                    );
+                }
             }
+
+            // Notifier tous les cuisiniers quand la commande est validée par l'admin
+            if ($request->status === 'confirmed' && $oldStatus !== 'confirmed') {
+                $cuisiniers = User::where('role', 'cuisinier')->get();
+                foreach ($cuisiniers as $cuisinier) {
+                    $cuisinier->notify(new NewOrderForCuisinier($order));
+                    $notificationService->cuisinierNewOrder($cuisinier, $order);
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Notification dispatch failed during order status update.', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage(),
+            ]);
         }
 
-        return redirect()->route('admin.orders.show', $order)->with('success', 'Statut mis à jour.');
+        $successMessage = match ($request->status) {
+            'confirmed' => 'Commande validée avec succès. Les livreurs et cuisiniers ont été notifiés.',
+            'cancelled' => 'Commande annulée.',
+            'delivered' => 'Commande marquée comme livrée.',
+            default => 'Statut mis à jour.',
+        };
+
+        return redirect()->route('admin.orders.show', $order)->with('success', $successMessage);
     }
 
     public function print(Order $order)
