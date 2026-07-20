@@ -3,36 +3,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const rate = parseFloat(@json(\App\Models\ExchangeRate::current()));
     if (!rate || isNaN(rate)) return;
 
-    function toFixedTwo(v) {
-        return (Math.round(v * 100) / 100).toFixed(2);
+    function roundValue(v, decimals) {
+        const factor = Math.pow(10, decimals);
+        return (Math.round(v * factor) / factor).toFixed(decimals);
     }
 
     function wireForm(form) {
-        const price = form.querySelector('[name="price"]');
-        const priceFc = form.querySelector('[name="price_fc"]');
-        const currency = form.querySelector('[name="currency"]');
-        const priceUsd = form.querySelector('[name="price_usd"]');
-
-        // ensure hidden fields exist when needed
-        if (!priceFc && price) {
-            const h = document.createElement('input');
-            h.type = 'hidden';
-            h.name = 'price_fc';
-            form.appendChild(h);
-        }
-
-        if (!priceUsd && price && currency && currency.value === 'fc') {
-            const h2 = document.createElement('input');
-            h2.type = 'hidden';
-            h2.name = 'price_usd';
-            form.appendChild(h2);
-        }
-
         const p = form.querySelector('[name="price"]');
         const pf = form.querySelector('[name="price_fc"]');
-        const pu = form.querySelector('[name="price_usd"]');
+        const currency = form.querySelector('[name="currency"]');
 
-        // create visible conversion labels next to inputs
+        if (!p && !pf) return;
+
+        // Disable HTML5 step validation to avoid "valeur correcte" errors
+        [p, pf].forEach(inp => { if (inp) { inp.setAttribute('step', 'any'); inp.setAttribute('inputmode', 'decimal'); } });
+
         function attachLabel(inp) {
             if (!inp) return null;
             let el = inp.parentElement.querySelector('.converted-label');
@@ -46,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const labelPrice = attachLabel(p);
         const labelPriceFc = attachLabel(pf);
-        // attach rate badge next to currency select
+
         function attachRateBadge(sel) {
             if (!sel) return null;
             let badge = sel.parentElement.querySelector('.rate-badge');
@@ -59,69 +44,61 @@ document.addEventListener('DOMContentLoaded', function () {
             return badge;
         }
 
-        const rateBadge = attachRateBadge(currency);
+        attachRateBadge(currency);
 
-        let editing = null;
-        const debounce = (fn, ms = 150) => {
-            let t;
-            return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
-        };
+        let updating = false;
 
-        function updateFromPrice() {
-            if (!p || !pf) return;
-            const v = parseFloat(p.value || 0);
-            if (isNaN(v)) { pf.value = ''; if (pu) pu.value = ''; return; }
+        function sync(source) {
+            if (updating) return;
+            updating = true;
+
             const cur = currency ? currency.value : 'usd';
-            if (cur === 'usd') {
-                pf.value = toFixedTwo(v * rate);
-                if (pu) pu.value = toFixedTwo(v);
-                if (labelPrice) labelPrice.textContent = '≈ ' + toFixedTwo(v * rate) + ' FC';
-                if (labelPriceFc) labelPriceFc.textContent = '≈ $ ' + toFixedTwo(v);
+
+            if (source === 'price' && p) {
+                const v = parseFloat(p.value);
+                if (isNaN(v)) { if (pf) pf.value = ''; updateLabels('', ''); }
+                else if (cur === 'usd') {
+                    if (pf) pf.value = roundValue(v * rate, 2);
+                    updateLabels(v, v * rate);
+                } else {
+                    if (pf) pf.value = roundValue(v, 2);
+                    updateLabels(v / rate, v);
+                }
+            } else if (source === 'price_fc' && pf) {
+                const v = parseFloat(pf.value);
+                if (isNaN(v)) { if (p) p.value = ''; updateLabels('', ''); }
+                else if (cur === 'usd') {
+                    if (p) p.value = roundValue(v / rate, 2);
+                    updateLabels(v / rate, v);
+                } else {
+                    if (p) p.value = roundValue(v, 2);
+                    updateLabels(v / rate, v);
+                }
             } else {
-                // price input is in FC when currency=fc
-                pf.value = toFixedTwo(v);
-                if (pu) pu.value = toFixedTwo(v / rate);
-                if (labelPrice) labelPrice.textContent = '≈ $ ' + toFixedTwo(v / rate);
-                if (labelPriceFc) labelPriceFc.textContent = '≈ ' + toFixedTwo(v) + ' FC';
+                // currency change or initial sync: recalculate labels from price
+                const v = parseFloat(p ? p.value : 0);
+                if (!isNaN(v)) {
+                    if (cur === 'usd') updateLabels(v, v * rate);
+                    else updateLabels(v / rate, v);
+                }
             }
+
+            updating = false;
         }
 
-        function updateFromPriceFc() {
-            if (!p || !pf) return;
-            const v = parseFloat(pf.value || 0);
-            if (isNaN(v)) { p.value = ''; if (pu) pu.value = ''; return; }
-            const cur = currency ? currency.value : 'usd';
-            if (cur === 'usd') {
-                // price_fc edited, update price (usd)
-                p.value = toFixedTwo(v / rate);
-                if (pu) pu.value = toFixedTwo(p.value);
-                if (labelPrice) labelPrice.textContent = '≈ ' + toFixedTwo(v) + ' FC';
-                if (labelPriceFc) labelPriceFc.textContent = '≈ $ ' + toFixedTwo(v / rate);
-            } else {
-                // currency=fc, price should be fc; update price (fc -> kept)
-                p.value = toFixedTwo(v);
-                if (pu) pu.value = toFixedTwo(v / rate);
-                if (labelPrice) labelPrice.textContent = '≈ $ ' + toFixedTwo(v / rate);
-                if (labelPriceFc) labelPriceFc.textContent = '≈ ' + toFixedTwo(v) + ' FC';
-            }
+        function updateLabels(usd, fc) {
+            if (labelPrice) labelPrice.textContent = usd !== '' ? '≈ $ ' + roundValue(usd, 2) : '';
+            if (labelPriceFc) labelPriceFc.textContent = fc !== '' ? '≈ ' + roundValue(fc, 2) + ' FC' : '';
         }
 
-        const debouncedPrice = debounce(() => { if (editing==='price') return; editing='price'; updateFromPrice(); editing = null; });
-        const debouncedFc = debounce(() => { if (editing==='price_fc') return; editing='price_fc'; updateFromPriceFc(); editing = null; });
+        if (p) p.addEventListener('input', () => sync('price'));
+        if (pf) pf.addEventListener('input', () => sync('price_fc'));
+        if (currency) currency.addEventListener('change', () => sync('currency'));
 
-        if (p) p.addEventListener('input', debouncedPrice);
-        if (pf) pf.addEventListener('input', debouncedFc);
-
-        if (currency) currency.addEventListener('change', function () {
-            updateFromPrice();
-        });
-
-        // initial sync
-        updateFromPrice();
+        sync('currency');
     }
 
     document.querySelectorAll('form').forEach(form => {
-        // only wire forms that have price or price_fc inputs
         if (form.querySelector('[name="price"]') || form.querySelector('[name="price_fc"]')) {
             wireForm(form);
         }

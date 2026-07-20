@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Meal;
 use App\Models\Order;
 use App\Models\User;
-use App\Notifications\OrderCreated;
 use App\Services\ActivityLogService;
 use App\Services\NotificationService;
 use App\Services\OrderService;
@@ -66,19 +65,17 @@ class OrderController extends Controller
             $order->client_validation_code
         );
 
-        // Notifier tous les admins
+        // Notifier tous les utilisateurs actifs (sauf clients) d'une nouvelle commande
         $notificationService = app(NotificationService::class);
-        $admins = User::where('role', 'admin')->get();
-        foreach ($admins as $admin) {
-            $admin->notify(new OrderCreated($order));
-
+        $recipients = User::where('role', '!=', 'client')->get();
+        foreach ($recipients as $recipient) {
             $notificationService->notify(
-                $admin,
+                $recipient,
                 'order',
-                'Nouvelle commande à valider',
+                'Nouvelle commande créée',
                 "L'agent {$order->agent->name} a créé la commande {$order->code}. Ouvrez-la pour prendre des dispositions.",
                 'order_created',
-                route('admin.orders.show', $order),
+                $recipient->isAdmin() ? route('admin.orders.show', $order) : route('dashboard'),
             );
         }
 
