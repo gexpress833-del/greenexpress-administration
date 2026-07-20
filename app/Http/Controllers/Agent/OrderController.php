@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Notifications\OrderCreated;
 use App\Services\ActivityLogService;
+use App\Services\NotificationService;
 use App\Services\OrderService;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
@@ -66,9 +67,19 @@ class OrderController extends Controller
         );
 
         // Notifier tous les admins
+        $notificationService = app(NotificationService::class);
         $admins = User::where('role', 'admin')->get();
         foreach ($admins as $admin) {
             $admin->notify(new OrderCreated($order));
+
+            $notificationService->notify(
+                $admin,
+                'order',
+                'Nouvelle commande à valider',
+                "L'agent {$order->agent->name} a créé la commande {$order->code}. Ouvrez-la pour prendre des dispositions.",
+                'order_created',
+                route('admin.orders.show', $order),
+            );
         }
 
         app(ActivityLogService::class)->logFromRequest($request, 'order_created', Order::class, $order->id, 'Agent created order '.$order->code);
