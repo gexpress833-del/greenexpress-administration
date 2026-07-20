@@ -56,7 +56,8 @@ class DeliveryController extends Controller
         $delivery->load(['order.items.meal', 'order.agent']);
 
         if (! in_array($delivery->order->status, ['confirmed', 'preparing', 'delivering', 'delivered']) || $delivery->order->admin_validated_at === null) {
-            abort(403, 'Cette commande n\'est pas encore validée par l\'administrateur.');
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'Cette commande n\'est pas encore validée par l\'administrateur. Veuillez patienter avant de scanner.');
         }
 
         $isAssignedToMe = $delivery->livreur_id === $request->user()->id;
@@ -71,7 +72,8 @@ class DeliveryController extends Controller
 
         // Ne pas assigner une commande non validée par l'admin
         if (! in_array($delivery->order->status, ['confirmed', 'preparing']) || $delivery->order->admin_validated_at === null) {
-            abort(403, 'Cette commande n\'est pas encore validée par l\'administrateur.');
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'Cette commande n\'est pas encore validée par l\'administrateur. Vous ne pouvez pas la prendre en charge.');
         }
 
         $deliveryService->assign($delivery, $request->user()->id);
@@ -140,12 +142,14 @@ class DeliveryController extends Controller
         $delivery = Delivery::where('order_id', $order->id)->first();
 
         if (! $delivery) {
-            abort(403, 'Aucune livraison trouvée pour cette commande.');
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'Aucune livraison trouvée pour cette commande. Vérifiez le code scanné.');
         }
 
         // Vérifier que la commande est validée par admin
         if (! in_array($order->status, ['confirmed', 'preparing', 'delivering', 'delivered']) || $order->admin_validated_at === null) {
-            abort(403, 'Cette commande n\'est pas encore validée par l\'administrateur.');
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'Cette commande n\'est pas encore validée par l\'administrateur. Le QR ne peut pas être scanné pour le moment.');
         }
 
         $check = $deliveryService->canDeliver($delivery);
@@ -164,7 +168,8 @@ class DeliveryController extends Controller
             $order->status = 'delivering';
             $order->save();
         } elseif ($delivery->livreur_id !== $request->user()->id) {
-            abort(403, 'Cette livraison est assignée à un autre livreur.');
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'Cette livraison est déjà assignée à un autre livreur. Vous ne pouvez pas la scanner.');
         }
 
         if (strtoupper($request->code) !== $order->client_validation_code) {
@@ -245,7 +250,10 @@ class DeliveryController extends Controller
 
     public function validateByCode(Request $request, Delivery $delivery, DeliveryService $deliveryService)
     {
-        abort_unless($delivery->livreur_id === $request->user()->id, 403);
+        if ($delivery->livreur_id !== $request->user()->id) {
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'Cette livraison ne vous est pas assignée.');
+        }
 
         $request->validate([
             'validation_code' => ['required', 'string', 'size:6'],
@@ -255,7 +263,8 @@ class DeliveryController extends Controller
 
         // Vérifier que la commande est validée par admin
         if (! in_array($order->status, ['confirmed', 'preparing', 'delivering', 'delivered']) || $order->admin_validated_at === null) {
-            abort(403, 'Cette commande n\'est pas encore validée par l\'administrateur.');
+            return redirect()->route('livreur.deliveries.show', $delivery)
+                ->with('error', 'Cette commande n\'est pas encore validée par l\'administrateur. Le code ne peut pas être validé pour le moment.');
         }
 
         $check = $deliveryService->canDeliver($delivery);
