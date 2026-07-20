@@ -1,9 +1,9 @@
-importScripts('https://www.gstatic.com/firebasejs/11.10.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/11.10.1/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/11.6.0/firebase-messaging-compat.js');
 
-const CACHE_NAME = 'green-express-v11';
-const STATIC_CACHE = 'green-express-static-v11';
-const DYNAMIC_CACHE = 'green-express-dynamic-v11';
+const CACHE_NAME = 'green-express-v12';
+const STATIC_CACHE = 'green-express-static-v12';
+const DYNAMIC_CACHE = 'green-express-dynamic-v12';
 
 const STATIC_ASSETS = [
     '/logo.png',

@@ -1,4 +1,4 @@
-const FIREBASE_VERSION = '11.10.1';
+const FIREBASE_VERSION = '11.6.0';
 
 function isIosPwa() {
     return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
