@@ -62,7 +62,14 @@ Route::get('/firebase-config', function () {
 
     return response()->json([
         'enabled' => collect($firebase)->every(fn ($value) => is_string($value) && $value !== ''),
-        'firebase' => $firebase,
+        'firebase' => [
+            'apiKey' => $firebase['api_key'] ?? '',
+            'authDomain' => $firebase['auth_domain'] ?? '',
+            'projectId' => $firebase['project_id'] ?? '',
+            'storageBucket' => $firebase['storage_bucket'] ?? '',
+            'messagingSenderId' => $firebase['messaging_sender_id'] ?? '',
+            'appId' => $firebase['app_id'] ?? '',
+        ],
         'vapid_key' => $firebase['vapid_key'] ?? null,
     ]);
 })->name('firebase.config');
