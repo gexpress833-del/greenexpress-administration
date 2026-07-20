@@ -51,6 +51,7 @@ return [
 
     'firebase' => [
         'project_id' => env('FIREBASE_PROJECT_ID'),
+        'service_account' => env('FIREBASE_SERVICE_ACCOUNT'),
         'service_account_json' => env('FIREBASE_SERVICE_ACCOUNT_JSON', storage_path('app/firebase/green-express-admin-firebase-adminsdk-fbsvc-49383ccd9c.json')),
         'web' => [
             'api_key' => env('FIREBASE_WEB_API_KEY'),

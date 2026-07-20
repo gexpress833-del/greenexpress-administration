@@ -150,12 +150,21 @@ class FcmService
 
     private function credentials(): array
     {
-        $path = config('services.firebase.service_account_json');
-        if (! is_string($path) || ! is_file($path)) {
-            throw new RuntimeException('Firebase service account file is missing.');
+        $raw = config('services.firebase.service_account');
+
+        if (is_string($raw) && $raw !== '') {
+            $decoded = base64_decode($raw, true);
+            $json = $decoded !== false && str_starts_with($decoded, '{') ? $decoded : $raw;
+
+            return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         }
 
-        return json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+        $path = config('services.firebase.service_account_json');
+        if (is_string($path) && is_file($path)) {
+            return json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+        }
+
+        throw new RuntimeException('Firebase service account not configured. Set FIREBASE_SERVICE_ACCOUNT (base64 or raw JSON) or FIREBASE_SERVICE_ACCOUNT_JSON (file path) in .env.');
     }
 
     private function base64Url(string $value): string
