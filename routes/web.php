@@ -20,6 +20,7 @@ use App\Http\Controllers\Client\ReviewController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ExchangeRatePublicController;
+use App\Http\Controllers\FcmTokenController;
 use App\Http\Controllers\MealPublicController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordChangeController;
@@ -56,7 +57,19 @@ Route::post('/internal/schedule-run', function () {
     }
 })->middleware('throttle:6,1')->name('internal.schedule-run');
 
+Route::get('/firebase-config', function () {
+    $firebase = config('services.firebase.web');
+
+    return response()->json([
+        'enabled' => collect($firebase)->every(fn ($value) => is_string($value) && $value !== ''),
+        'firebase' => $firebase,
+        'vapid_key' => $firebase['vapid_key'] ?? null,
+    ]);
+})->name('firebase.config');
+
 Route::middleware(['auth', 'password.changed'])->group(function () {
+    Route::post('/notifications/fcm-token', [FcmTokenController::class, 'store'])->name('notifications.fcm-token.store');
+    Route::delete('/notifications/fcm-token', [FcmTokenController::class, 'destroy'])->name('notifications.fcm-token.destroy');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/taux', [ExchangeRatePublicController::class, 'show'])->name('exchange-rate.show');
     Route::get('/repas', [MealPublicController::class, 'index'])->name('meals.public');

@@ -1,6 +1,7 @@
 
 
 import Alpine from 'alpinejs';
+import './firebase-messaging.js';
 
 window.Alpine = Alpine;
 

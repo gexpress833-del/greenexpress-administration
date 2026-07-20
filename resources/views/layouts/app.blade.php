@@ -43,6 +43,16 @@
                 @endauth
 
                 <main class="flex-1 p-4 lg:p-8" @auth style="padding-top: calc(1rem + 4rem + env(safe-area-inset-top))" @endauth>
+                    @auth
+                        <div class="mb-4 flex flex-col gap-2 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-100" data-fcm-permission-panel>
+                            <div>
+                                <p class="font-semibold">Activer les notifications</p>
+                                <p class="text-xs text-blue-700 dark:text-blue-200">Recevez les alertes importantes de Green Express sur cet appareil.</p>
+                            </div>
+                            <button type="button" data-fcm-enable class="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-blue-700">Activer</button>
+                        </div>
+                    @endauth
+
                     @if(session('whatsapp_link'))
                         <div class="mb-4 rounded-xl border border-green-200 bg-white p-4 text-slate-800 shadow-sm dark:border-green-800 dark:bg-slate-900 dark:text-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <div>

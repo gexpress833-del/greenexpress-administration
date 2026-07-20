@@ -114,6 +114,11 @@ class User extends Authenticatable
         return $this->hasMany(Withdrawal::class, 'agent_id');
     }
 
+    public function fcmTokens(): HasMany
+    {
+        return $this->hasMany(FcmToken::class);
+    }
+
     public function agentPoints(): HasMany
     {
         return $this->hasMany(AgentPoint::class, 'agent_id');

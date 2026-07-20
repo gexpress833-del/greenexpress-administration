@@ -18,7 +18,7 @@ class NotificationService
      */
     public function notify(User $user, string $category, string $title, string $message, string $type = 'custom', ?string $url = null, ?string $whatsappLink = null): void
     {
-        Notification::create([
+        $notification = Notification::create([
             'user_id' => $user->id,
             'title' => $title,
             'message' => $message,
@@ -28,6 +28,16 @@ class NotificationService
             'whatsapp_link' => $whatsappLink,
             'is_read' => false,
         ]);
+
+        try {
+            app(FcmService::class)->sendNotification($notification);
+        } catch (\Throwable $exception) {
+            Log::warning('FCM notification dispatch failed.', [
+                'notification_id' => $notification->id,
+                'user_id' => $user->id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -37,10 +47,8 @@ class NotificationService
     {
         try {
             User::chunkById(200, function ($users) use ($title, $message, $type, $relatedClass, $relatedId, $url, $category) {
-                $now = now();
-                $rows = [];
                 foreach ($users as $user) {
-                    $rows[] = [
+                    $notification = Notification::create([
                         'user_id' => $user->id,
                         'title' => $title,
                         'message' => $message,
@@ -50,13 +58,17 @@ class NotificationService
                         'notifiable_id' => $relatedId,
                         'url' => $url,
                         'is_read' => false,
-                        'created_at' => $now,
-                        'updated_at' => $now,
-                    ];
-                }
+                    ]);
 
-                if (! empty($rows)) {
-                    Notification::insert($rows);
+                    try {
+                        app(FcmService::class)->sendNotification($notification);
+                    } catch (\Throwable $exception) {
+                        Log::warning('FCM broadcast notification failed.', [
+                            'notification_id' => $notification->id,
+                            'user_id' => $user->id,
+                            'error' => $exception->getMessage(),
+                        ]);
+                    }
                 }
             });
         } catch (\Throwable $e) {
