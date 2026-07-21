@@ -30,6 +30,39 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_users_can_authenticate_with_phone_number(): void
+    {
+        $user = User::factory()->create(['phone' => '+243811234567']);
+
+        $response = $this->post('/login', [
+            'login' => '+243811234567',
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_users_can_authenticate_with_formatted_phone_number(): void
+    {
+        $user = User::factory()->create(['phone' => '+243811234567']);
+
+        $response = $this->post('/login', [
+            'login' => '+243 811-234-567',
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_phone_is_normalized_on_create(): void
+    {
+        $user = User::factory()->create(['phone' => '+243 811-234-567']);
+
+        $this->assertSame('+243811234567', $user->fresh()->phone);
+    }
+
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();

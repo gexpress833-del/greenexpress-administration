@@ -139,6 +139,53 @@ class LivreurFeatureTest extends TestCase
         $this->assertDatabaseHas('agent_points', ['order_id' => $order->id]);
     }
 
+    public function test_validation_code_form_visible_after_deliver_before_client_validation(): void
+    {
+        $livreur = $this->livreur();
+        $order = Order::factory()->create([
+            'client_validation_code' => 'ABC123',
+            'status' => 'delivered',
+            'admin_validated_at' => now(),
+            'client_validated_at' => null,
+        ]);
+        $delivery = Delivery::factory()->create([
+            'livreur_id' => $livreur->id,
+            'order_id' => $order->id,
+            'status' => 'delivered',
+        ]);
+
+        $response = $this->actingAs($livreur)
+            ->get(route('livreur.deliveries.show', $delivery));
+
+        $response->assertStatus(200);
+        $response->assertSee('Valider la livraison par code');
+        $response->assertDontSee($order->client_validation_code);
+    }
+
+    public function test_validation_code_form_hidden_after_client_validation(): void
+    {
+        $livreur = $this->livreur();
+        $order = Order::factory()->create([
+            'client_validation_code' => 'ABC123',
+            'status' => 'delivered',
+            'admin_validated_at' => now(),
+            'client_validated_at' => now(),
+        ]);
+        $delivery = Delivery::factory()->create([
+            'livreur_id' => $livreur->id,
+            'order_id' => $order->id,
+            'status' => 'delivered',
+        ]);
+
+        $response = $this->actingAs($livreur)
+            ->get(route('livreur.deliveries.show', $delivery));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Valider la livraison par code');
+        $response->assertSee('Livraison validée par le client');
+        $response->assertSee($order->client_validation_code);
+    }
+
     public function test_livreur_validate_by_code_rejects_wrong_code(): void
     {
         $livreur = $this->livreur();

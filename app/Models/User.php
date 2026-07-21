@@ -49,6 +49,17 @@ class User extends Authenticatable
         ];
     }
 
+    public function setPhoneAttribute(?string $value): void
+    {
+        if ($value === null || $value === '') {
+            $this->attributes['phone'] = null;
+
+            return;
+        }
+
+        $this->attributes['phone'] = preg_replace('/[^0-9+]/', '', $value);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

@@ -48,7 +48,7 @@ class LoginRequest extends FormRequest
 
         $credentials = filter_var($login, FILTER_VALIDATE_EMAIL)
             ? ['email' => $login, 'password' => $password]
-            : ['phone' => $login, 'password' => $password];
+            : ['phone' => preg_replace('/[^0-9+]/', '', $login), 'password' => $password];
 
         if (! Auth::attempt($credentials, $remember)) {
             RateLimiter::hit($this->throttleKey());
