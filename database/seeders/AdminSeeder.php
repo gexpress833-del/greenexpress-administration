@@ -20,10 +20,9 @@ class AdminSeeder extends Seeder
             $admin->update([
                 'name' => $name,
                 'email' => $email,
-                'password' => Hash::make($password),
                 'is_active' => true,
             ]);
-            echo "Admin user updated successfully!\n";
+            $this->command->info('Admin user updated successfully!');
         } else {
             User::create([
                 'name' => $name,
@@ -31,13 +30,10 @@ class AdminSeeder extends Seeder
                 'phone' => '+243000000000',
                 'role' => 'admin',
                 'password' => Hash::make($password),
+                'password_changed_at' => null,
                 'is_active' => true,
             ]);
-            echo "Admin user created successfully!\n";
+            $this->command->info('Admin user created successfully! Please change the password after first login.');
         }
-
-        echo "Email: {$email}\n";
-        echo "Password: {$password}\n";
-        echo "Please change the default password after first login.\n";
     }
 }

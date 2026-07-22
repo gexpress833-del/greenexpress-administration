@@ -21,45 +21,53 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Admin
-        User::create([
-            'name' => 'Admin Green Express',
-            'email' => 'admin@greenexpress.com',
-            'phone' => '+243000000001',
-            'role' => 'admin',
-            'password' => Hash::make('password'),
-            'password_changed_at' => now(),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@greenexpress.com'],
+            [
+                'name' => 'Admin Green Express',
+                'phone' => '+243000000001',
+                'role' => 'admin',
+                'password' => Hash::make('password'),
+                'password_changed_at' => now(),
+            ]
+        );
 
         // Agent
-        User::create([
-            'name' => 'Agent Commercial',
-            'email' => 'agent@greenexpress.com',
-            'phone' => '+243000000002',
-            'role' => 'agent',
-            'password' => Hash::make('password'),
-            'password_changed_at' => now(),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'agent@greenexpress.com'],
+            [
+                'name' => 'Agent Commercial',
+                'phone' => '+243000000002',
+                'role' => 'agent',
+                'password' => Hash::make('password'),
+                'password_changed_at' => now(),
+            ]
+        );
 
         // Livreur
-        User::create([
-            'name' => 'Livreur Principal',
-            'email' => 'livreur@greenexpress.com',
-            'phone' => '+243000000003',
-            'role' => 'livreur',
-            'password' => Hash::make('password'),
-            'password_changed_at' => now(),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'livreur@greenexpress.com'],
+            [
+                'name' => 'Livreur Principal',
+                'phone' => '+243000000003',
+                'role' => 'livreur',
+                'password' => Hash::make('password'),
+                'password_changed_at' => now(),
+            ]
+        );
 
         // Client
-        User::create([
-            'name' => 'Client Abonné',
-            'email' => 'client@greenexpress.com',
-            'phone' => '+243000000004',
-            'address' => 'Kolwezi, Gombe',
-            'role' => 'client',
-            'password' => Hash::make('password'),
-            'password_changed_at' => now(),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'client@greenexpress.com'],
+            [
+                'name' => 'Client Abonné',
+                'phone' => '+243000000004',
+                'address' => 'Kolwezi, Gombe',
+                'role' => 'client',
+                'password' => Hash::make('password'),
+                'password_changed_at' => now(),
+            ]
+        );
 
         // Subscription Types
         $this->call(SubscriptionTypeSeeder::class);

@@ -40,7 +40,7 @@ fi
 # Run migrations
 cd /var/www/html && php artisan migrate --force --no-interaction
 
-# Create admin if none exists
+# Only seed admin user (not demo data) — AdminSeeder skips password reset if admin already exists
 cd /var/www/html && php artisan db:seed --class=AdminSeeder --force --no-interaction
 
 # Storage link
