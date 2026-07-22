@@ -181,7 +181,7 @@ class NotificationService
     }
 
     /**
-     * 6. Livreur: Validation client (15 points)
+     * 6. Livreur: Validation client (13 points)
      */
     public function livreurDeliveryValidated(User $livreur, Delivery $delivery, bool $isSubscription = false): void
     {
@@ -190,10 +190,10 @@ class NotificationService
 
         if ($isSubscription) {
             $title = '🎉 Livraison d\'abonnement validée !';
-            $message = "Le repas quotidien a été confirmé par le client. 15 points viennent d'être ajoutés à votre compte.";
+            $message = "Le repas quotidien a été confirmé par le client. 13 points viennent d'être ajoutés à votre compte.";
         } else {
             $title = '🎉 Livraison validée !';
-            $message = "Félicitations ! Le client {$clientName} a confirmé la réception de sa commande. Vous recevez 15 points. Continuez ainsi pour augmenter votre score.";
+            $message = "Félicitations ! Le client {$clientName} a confirmé la réception de sa commande. Vous recevez 13 points. Continuez ainsi pour augmenter votre score.";
         }
 
         $this->notify(

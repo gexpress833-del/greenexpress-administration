@@ -25,7 +25,7 @@
         <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
             <p class="text-sm text-blue-800 dark:text-blue-200">
                 Vérifiez que cette commande correspond bien à celle que vous livrez.
-                La validation attribuera 15 points à votre compte.
+                La validation attribuera 13 points à votre compte.
             </p>
         </div>
 

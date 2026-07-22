@@ -9,7 +9,7 @@ class PointService
 {
     public const AGENT_POINTS_PER_ORDER = 12;
 
-    public const LIVREUR_POINTS_PER_ORDER = 15;
+    public const LIVREUR_POINTS_PER_ORDER = 13;
 
     public const VALUE_PER_POINT_USD = 0.025;
 

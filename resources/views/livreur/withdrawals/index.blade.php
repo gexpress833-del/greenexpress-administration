@@ -7,7 +7,7 @@
         <div class="mb-8">
             <p class="text-xs font-bold uppercase tracking-[0.25em] text-emerald-600">Espace livreur</p>
             <h1 class="mt-2 text-3xl font-black text-gray-900 dark:text-white">Retrait de mes points</h1>
-            <p class="mt-2 text-gray-600 dark:text-gray-300">Vous gagnez 15 points par commande validée. Convertissez-les sur n’importe quel opérateur Mobile Money.</p>
+            <p class="mt-2 text-gray-600 dark:text-gray-300">Vous gagnez 13 points par commande validée. Convertissez-les sur n’importe quel opérateur Mobile Money.</p>
         </div>
         <div class="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
             <section class="rounded-3xl bg-green-900 p-6 text-white shadow-xl">

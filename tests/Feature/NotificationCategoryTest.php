@@ -183,7 +183,7 @@ class NotificationCategoryTest extends TestCase
         ]);
 
         $notif = Notification::where('user_id', $livreur->id)->first();
-        $this->assertStringContainsString('15 points', $notif->message);
+        $this->assertStringContainsString('13 points', $notif->message);
     }
 
     public function test_livreur_receives_delivery_pending_notification(): void
