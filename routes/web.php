@@ -33,7 +33,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::post('/internal/schedule-run', function () {
+Route::match(['get', 'post'], '/internal/schedule-run', function () {
     $configuredSecret = config('services.schedule.secret');
     $providedSecret = request()->bearerToken() ?? request()->query('token');
 

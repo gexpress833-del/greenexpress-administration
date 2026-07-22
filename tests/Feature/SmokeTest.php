@@ -45,11 +45,11 @@ class SmokeTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_scheduler_endpoint_rejects_get_requests_and_missing_secrets(): void
+    public function test_scheduler_endpoint_rejects_missing_and_invalid_secrets(): void
     {
         config(['services.schedule.secret' => 'test-schedule-secret']);
 
-        $this->get(route('internal.schedule-run'))->assertMethodNotAllowed();
+        $this->getJson(route('internal.schedule-run'))->assertForbidden();
         $this->postJson(route('internal.schedule-run'))->assertForbidden();
         $this->withToken('wrong-secret')->postJson(route('internal.schedule-run'))->assertForbidden();
     }
@@ -62,6 +62,17 @@ class SmokeTest extends TestCase
 
         $this->withToken('test-schedule-secret')
             ->postJson(route('internal.schedule-run'))
+            ->assertOk()
+            ->assertJson(['status' => 'ok']);
+    }
+
+    public function test_scheduler_endpoint_accepts_get_with_a_valid_token_query_param(): void
+    {
+        config(['services.schedule.secret' => 'test-schedule-secret']);
+        Artisan::shouldReceive('call')->once()->with('schedule:run')->andReturn(0);
+        Artisan::shouldReceive('output')->once()->andReturn('');
+
+        $this->getJson(route('internal.schedule-run', ['token' => 'test-schedule-secret']))
             ->assertOk()
             ->assertJson(['status' => 'ok']);
     }
