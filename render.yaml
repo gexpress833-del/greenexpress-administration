@@ -68,3 +68,13 @@ services:
         value: Green Express
       - key: SCHEDULE_SECRET
         sync: false
+
+  - type: cron
+    name: greenexpress-scheduler
+    runtime: docker
+    plan: free
+    schedule: "0 */5 * * *"
+    dockerCommand: "curl -fsS -H \"Authorization: Bearer $SCHEDULE_SECRET\" https://greenexpress-administration.onrender.com/internal/schedule-run || true"
+    envVars:
+      - key: SCHEDULE_SECRET
+        sync: false
