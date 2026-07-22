@@ -84,16 +84,21 @@ class OrderController extends Controller
 
         app(ActivityLogService::class)->logFromRequest($request, 'order_created', Order::class, $order->id, 'Agent created order '.$order->code);
 
-        // Envoyer un email aux agents pour les informer de la nouvelle commande
-        $agents = User::where('role', 'agent')->where('is_active', true)->get();
-        foreach ($agents as $agent) {
-            if (filter_var($agent->email, FILTER_VALIDATE_EMAIL)) {
+        // Envoyer un email a l'agent createur, aux admins et aux cuisiniers
+        $emailRecipients = User::where('is_active', true)
+            ->where(function ($q) use ($order) {
+                $q->where('id', $order->agent_id)
+                    ->orWhereIn('role', ['admin', 'cuisinier']);
+            })
+            ->get();
+        foreach ($emailRecipients as $recipient) {
+            if (filter_var($recipient->email, FILTER_VALIDATE_EMAIL)) {
                 try {
-                    $agent->notify(new OrderCreatedClientMail($order));
+                    $recipient->notify(new OrderCreatedClientMail($order));
                 } catch (\Throwable $e) {
-                    Log::warning('Order created email to agent failed.', [
+                    Log::warning('Order created email failed.', [
                         'order_id' => $order->id,
-                        'agent_id' => $agent->id,
+                        'recipient_id' => $recipient->id,
                         'error' => $e->getMessage(),
                     ]);
                 }

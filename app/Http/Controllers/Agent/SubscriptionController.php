@@ -177,7 +177,15 @@ class SubscriptionController extends Controller
         }
 
         try {
-            User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionPending($subscription)));
+            $recipients = User::where('is_active', true)
+                ->where(function ($q) use ($subscription) {
+                    $q->where('id', $subscription->agent_id)
+                        ->orWhereIn('role', ['admin', 'cuisinier']);
+                })
+                ->get();
+            foreach ($recipients as $recipient) {
+                $recipient->notify(new SubscriptionPending($subscription));
+            }
         } catch (\Throwable $e) {
             Log::error('SubscriptionPending notification failed', [
                 'subscription_id' => $subscription->id,
