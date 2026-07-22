@@ -25,6 +25,7 @@ class OrderFactory extends Factory
             'client_phone' => fake()->phoneNumber(),
             'delivery_address' => fake()->address(),
             'delivery_date' => fake()->dateTimeBetween('now', '+10 days')->format('Y-m-d'),
+            'delivery_time' => fake()->time('H:i'),
             'total_amount' => fake()->randomFloat(2, 5, 200),
             'status' => 'pending',
             'notes' => fake()->optional()->sentence(),

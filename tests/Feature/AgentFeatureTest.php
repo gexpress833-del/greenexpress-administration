@@ -51,6 +51,7 @@ class AgentFeatureTest extends TestCase
             'client_phone' => '+243000000000',
             'delivery_address' => 'Kolwezi',
             'delivery_date' => now()->addDay()->format('Y-m-d'),
+            'delivery_time' => '12:00',
             'currency' => 'usd',
             'items' => [
                 ['meal_id' => $meal->id, 'quantity' => 3],

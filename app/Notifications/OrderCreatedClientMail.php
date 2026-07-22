@@ -26,19 +26,24 @@ class OrderCreatedClientMail extends Notification
 
         $total = number_format((float) $this->order->total_amount, 2);
 
+        $deliveryInfo = $this->order->delivery_date->format('d/m/Y');
+        if ($this->order->delivery_time) {
+            $deliveryInfo .= ' à '.$this->order->delivery_time;
+        }
+
         return (new MailMessage)
-            ->subject('Confirmation de votre commande '.$this->order->code)
-            ->greeting('Bonjour '.$this->order->client_name.',')
-            ->line('Votre commande a été enregistrée avec succès.')
+            ->subject('Nouvelle commande '.$this->order->code.' créée')
+            ->greeting('Bonjour,')
+            ->line('Une nouvelle commande a été créée par '.$this->order->agent->name.'.')
             ->line('**Numéro de commande :** '.$this->order->code)
-            ->line('**Date de livraison :** '.$this->order->delivery_date->format('d/m/Y'))
-            ->line('**Adresse de livraison :** '.$this->order->delivery_address)
-            ->line('**Détails de la commande :**')
+            ->line('**Client :** '.$this->order->client_name.' — '.$this->order->client_phone)
+            ->line('**Livraison :** '.$deliveryInfo)
+            ->line('**Adresse :** '.$this->order->delivery_address)
+            ->line('**Détails :**')
             ->line($items)
             ->line('**Total :** '.$total.' USD')
-            ->line('Votre commande est en attente de validation par notre équipe.')
-            ->action('Suivre ma commande', url('/login'))
-            ->line('Merci pour votre confiance.')
+            ->line('La commande est en attente de validation par l\'administrateur.')
+            ->action('Voir la commande', url('/admin/orders/'.$this->order->id))
             ->salutation('L\'équipe Green Express');
     }
 }

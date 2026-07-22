@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['code', 'client_validation_code', 'agent_id', 'client_id', 'subscription_id', 'client_name', 'client_phone', 'delivery_address', 'delivery_date', 'total_amount', 'currency', 'total_amount_fc', 'status', 'notes', 'confirmed_at', 'delivered_at', 'client_validated_at', 'admin_validated_at'])]
+#[Fillable(['code', 'client_validation_code', 'agent_id', 'client_id', 'subscription_id', 'client_name', 'client_phone', 'delivery_address', 'delivery_date', 'delivery_time', 'total_amount', 'currency', 'total_amount_fc', 'status', 'notes', 'confirmed_at', 'delivered_at', 'client_validated_at', 'admin_validated_at'])]
 class Order extends Model
 {
     use HasFactory, SoftDeletes;

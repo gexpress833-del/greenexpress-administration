@@ -30,6 +30,7 @@ class OrderService
                 'client_phone' => $data['client_phone'],
                 'delivery_address' => $data['delivery_address'],
                 'delivery_date' => $data['delivery_date'],
+                'delivery_time' => $data['delivery_time'] ?? null,
                 'currency' => $data['currency'],
                 'status' => 'pending',
                 'notes' => $data['notes'] ?? null,

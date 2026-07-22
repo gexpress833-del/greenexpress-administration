@@ -49,6 +49,7 @@ class OrderController extends Controller
             'client_phone' => ['required', 'string', 'max:50'],
             'delivery_address' => ['required', 'string'],
             'delivery_date' => ['required', 'date'],
+            'delivery_time' => ['required', 'date_format:H:i'],
             'notes' => ['nullable', 'string'],
             'currency' => ['required', 'in:usd,fc'],
             'items' => ['required', 'array', 'min:1'],
@@ -83,16 +84,19 @@ class OrderController extends Controller
 
         app(ActivityLogService::class)->logFromRequest($request, 'order_created', Order::class, $order->id, 'Agent created order '.$order->code);
 
-        // Envoyer un email au client si un compte existe avec une adresse email valide
-        if ($order->client && filter_var($order->client->email, FILTER_VALIDATE_EMAIL)) {
-            try {
-                $order->client->notify(new OrderCreatedClientMail($order));
-            } catch (\Throwable $e) {
-                Log::warning('Order created email failed.', [
-                    'order_id' => $order->id,
-                    'client_id' => $order->client_id,
-                    'error' => $e->getMessage(),
-                ]);
+        // Envoyer un email aux agents pour les informer de la nouvelle commande
+        $agents = User::where('role', 'agent')->where('is_active', true)->get();
+        foreach ($agents as $agent) {
+            if (filter_var($agent->email, FILTER_VALIDATE_EMAIL)) {
+                try {
+                    $agent->notify(new OrderCreatedClientMail($order));
+                } catch (\Throwable $e) {
+                    Log::warning('Order created email to agent failed.', [
+                        'order_id' => $order->id,
+                        'agent_id' => $agent->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
             }
         }
 
