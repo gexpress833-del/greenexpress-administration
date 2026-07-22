@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Meal;
 use App\Models\Order;
 use App\Models\User;
+use App\Notifications\OrderCreatedClientMail;
 use App\Services\ActivityLogService;
 use App\Services\NotificationService;
 use App\Services\OrderService;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -80,6 +82,19 @@ class OrderController extends Controller
         }
 
         app(ActivityLogService::class)->logFromRequest($request, 'order_created', Order::class, $order->id, 'Agent created order '.$order->code);
+
+        // Envoyer un email au client si un compte existe avec une adresse email valide
+        if ($order->client && filter_var($order->client->email, FILTER_VALIDATE_EMAIL)) {
+            try {
+                $order->client->notify(new OrderCreatedClientMail($order));
+            } catch (\Throwable $e) {
+                Log::warning('Order created email failed.', [
+                    'order_id' => $order->id,
+                    'client_id' => $order->client_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
 
         return redirect()->route('agent.orders.index')
             ->with('success', 'Commande enregistrée.')
