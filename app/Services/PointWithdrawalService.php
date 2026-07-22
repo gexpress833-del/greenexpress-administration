@@ -21,11 +21,14 @@ class PointWithdrawalService
             default => 0,
         };
 
+        $bonusService = app(RecoveryBonusService::class);
+        $compensationPoints = $bonusService->getCompensationPoints($user->id);
+
         $reserved = Withdrawal::where('user_id', $user->id)
             ->whereIn('status', ['pending', 'approved', 'paid'])
             ->sum('points');
 
-        return max(0, (int) $earned - (int) $reserved);
+        return max(0, (int) $earned + (int) $compensationPoints - (int) $reserved);
     }
 
     public function create(User $user, int $points, string $operator, string $number): Withdrawal

@@ -42,3 +42,7 @@ Schedule::call(function () {
         $subscription->update(['expiration_notified_at' => $now]);
     }
 })->daily();
+
+Schedule::command('app:award-recovery-bonus')
+    ->cron('0 */5 * * *')
+    ->withoutOverlapping();

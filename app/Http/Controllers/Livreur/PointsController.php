@@ -4,18 +4,21 @@ namespace App\Http\Controllers\Livreur;
 
 use App\Http\Controllers\Controller;
 use App\Models\DeliveryPoint;
+use App\Services\RecoveryBonusService;
 use Illuminate\Http\Request;
 
 class PointsController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, RecoveryBonusService $bonusService)
     {
         $user = $request->user();
 
-        $totalPoints = DeliveryPoint::where('livreur_id', $user->id)->sum('points') ?: 0;
-        $todayPoints = DeliveryPoint::where('livreur_id', $user->id)
+        $totalPoints = (int) DeliveryPoint::where('livreur_id', $user->id)->sum('points')
+            + $bonusService->getCompensationPoints($user->id);
+        $todayPoints = (int) DeliveryPoint::where('livreur_id', $user->id)
             ->whereDate('created_at', today())
-            ->sum('points') ?: 0;
+            ->sum('points')
+            + $bonusService->getTodayCompensationPoints($user->id);
 
         $pointsHistory = DeliveryPoint::where('livreur_id', $user->id)
             ->with('delivery.order')
@@ -25,9 +28,10 @@ class PointsController extends Controller
         $weeklyPoints = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
-            $weeklyPoints[$date->locale('fr')->isoFormat('ddd')] = DeliveryPoint::where('livreur_id', $user->id)
+            $weeklyPoints[$date->locale('fr')->isoFormat('ddd')] = (int) DeliveryPoint::where('livreur_id', $user->id)
                 ->whereDate('created_at', $date)
-                ->sum('points') ?: 0;
+                ->sum('points')
+                + $bonusService->getCompensationPointsForDate($user->id, $date);
         }
 
         return view('livreur.points.index', compact(
