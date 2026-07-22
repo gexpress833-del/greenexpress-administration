@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Delivery;
+use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 
 class DeliveryService
@@ -59,13 +60,19 @@ class DeliveryService
     public function assign(Delivery $delivery, int $livreurId): void
     {
         DB::transaction(function () use ($delivery, $livreurId) {
-            $delivery->livreur_id = $livreurId;
-            $delivery->status = 'assigned';
-            $delivery->picked_up_at = now();
-            $delivery->save();
+            $lockedDelivery = Delivery::where('id', $delivery->id)->lockForUpdate()->first();
 
-            $delivery->order->status = 'delivering';
-            $delivery->order->save();
+            if ($lockedDelivery->livreur_id !== null) {
+                throw new \DomainException('Cette livraison est déjà assignée.');
+            }
+
+            $lockedDelivery->livreur_id = $livreurId;
+            $lockedDelivery->status = 'assigned';
+            $lockedDelivery->picked_up_at = now();
+            $lockedDelivery->save();
+
+            $lockedDelivery->order->status = 'delivering';
+            $lockedDelivery->order->save();
         });
     }
 
@@ -96,16 +103,67 @@ class DeliveryService
         }
 
         DB::transaction(function () use ($order, $delivery) {
-            $order->client_validated_at = now();
-            $order->delivered_at = now();
-            $order->status = 'delivered';
-            $order->save();
+            $lockedOrder = Order::where('id', $order->id)->lockForUpdate()->first();
+            $lockedDelivery = Delivery::where('id', $delivery->id)->lockForUpdate()->first();
 
-            $delivery->status = 'delivered';
-            $delivery->delivered_at = now();
-            $delivery->save();
+            if ($lockedOrder->client_validated_at) {
+                return;
+            }
+
+            $lockedOrder->client_validated_at = now();
+            $lockedOrder->delivered_at = now();
+            $lockedOrder->status = 'delivered';
+            $lockedOrder->save();
+
+            $lockedDelivery->status = 'delivered';
+            $lockedDelivery->delivered_at = now();
+            $lockedDelivery->save();
         });
 
         return ['success' => true, 'message' => 'Livraison validée.'];
+    }
+
+    public function validateByQr(Delivery $delivery, int $livreurId, string $code): array
+    {
+        $order = $delivery->order;
+
+        if (strtoupper($code) !== $order->client_validation_code) {
+            return ['success' => false, 'message' => 'Code de validation incorrect.'];
+        }
+
+        return DB::transaction(function () use ($delivery, $order, $livreurId) {
+            $lockedOrder = Order::where('id', $order->id)->lockForUpdate()->first();
+            $lockedDelivery = Delivery::where('id', $delivery->id)->lockForUpdate()->first();
+
+            if ($lockedDelivery->livreur_id !== null && $lockedDelivery->livreur_id !== $livreurId) {
+                return ['success' => false, 'message' => 'Cette livraison est déjà assignée à un autre livreur.'];
+            }
+
+            // Auto-assigner si non assignée
+            if ($lockedDelivery->livreur_id === null) {
+                $lockedDelivery->livreur_id = $livreurId;
+                $lockedDelivery->status = 'assigned';
+                $lockedDelivery->picked_up_at = now();
+                $lockedDelivery->save();
+
+                $lockedOrder->status = 'delivering';
+                $lockedOrder->save();
+            }
+
+            if ($lockedOrder->client_validated_at) {
+                return ['success' => true, 'message' => 'Cette livraison a déjà été validée.'];
+            }
+
+            $lockedOrder->client_validated_at = now();
+            $lockedOrder->delivered_at = now();
+            $lockedOrder->status = 'delivered';
+            $lockedOrder->save();
+
+            $lockedDelivery->status = 'delivered';
+            $lockedDelivery->delivered_at = now();
+            $lockedDelivery->save();
+
+            return ['success' => true, 'message' => 'Livraison validée.'];
+        });
     }
 }

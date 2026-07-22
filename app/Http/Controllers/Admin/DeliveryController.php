@@ -49,11 +49,15 @@ class DeliveryController extends Controller
                 ->with('error', 'Cette commande n\'est pas encore validée par l\'administrateur.');
         }
 
+        if ($order->delivery()->exists()) {
+            return redirect()->route('admin.deliveries.create')
+                ->with('error', 'Une livraison existe déjà pour cette commande.');
+        }
+
         $data['delivery_code'] = 'DLV-'.strtoupper(uniqid());
 
         Delivery::create($data);
-        $order->status = 'delivering';
-        $order->save();
+        $order->transitionTo('delivering');
 
         return redirect()->route('admin.deliveries.index')->with('success', 'Livraison assignée.');
     }

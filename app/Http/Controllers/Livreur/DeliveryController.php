@@ -63,6 +63,11 @@ class DeliveryController extends Controller
         $isAssignedToMe = $delivery->livreur_id === $request->user()->id;
         $isUnassigned = $delivery->livreur_id === null;
 
+        if (! $isAssignedToMe && ! $isUnassigned) {
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'Cette livraison est assignée à un autre livreur.');
+        }
+
         return view('livreur.deliveries.show', compact('delivery', 'isAssignedToMe', 'isUnassigned'));
     }
 
@@ -76,7 +81,12 @@ class DeliveryController extends Controller
                 ->with('error', 'Cette commande n\'est pas encore validée par l\'administrateur. Vous ne pouvez pas la prendre en charge.');
         }
 
-        $deliveryService->assign($delivery, $request->user()->id);
+        try {
+            $deliveryService->assign($delivery, $request->user()->id);
+        } catch (\DomainException $e) {
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', $e->getMessage());
+        }
 
         $notificationService = app(NotificationService::class);
         if ($delivery->order->subscription_id) {
@@ -115,13 +125,7 @@ class DeliveryController extends Controller
                 ->with('error', $check['message']);
         }
 
-        $delivery->status = 'delivered';
-        $delivery->delivered_at = now();
-        $delivery->save();
-
-        $order->status = 'delivered';
-        $order->delivered_at = now();
-        $order->save();
+        $deliveryService->deliver($delivery);
 
         app(ActivityLogService::class)->logFromRequest($request, 'delivery_delivered', Delivery::class, $delivery->id, 'Livreur marked delivery as delivered for order '.$order->code);
 
@@ -129,6 +133,31 @@ class DeliveryController extends Controller
 
         return redirect()->route('livreur.deliveries.index')
             ->with('success', 'Livraison marquée comme livrée. En attente de validation du client.');
+    }
+
+    public function qrScanForm(Request $request)
+    {
+        $orderId = $request->query('order_id');
+        $code = $request->query('code');
+
+        if (! $orderId || ! $code) {
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'QR code invalide ou incomplet.');
+        }
+
+        $order = Order::find($orderId);
+        if (! $order) {
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'Commande introuvable.');
+        }
+
+        $delivery = Delivery::where('order_id', $order->id)->first();
+        if (! $delivery) {
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'Aucune livraison trouvée pour cette commande.');
+        }
+
+        return view('livreur.deliveries.qr-confirm', compact('order', 'delivery', 'code'));
     }
 
     public function validateQrForm(Request $request, DeliveryService $deliveryService)
@@ -152,35 +181,28 @@ class DeliveryController extends Controller
                 ->with('error', 'Cette commande n\'est pas encore validée par l\'administrateur. Le QR ne peut pas être scanné pour le moment.');
         }
 
+        // Vérifier le code AVANT toute mutation
+        if (strtoupper($request->code) !== $order->client_validation_code) {
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'Code QR invalide.');
+        }
+
+        // Vérifier que la livraison n'est pas assignée à un autre livreur
+        if ($delivery->livreur_id !== null && $delivery->livreur_id !== $request->user()->id) {
+            return redirect()->route('livreur.deliveries.index')
+                ->with('error', 'Cette livraison est déjà assignée à un autre livreur. Vous ne pouvez pas la scanner.');
+        }
+
         $check = $deliveryService->canDeliver($delivery);
         if (! $check['allowed']) {
             return redirect()->route('livreur.deliveries.show', $delivery)
                 ->with('error', $check['message']);
         }
 
-        // Auto-assigner si non assignée
-        if ($delivery->livreur_id === null) {
-            $delivery->livreur_id = $request->user()->id;
-            $delivery->status = 'assigned';
-            $delivery->picked_up_at = now();
-            $delivery->save();
-
-            $order->status = 'delivering';
-            $order->save();
-        } elseif ($delivery->livreur_id !== $request->user()->id) {
-            return redirect()->route('livreur.deliveries.index')
-                ->with('error', 'Cette livraison est déjà assignée à un autre livreur. Vous ne pouvez pas la scanner.');
-        }
-
-        if (strtoupper($request->code) !== $order->client_validation_code) {
-            return redirect()->route('livreur.deliveries.show', $delivery)
-                ->with('error', 'Code QR invalide.');
-        }
-
         $alreadyValidated = $order->client_validated_at !== null;
 
-        // Validation immédiate au scan QR
-        $result = $deliveryService->validateByClient($delivery, $request->code);
+        // Auto-assigner et valider dans une transaction verrouillée
+        $result = $deliveryService->validateByQr($delivery, $request->user()->id, $request->code);
 
         if (! $result['success']) {
             return redirect()->route('livreur.deliveries.show', $delivery)
@@ -188,6 +210,7 @@ class DeliveryController extends Controller
         }
 
         $order->refresh();
+        $delivery->refresh();
 
         if (! $alreadyValidated) {
             try {
@@ -260,6 +283,8 @@ class DeliveryController extends Controller
             return redirect()->route('livreur.deliveries.show', $delivery)
                 ->with('success', $result['message']);
         }
+
+        $order->refresh();
 
         try {
             OrderValidatedByClient::dispatch($order);

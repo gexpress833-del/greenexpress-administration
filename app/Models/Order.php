@@ -84,4 +84,30 @@ class Order extends Model
             default => 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
         };
     }
+
+    private static array $statusTransitions = [
+        'pending' => ['confirmed', 'cancelled'],
+        'confirmed' => ['preparing', 'delivering', 'delivered', 'cancelled'],
+        'preparing' => ['delivering', 'delivered', 'cancelled'],
+        'delivering' => ['delivered', 'cancelled'],
+        'delivered' => [],
+        'cancelled' => [],
+    ];
+
+    public function canTransitionTo(string $status): bool
+    {
+        return in_array($status, self::$statusTransitions[$this->status] ?? [], true);
+    }
+
+    public function transitionTo(string $status, array $extra = []): bool
+    {
+        if (! $this->canTransitionTo($status)) {
+            throw new \DomainException("Invalid order status transition from {$this->status} to {$status}.");
+        }
+
+        $this->status = $status;
+        $this->fill($extra);
+
+        return $this->save();
+    }
 }

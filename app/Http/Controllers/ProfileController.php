@@ -79,6 +79,10 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        if ($user->avatar) {
+            app(CloudinaryService::class)->delete($user->avatar);
+        }
+
         Auth::logout();
 
         $user->delete();

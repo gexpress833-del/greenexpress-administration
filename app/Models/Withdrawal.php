@@ -47,4 +47,28 @@ class Withdrawal extends Model
             default => 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
         };
     }
+
+    private static array $statusTransitions = [
+        'pending' => ['approved', 'rejected'],
+        'approved' => ['paid', 'rejected'],
+        'paid' => [],
+        'rejected' => [],
+    ];
+
+    public function canTransitionTo(string $status): bool
+    {
+        return in_array($status, self::$statusTransitions[$this->status] ?? [], true);
+    }
+
+    public function transitionTo(string $status, array $extra = []): bool
+    {
+        if (! $this->canTransitionTo($status)) {
+            throw new \DomainException("Invalid withdrawal status transition from {$this->status} to {$status}.");
+        }
+
+        $this->status = $status;
+        $this->fill($extra);
+
+        return $this->save();
+    }
 }

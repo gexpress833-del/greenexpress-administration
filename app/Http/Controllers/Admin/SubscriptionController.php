@@ -67,14 +67,14 @@ class SubscriptionController extends Controller
 
         $dates = DateHelper::calculateSubscriptionDates($actualStartDate, $subscription->total_days);
 
-        $subscription->status = 'active';
-        $subscription->admin_validated_at = $validationDate;
-        $subscription->validated_by = $request->user()->id;
-        $subscription->start_date = $dates['start_date'];
-        $subscription->end_date = $dates['end_date'];
-        $subscription->total_days = $dates['total_days'];
-        $subscription->remaining_days = $dates['remaining_days'];
-        $subscription->save();
+        $subscription->transitionTo('active', [
+            'admin_validated_at' => $validationDate,
+            'validated_by' => $request->user()->id,
+            'start_date' => $dates['start_date'],
+            'end_date' => $dates['end_date'],
+            'total_days' => $dates['total_days'],
+            'remaining_days' => $dates['remaining_days'],
+        ]);
 
         $deliveryService = app(SubscriptionDeliveryService::class);
         $deliveryService->rewardAgent($subscription);
@@ -134,10 +134,10 @@ class SubscriptionController extends Controller
     public function reject(Request $request, Subscription $subscription)
     {
         try {
-            $subscription->status = 'rejected';
-            $subscription->admin_validated_at = now();
-            $subscription->validated_by = $request->user()->id;
-            $subscription->save();
+            $subscription->transitionTo('rejected', [
+                'admin_validated_at' => now(),
+                'validated_by' => $request->user()->id,
+            ]);
 
             app(ActivityLogService::class)->logFromRequest($request, 'subscription_rejected', Subscription::class, $subscription->id, 'Admin rejected subscription for client '.($subscription->client?->name ?? $subscription->client_name));
 

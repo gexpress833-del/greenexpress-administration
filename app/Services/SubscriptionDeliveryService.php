@@ -10,6 +10,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\SubscriptionDeliveriesAvailable;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SubscriptionDeliveryService
@@ -43,71 +44,74 @@ class SubscriptionDeliveryService
             ->map(fn ($d) => Carbon::parse($d)->startOfDay()->toDateString())
             ->all();
 
-        while ($count < $deliveryDays) {
-            if ($date->gt($end)) {
-                break;
-            }
+        DB::transaction(function () use (&$date, &$count, &$todayCount, &$createdDeliveries, $end, $mealsPerDay, $deliveryDays, $subscription, $subscriptionType, $existingDates, $today) {
 
-            if (DateHelper::isBusinessDay($date)) {
-                $skipDate = in_array($date->copy()->startOfDay()->toDateString(), $existingDates);
-                if (! $skipDate) {
-                    $meal = $subscriptionType->mealForDate($date);
+            while ($count < $deliveryDays) {
+                if ($date->gt($end)) {
+                    break;
+                }
 
-                    for ($mealIndex = 0; $mealIndex < $mealsPerDay; $mealIndex++) {
-                        $order = Order::create([
-                            'code' => 'GX-SUB-'.strtoupper(Str::random(8)).'-'.$date->format('Ymd').'-'.($mealIndex + 1),
-                            'agent_id' => $subscription->agent_id,
-                            'client_id' => $subscription->client_id,
-                            'subscription_id' => $subscription->id,
-                            'client_name' => $subscription->client_name,
-                            'client_phone' => $subscription->client_phone,
-                            'delivery_address' => $subscription->client?->address ?? '',
-                            'delivery_date' => $date->copy(),
-                            'currency' => $subscription->currency,
-                            'status' => 'confirmed',
-                            'total_amount' => 0,
-                            'total_amount_fc' => 0,
-                            'admin_validated_at' => now(),
-                            'confirmed_at' => now(),
-                            'client_validation_code' => strtoupper(Str::random(6)),
-                        ]);
+                if (DateHelper::isBusinessDay($date)) {
+                    $skipDate = in_array($date->copy()->startOfDay()->toDateString(), $existingDates);
+                    if (! $skipDate) {
+                        $meal = $subscriptionType->mealForDate($date);
 
-                        if ($meal) {
-                            OrderItem::create([
-                                'order_id' => $order->id,
-                                'meal_id' => $meal->id,
-                                'quantity' => 1,
-                                'unit_price' => 0,
-                                'unit_price_fc' => 0,
-                                'total_price' => 0,
-                                'total_price_fc' => 0,
+                        for ($mealIndex = 0; $mealIndex < $mealsPerDay; $mealIndex++) {
+                            $order = Order::create([
+                                'code' => 'GX-SUB-'.strtoupper(Str::random(8)).'-'.$date->format('Ymd').'-'.($mealIndex + 1),
+                                'agent_id' => $subscription->agent_id,
+                                'client_id' => $subscription->client_id,
+                                'subscription_id' => $subscription->id,
+                                'client_name' => $subscription->client_name,
+                                'client_phone' => $subscription->client_phone,
+                                'delivery_address' => $subscription->client?->address ?? '',
+                                'delivery_date' => $date->copy(),
+                                'currency' => $subscription->currency,
+                                'status' => 'confirmed',
+                                'total_amount' => 0,
+                                'total_amount_fc' => 0,
+                                'admin_validated_at' => now(),
+                                'confirmed_at' => now(),
+                                'client_validation_code' => strtoupper(Str::random(6)),
                             ]);
+
+                            if ($meal) {
+                                OrderItem::create([
+                                    'order_id' => $order->id,
+                                    'meal_id' => $meal->id,
+                                    'quantity' => 1,
+                                    'unit_price' => 0,
+                                    'unit_price_fc' => 0,
+                                    'total_price' => 0,
+                                    'total_price_fc' => 0,
+                                ]);
+                            }
+
+                            $delivery = Delivery::create([
+                                'order_id' => $order->id,
+                                'livreur_id' => null,
+                                'delivery_code' => 'DLV-'.strtoupper(uniqid()),
+                                'status' => 'pending',
+                                'notes' => "Abonnement {$subscription->id} - {$date->format('d/m/Y')} - Repas ".($mealIndex + 1)."/{$mealsPerDay}",
+                            ]);
+
+                            $createdDeliveries[] = $delivery;
+                            if ($date->isSameDay($today)) {
+                                $todayCount++;
+                            }
                         }
 
-                        $delivery = Delivery::create([
-                            'order_id' => $order->id,
-                            'livreur_id' => null,
-                            'delivery_code' => 'DLV-'.strtoupper(uniqid()),
-                            'status' => 'pending',
-                            'notes' => "Abonnement {$subscription->id} - {$date->format('d/m/Y')} - Repas ".($mealIndex + 1)."/{$mealsPerDay}",
-                        ]);
-
-                        $createdDeliveries[] = $delivery;
-                        if ($date->isSameDay($today)) {
-                            $todayCount++;
-                        }
+                        $count++;
                     }
+                }
 
-                    $count++;
+                $date->addDay();
+
+                if ($date->gt($end)) {
+                    break;
                 }
             }
-
-            $date->addDay();
-
-            if ($date->gt($end)) {
-                break;
-            }
-        }
+        });
 
         if (count($createdDeliveries) > 0) {
             $this->notifyLivreurs($subscription, $todayCount, count($createdDeliveries));

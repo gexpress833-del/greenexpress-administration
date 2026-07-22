@@ -7,20 +7,30 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $users = DB::table('users')
+        DB::table('users')
             ->whereNotNull('phone')
             ->where('phone', '!=', '')
-            ->get(['id', 'phone']);
+            ->orderBy('id')
+            ->chunk(200, function ($users) {
+                $seen = [];
+                foreach ($users as $user) {
+                    $normalized = preg_replace('/[^0-9+]/', '', $user->phone);
 
-        foreach ($users as $user) {
-            $normalized = preg_replace('/[^0-9+]/', '', $user->phone);
+                    if ($normalized === '' || $normalized === $user->phone) {
+                        continue;
+                    }
 
-            if ($normalized !== $user->phone) {
-                DB::table('users')
-                    ->where('id', $user->id)
-                    ->update(['phone' => $normalized]);
-            }
-        }
+                    if (in_array($normalized, $seen, true)) {
+                        $normalized = $normalized.'_dup_'.$user->id;
+                    }
+
+                    $seen[] = $normalized;
+
+                    DB::table('users')
+                        ->where('id', $user->id)
+                        ->update(['phone' => $normalized]);
+                }
+            });
     }
 
     public function down(): void

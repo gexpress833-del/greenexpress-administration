@@ -180,10 +180,10 @@ class SubscriptionController extends Controller
     {
         abort_unless($subscription->client_id === $request->user()->id, 403);
 
-        $subscription->status = 'pending';
-        $subscription->admin_validated_at = null;
-        $subscription->validated_by = null;
-        $subscription->save();
+        $subscription->transitionTo('pending', [
+            'admin_validated_at' => null,
+            'validated_by' => null,
+        ]);
 
         try {
             $subscription->client->notify(new SubscriptionReactivated($subscription));

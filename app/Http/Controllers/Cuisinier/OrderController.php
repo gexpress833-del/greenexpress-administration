@@ -42,7 +42,7 @@ class OrderController extends Controller
         ]);
 
         $oldStatus = $order->status;
-        $order->update(['status' => $validated['status']]);
+        $order->transitionTo($validated['status']);
 
         $notificationService = app(NotificationService::class);
 

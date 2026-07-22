@@ -49,7 +49,7 @@ class SubscriptionController extends Controller
             'type' => ['nullable', 'string'],
             'start_date' => ['required', 'date'],
             'currency' => ['required', 'in:usd,fc'],
-            'price' => ['required', 'numeric', 'min:0'],
+            'price' => ['nullable', 'numeric', 'min:0'],
             'payment_confirmed' => ['required', 'accepted'],
         ]);
 
@@ -119,10 +119,19 @@ class SubscriptionController extends Controller
                     ]);
                 }
 
-                $price = (float) $data['price'];
                 $currencyService = app(CurrencyService::class);
-                $priceFc = $data['currency'] === 'fc' ? $price : $currencyService->usdToFc($price);
-                $priceUsd = $data['currency'] === 'usd' ? $price : $currencyService->fcToUsd($price);
+
+                if ($subscriptionType) {
+                    $priceUsd = (float) $subscriptionType->price;
+                    $priceFc = (float) $subscriptionType->price_fc;
+                    if ($priceFc <= 0) {
+                        $priceFc = $currencyService->usdToFc($priceUsd);
+                    }
+                } else {
+                    $price = (float) $data['price'];
+                    $priceFc = $data['currency'] === 'fc' ? $price : $currencyService->usdToFc($price);
+                    $priceUsd = $data['currency'] === 'usd' ? $price : $currencyService->fcToUsd($price);
+                }
                 $dates = DateHelper::calculateSubscriptionDates($data['start_date'], $totalDays);
                 $legacyType = $totalDays <= 7 ? 'weekly' : 'monthly';
 
@@ -221,27 +230,28 @@ class SubscriptionController extends Controller
 
         try {
             [$client, $response] = DB::transaction(function () use ($client, $subscription) {
+                $isNewClient = false;
                 if (! $client) {
+                    $tempPassword = Str::random(10);
                     $client = User::create([
                         'name' => $subscription->client_name,
                         'email' => $subscription->client_email,
                         'phone' => $subscription->client_phone,
                         'role' => 'client',
-                        'password' => Hash::make(Str::random(32)),
+                        'password' => Hash::make($tempPassword),
                         'password_changed_at' => null,
                         'is_active' => true,
                     ]);
+                    $isNewClient = true;
+                } else {
+                    $tempPassword = null;
+                    $client->fill([
+                        'name' => $subscription->client_name ?? $client->name,
+                        'email' => $subscription->client_email ?? $client->email,
+                        'phone' => $subscription->client_phone ?? $client->phone,
+                        'is_active' => true,
+                    ])->save();
                 }
-
-                $tempPassword = Str::random(10);
-                $client->forceFill([
-                    'name' => $subscription->client_name ?? $client->name,
-                    'email' => $subscription->client_email ?? $client->email,
-                    'phone' => $subscription->client_phone ?? $client->phone,
-                    'password' => Hash::make($tempPassword),
-                    'password_changed_at' => null,
-                    'is_active' => true,
-                ])->save();
 
                 $subscription->update([
                     'client_id' => $client->id,

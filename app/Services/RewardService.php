@@ -37,12 +37,18 @@ class RewardService
             return null;
         }
 
-        return AgentReward::create([
-            'agent_id' => $agent->id,
-            'type' => RewardType::FREE_STANDARD_MEAL->value,
-            'earned_date' => today(),
-            'description' => "Bonus repas gratuit pour {$todayCount} commandes validées aujourd'hui",
-        ]);
+        $reward = AgentReward::firstOrCreate(
+            [
+                'agent_id' => $agent->id,
+                'type' => RewardType::FREE_STANDARD_MEAL->value,
+                'earned_date' => today(),
+            ],
+            [
+                'description' => "Bonus repas gratuit pour {$todayCount} commandes validées aujourd'hui",
+            ],
+        );
+
+        return $reward->wasRecentlyCreated ? $reward : null;
     }
 
     public function getTodayRewardCount(int $agentId): int

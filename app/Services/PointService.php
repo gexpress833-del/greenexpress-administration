@@ -28,25 +28,21 @@ class PointService
             return null;
         }
 
-        $existingPoint = AgentPoint::where('order_id', $order->id)
-            ->where('agent_id', $order->agent_id)
-            ->first();
-
-        if ($existingPoint) {
-            return $existingPoint;
-        }
-
         $points = self::AGENT_POINTS_PER_ORDER;
         $valueUsd = round($points * self::VALUE_PER_POINT_USD, 2);
 
-        return AgentPoint::create([
-            'agent_id' => $order->agent_id,
-            'order_id' => $order->id,
-            'points' => $points,
-            'value_usd' => $valueUsd,
-            'description' => "Points gagnés pour la commande {$order->code}",
-            'earned_at' => now(),
-        ]);
+        return AgentPoint::firstOrCreate(
+            [
+                'agent_id' => $order->agent_id,
+                'order_id' => $order->id,
+            ],
+            [
+                'points' => $points,
+                'value_usd' => $valueUsd,
+                'description' => "Points gagnés pour la commande {$order->code}",
+                'earned_at' => now(),
+            ],
+        );
     }
 
     public function getTotalPoints(int $agentId): int

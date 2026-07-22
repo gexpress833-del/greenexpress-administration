@@ -145,7 +145,8 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::get('/deliveries/{delivery}', [App\Http\Controllers\Livreur\DeliveryController::class, 'show'])->name('deliveries.show');
         Route::post('/deliveries/{delivery}/assign', [App\Http\Controllers\Livreur\DeliveryController::class, 'assign'])->name('deliveries.assign');
         Route::post('/deliveries/{delivery}/deliver', [App\Http\Controllers\Livreur\DeliveryController::class, 'deliver'])->name('deliveries.deliver');
-        Route::get('/delivery-validate', [App\Http\Controllers\Livreur\DeliveryController::class, 'validateQrForm'])->name('deliveries.validate-qr-form');
+        Route::get('/delivery-validate', [App\Http\Controllers\Livreur\DeliveryController::class, 'qrScanForm'])->name('deliveries.validate-qr-form');
+        Route::post('/delivery-validate', [App\Http\Controllers\Livreur\DeliveryController::class, 'validateQrForm'])->name('deliveries.validate-qr');
         Route::post('/deliveries/{delivery}/validate-by-code', [App\Http\Controllers\Livreur\DeliveryController::class, 'validateByCode'])->name('deliveries.validate-by-code');
         Route::post('/deliveries/{delivery}/notify', [App\Http\Controllers\Livreur\DeliveryController::class, 'notifyClient'])->name('deliveries.notify');
         Route::get('/points', [App\Http\Controllers\Livreur\PointsController::class, 'index'])->name('points.index');

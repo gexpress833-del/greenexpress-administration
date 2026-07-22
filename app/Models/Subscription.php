@@ -166,6 +166,31 @@ class Subscription extends Model
         };
     }
 
+    private static array $statusTransitions = [
+        'pending' => ['active', 'expired', 'rejected'],
+        'active' => ['suspended', 'expired'],
+        'suspended' => ['active', 'expired', 'pending'],
+        'expired' => [],
+        'rejected' => [],
+    ];
+
+    public function canTransitionTo(string $status): bool
+    {
+        return in_array($status, self::$statusTransitions[$this->status] ?? [], true);
+    }
+
+    public function transitionTo(string $status, array $extra = []): bool
+    {
+        if (! $this->canTransitionTo($status)) {
+            throw new \DomainException("Invalid subscription status transition from {$this->status} to {$status}.");
+        }
+
+        $this->status = $status;
+        $this->fill($extra);
+
+        return $this->save();
+    }
+
     public function getTypeLabelAttribute(): string
     {
         if ($this->subscriptionType) {

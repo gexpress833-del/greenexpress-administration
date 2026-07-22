@@ -30,9 +30,7 @@ class PointWithdrawalService
 
     public function create(User $user, int $points, string $operator, string $number): Withdrawal
     {
-        $availablePoints = $this->availablePoints($user);
         $minimumPoints = (int) ceil(self::MIN_WITHDRAWAL_USD / PointService::VALUE_PER_POINT_USD);
-        $amountUsd = round($points * PointService::VALUE_PER_POINT_USD, 2);
 
         if ($points < $minimumPoints) {
             throw ValidationException::withMessages([
@@ -40,13 +38,18 @@ class PointWithdrawalService
             ]);
         }
 
-        if ($points > $availablePoints) {
-            throw ValidationException::withMessages([
-                'points' => 'Le nombre de points demandé dépasse votre solde disponible.',
-            ]);
-        }
+        return DB::transaction(function () use ($user, $points, $operator, $number) {
+            $lockedUser = User::where('id', $user->id)->lockForUpdate()->first();
+            $availablePoints = $this->availablePoints($lockedUser);
 
-        return DB::transaction(function () use ($user, $points, $operator, $number, $amountUsd): Withdrawal {
+            if ($points > $availablePoints) {
+                throw ValidationException::withMessages([
+                    'points' => 'Le nombre de points demandé dépasse votre solde disponible.',
+                ]);
+            }
+
+            $amountUsd = round($points * PointService::VALUE_PER_POINT_USD, 2);
+
             return Withdrawal::create([
                 'user_id' => $user->id,
                 'agent_id' => $user->isAgent() ? $user->id : null,

@@ -238,10 +238,10 @@ class LivreurFeatureTest extends TestCase
         ]);
 
         $response = $this->actingAs($livreur)
-            ->get(route('livreur.deliveries.validate-qr-form', [
+            ->post(route('livreur.deliveries.validate-qr'), [
                 'order_id' => $order->id,
                 'code' => 'QRTEST',
-            ]));
+            ]);
 
         $response->assertRedirect(route('livreur.deliveries.show', $delivery));
         $response->assertSessionHas('validation_code', 'QRTEST');
@@ -261,13 +261,38 @@ class LivreurFeatureTest extends TestCase
         ]);
 
         $response = $this->actingAs($livreur)
-            ->get(route('livreur.deliveries.validate-qr-form', [
+            ->post(route('livreur.deliveries.validate-qr'), [
                 'order_id' => $order->id,
                 'code' => 'BADBAD',
-            ]));
+            ]);
 
-        $response->assertRedirect(route('livreur.deliveries.show', $delivery));
+        $response->assertRedirect(route('livreur.deliveries.index'));
         $response->assertSessionHas('error');
+    }
+
+    public function test_livreur_qr_invalid_code_does_not_mutate_delivery(): void
+    {
+        $livreur = $this->livreur();
+        $order = Order::factory()->create([
+            'client_validation_code' => 'QRTEST',
+            'status' => 'confirmed',
+            'admin_validated_at' => now(),
+        ]);
+        $delivery = Delivery::factory()->create([
+            'livreur_id' => null,
+            'order_id' => $order->id,
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($livreur)
+            ->post(route('livreur.deliveries.validate-qr'), [
+                'order_id' => $order->id,
+                'code' => 'BADBAD',
+            ]);
+
+        $delivery->refresh();
+        $this->assertNull($delivery->livreur_id, 'Delivery should not be assigned after invalid QR code.');
+        $this->assertEquals('pending', $delivery->status, 'Delivery status should remain pending after invalid QR code.');
     }
 
     public function test_livreur_can_view_points_page_with_earned_points(): void

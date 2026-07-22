@@ -20,10 +20,11 @@ class WithdrawalController extends Controller
     public function update(Request $request, Withdrawal $withdrawal)
     {
         $request->validate(['status' => 'required|in:approved,rejected,paid']);
-        $withdrawal->status = $request->status;
-        $withdrawal->processed_by = $request->user()->id;
-        $withdrawal->processed_at = now();
-        $withdrawal->save();
+
+        $withdrawal->transitionTo($request->status, [
+            'processed_by' => $request->user()->id,
+            'processed_at' => now(),
+        ]);
 
         app(ActivityLogService::class)->logFromRequest($request, 'withdrawal_'.$request->status, Withdrawal::class, $withdrawal->id, 'Admin '.$request->status.' withdrawal #'.$withdrawal->id);
 

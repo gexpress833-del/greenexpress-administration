@@ -45,14 +45,16 @@ class OrderController extends Controller
     {
         $request->validate(['status' => 'required|in:pending,confirmed,preparing,delivering,delivered,cancelled']);
         $oldStatus = $order->status;
-        $order->status = $request->status;
+
+        $extra = [];
         if ($request->status === 'delivered') {
-            $order->delivered_at = now();
+            $extra['delivered_at'] = now();
         }
         if ($request->status === 'confirmed' && $oldStatus !== 'confirmed') {
-            $order->admin_validated_at = now();
+            $extra['admin_validated_at'] = now();
         }
-        $order->save();
+
+        $order->transitionTo($request->status, $extra);
 
         $notificationService = app(NotificationService::class);
 
