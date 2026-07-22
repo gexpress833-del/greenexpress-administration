@@ -118,6 +118,8 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::post('/suspensions/{suspension}/reject', [SubscriptionSuspensionController::class, 'reject'])->name('suspensions.reject');
         Route::resource('complaints', ComplaintController::class)->only(['index', 'show', 'update']);
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity_logs.index');
+        Route::get('/notifications/create', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.create');
+        Route::post('/notifications/send', [App\Http\Controllers\Admin\NotificationController::class, 'store'])->name('notifications.send');
         // Reports
         Route::get('/reports/sales', [ReportController::class, 'exportSales'])->name('reports.sales');
         Route::get('/reports/statistics', [ReportController::class, 'exportStatistics'])->name('reports.statistics');
