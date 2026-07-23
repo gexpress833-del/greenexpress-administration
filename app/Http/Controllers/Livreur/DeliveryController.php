@@ -88,6 +88,8 @@ class DeliveryController extends Controller
                 ->with('error', $e->getMessage());
         }
 
+        $delivery->refresh();
+
         $notificationService = app(NotificationService::class);
         if ($delivery->order->subscription_id) {
             $notificationService->livreurSubscriptionDeliveryAssigned($request->user(), $delivery);

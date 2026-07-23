@@ -21,7 +21,7 @@ class DeliveryAssigned extends Notification
     {
         return [
             'title' => 'Livraison en cours',
-            'message' => "Le livreur {$this->delivery->livreur->name} a pris en charge votre commande {$this->delivery->order->code}.",
+            'message' => "Le livreur {$this->delivery->livreur?->name} a pris en charge votre commande {$this->delivery->order->code}.",
             'order_id' => $this->delivery->order_id,
             'url' => route('agent.orders.show', $this->delivery->order),
             'icon' => 'truck',
