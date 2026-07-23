@@ -8,7 +8,7 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 #[Signature('app:award-recovery-bonus')]
-#[Description('Award 4 recovery bonus points every 5 hours to active agents and livreurs until Sunday 23:59')]
+#[Description('Award 1 recovery bonus point every 5 hours to active agents and livreurs until Sunday 23:59')]
 class AwardHourlyCompensationPoints extends Command
 {
     public function handle(RecoveryBonusService $bonusService): int

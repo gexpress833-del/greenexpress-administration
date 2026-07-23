@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 
 class RecoveryBonusService
 {
-    public const BONUS_POINTS = 4;
+    public const BONUS_POINTS = 1;
 
     public const BONUS_INTERVAL_HOURS = 5;
 
@@ -98,7 +98,7 @@ class RecoveryBonusService
                         $user,
                         'reward',
                         'Bonus exceptionnel Green Express',
-                        "Afin de compenser la perte récente de certaines données, Green Express accorde exceptionnellement 4 points toutes les 5 heures jusqu'à dimanche à 23h59.\n\nÀ partir de lundi, le système de récompenses reprendra son fonctionnement habituel :\n- Les agents gagneront des points uniquement après la validation complète des commandes de leurs clients.\n- Les livreurs gagneront des points uniquement après la validation complète des livraisons.",
+                        "Afin de compenser la perte récente de certaines données, Green Express accorde exceptionnellement 1 point toutes les 5 heures jusqu'à dimanche à 23h59.\n\nÀ partir de lundi, le système de récompenses reprendra son fonctionnement habituel :\n- Les agents gagneront des points uniquement après la validation complète des commandes de leurs clients.\n- Les livreurs gagneront des points uniquement après la validation complète des livraisons.",
                         'recovery_bonus',
                     );
                     $count++;
