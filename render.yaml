@@ -66,6 +66,24 @@ services:
         value: gexpress833@gmail.com
       - key: MAIL_FROM_NAME
         value: Green Express
+      - key: FIREBASE_PROJECT_ID
+        value: green-express-admin
+      - key: FIREBASE_SERVICE_ACCOUNT
+        sync: false
+      - key: FIREBASE_WEB_API_KEY
+        sync: false
+      - key: FIREBASE_WEB_AUTH_DOMAIN
+        value: green-express-admin.firebaseapp.com
+      - key: FIREBASE_WEB_PROJECT_ID
+        value: green-express-admin
+      - key: FIREBASE_WEB_STORAGE_BUCKET
+        value: green-express-admin.firebasestorage.app
+      - key: FIREBASE_WEB_MESSAGING_SENDER_ID
+        value: "1041390496451"
+      - key: FIREBASE_WEB_APP_ID
+        value: "1:1041390496451:web:034824dbe5592e138c5076"
+      - key: FIREBASE_WEB_VAPID_KEY
+        sync: false
       - key: SCHEDULE_SECRET
         sync: false
 
