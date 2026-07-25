@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use chillerlan\QRCode\Output\QRGdImagePNG;
 use chillerlan\QRCode\Output\QRMarkupSVG;
@@ -123,20 +124,26 @@ class ReceiptController extends Controller
         return $data ? 'data:image/png;base64,'.base64_encode($data) : null;
     }
 
+    private function authorizeReceipt(User $user, Order $order): void
+    {
+        abort_unless($user->role === 'admin' || $order->agent_id === $user->id, 403);
+    }
+
     public function show(Request $request, Order $order)
     {
-        abort_unless($order->agent_id === $request->user()->id, 403);
+        $this->authorizeReceipt($request->user(), $order);
 
         $order->load(['agent', 'items.meal', 'subscription.subscriptionType']);
         $qrCode = $this->generateQrSvg($order);
         $mealImageUrls = $this->mealImageUrls($order);
+        $receiptPdfRoute = $request->user()->role === 'admin' ? 'admin.receipt.pdf' : 'agent.receipt.pdf';
 
-        return view('agent.receipt.show', compact('order', 'qrCode', 'mealImageUrls'));
+        return view('agent.receipt.show', compact('order', 'qrCode', 'mealImageUrls', 'receiptPdfRoute'));
     }
 
     public function pdf(Request $request, Order $order)
     {
-        abort_unless($order->agent_id === $request->user()->id, 403);
+        $this->authorizeReceipt($request->user(), $order);
 
         $order->load(['agent', 'items.meal', 'subscription.subscriptionType']);
         $qrCode = $this->generateQrPngBase64($order);

@@ -96,7 +96,7 @@
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3">
-            <a href="{{ route('agent.receipt.pdf', $order) }}" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white text-center font-semibold py-3 px-4 rounded-lg transition shadow-sm">
+            <a href="{{ route($receiptPdfRoute, $order) }}" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white text-center font-semibold py-3 px-4 rounded-lg transition shadow-sm">
                 Télécharger PDF
             </a>
             <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $order->client_phone) }}?text={{ urlencode("Bonjour " . $order->client_name . " 👋\nVotre commande Green Express a été enregistrée avec succès.\n\nCode de livraison : " . $order->code . "\n\nMerci pour votre confiance.") }}" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center font-semibold py-3 px-4 rounded-lg transition shadow-sm">

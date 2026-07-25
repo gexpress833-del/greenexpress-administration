@@ -20,6 +20,14 @@
             </div>
 
             <div class="mt-6 space-y-2">
+                <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <a href="{{ route('admin.receipt.show', $order) }}" target="_blank" class="block w-full rounded-lg bg-green-600 px-4 py-2 text-center font-semibold text-white transition hover:bg-green-700">
+                        🧾 Voir le reçu
+                    </a>
+                    <a href="{{ route('admin.receipt.pdf', $order) }}" class="block w-full rounded-lg bg-gray-800 px-4 py-2 text-center font-semibold text-white transition hover:bg-gray-900">
+                        📥 Télécharger le reçu PDF
+                    </a>
+                </div>
                 <a href="{{ route('admin.orders.print', $order) }}" target="_blank" class="block w-full text-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 font-semibold py-2 px-4 rounded-lg transition">
                     📄 Exporter le bon en PDF
                 </a>

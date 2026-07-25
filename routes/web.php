@@ -106,6 +106,8 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::resource('orders', OrderController::class)->only(['index', 'show']);
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::get('/orders/{order}/print', [OrderController::class, 'print'])->name('orders.print');
+        Route::get('/receipt/{order}', [ReceiptController::class, 'show'])->name('receipt.show');
+        Route::get('/receipt/{order}/pdf', [ReceiptController::class, 'pdf'])->name('receipt.pdf');
         Route::get('/subscriptions/expiring', [SubscriptionController::class, 'expiring'])->name('subscriptions.expiring');
         Route::resource('subscriptions', SubscriptionController::class)->only(['index', 'show', 'update', 'destroy']);
         Route::post('/subscriptions/{subscription}/reject', [SubscriptionController::class, 'reject'])->name('subscriptions.reject');
