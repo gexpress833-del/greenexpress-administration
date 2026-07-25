@@ -40,6 +40,8 @@
         .item-table tr { border-bottom: 1px solid #f3f4f6; }
         .item-table td { padding: 6px 0; vertical-align: top; }
         .item-table td:last-child { text-align: right; }
+        .item-image { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; margin-right: 8px; vertical-align: middle; }
+        .item-image-placeholder { display: inline-block; width: 48px; height: 48px; margin-right: 8px; border-radius: 6px; background: #f3f4f6; color: #9ca3af; font-size: 7px; text-align: center; line-height: 48px; vertical-align: middle; }
         .item-name { font-weight: 600; color: #1f2937; }
         .item-qty { color: #9ca3af; font-size: 11px; }
         .item-price { font-weight: 700; color: #1f2937; }
@@ -114,6 +116,11 @@
                 @foreach($order->items as $item)
                 <tr>
                     <td>
+                        @if($mealImageData[$item->id] ?? null)
+                            <img src="{{ $mealImageData[$item->id] }}" alt="{{ $item->meal->name }}" class="item-image">
+                        @else
+                            <span class="item-image-placeholder">Sans photo</span>
+                        @endif
                         <span class="item-name">{{ $item->meal->name }}</span>
                         <span class="item-qty">x{{ $item->quantity }}</span>
                     </td>

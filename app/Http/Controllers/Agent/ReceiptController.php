@@ -10,6 +10,7 @@ use chillerlan\QRCode\Output\QRMarkupSVG;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class ReceiptController extends Controller
 {
@@ -46,6 +47,45 @@ class ReceiptController extends Controller
         ]);
 
         return (new QRCode($options))->render($qrData);
+    }
+
+    private function mealImageUrls(Order $order): array
+    {
+        return $order->items->mapWithKeys(function ($item): array {
+            $image = $item->meal?->image;
+
+            if (! $image) {
+                return [$item->id => null];
+            }
+
+            return [$item->id => str_starts_with($image, 'http') ? $image : asset('storage/'.$image)];
+        })->all();
+    }
+
+    private function mealImageData(Order $order): array
+    {
+        return $order->items->mapWithKeys(function ($item): array {
+            $image = $item->meal?->image;
+
+            if (! $image) {
+                return [$item->id => null];
+            }
+
+            $contents = str_starts_with($image, 'http')
+                ? Http::timeout(5)->get($image)->body()
+                : @file_get_contents(public_path('storage/'.$image));
+
+            if (! $contents) {
+                return [$item->id => null];
+            }
+
+            $imageInfo = @getimagesizefromstring($contents);
+            if (! $imageInfo || empty($imageInfo['mime'])) {
+                return [$item->id => null];
+            }
+
+            return [$item->id => 'data:'.$imageInfo['mime'].';base64,'.base64_encode($contents)];
+        })->all();
     }
 
     private function logoBase64(): ?string
@@ -89,8 +129,9 @@ class ReceiptController extends Controller
 
         $order->load(['agent', 'items.meal', 'subscription.subscriptionType']);
         $qrCode = $this->generateQrSvg($order);
+        $mealImageUrls = $this->mealImageUrls($order);
 
-        return view('agent.receipt.show', compact('order', 'qrCode'));
+        return view('agent.receipt.show', compact('order', 'qrCode', 'mealImageUrls'));
     }
 
     public function pdf(Request $request, Order $order)
@@ -100,8 +141,9 @@ class ReceiptController extends Controller
         $order->load(['agent', 'items.meal', 'subscription.subscriptionType']);
         $qrCode = $this->generateQrPngBase64($order);
         $logoData = $this->logoBase64();
+        $mealImageData = $this->mealImageData($order);
 
-        $pdf = Pdf::loadView('pdf.receipt', compact('order', 'qrCode', 'logoData'));
+        $pdf = Pdf::loadView('pdf.receipt', compact('order', 'qrCode', 'logoData', 'mealImageData'));
 
         return $pdf->download('recu-'.$order->code.'.pdf');
     }

@@ -49,10 +49,17 @@
                 <!-- Items -->
                 <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Détails de la commande</h3>
                 @foreach($order->items as $item)
-                    <div class="flex justify-between items-center py-2 border-b border-gray-50">
-                        <div>
-                            <span class="text-gray-800 font-medium">{{ $item->meal->name }}</span>
-                            <span class="text-gray-400 text-sm ml-1">x{{ $item->quantity }}</span>
+                    <div class="flex justify-between items-center gap-3 py-2 border-b border-gray-50">
+                        <div class="flex min-w-0 items-center gap-3">
+                            @if($mealImageUrls[$item->id] ?? null)
+                                <img src="{{ $mealImageUrls[$item->id] }}" alt="{{ $item->meal->name }}" class="h-14 w-14 shrink-0 rounded-lg object-cover">
+                            @else
+                                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-[10px] text-gray-400">Sans photo</div>
+                            @endif
+                            <div>
+                                <span class="text-gray-800 font-medium">{{ $item->meal->name }}</span>
+                                <span class="text-gray-400 text-sm ml-1">x{{ $item->quantity }}</span>
+                            </div>
                         </div>
                         <div class="text-right">
                             <div class="font-semibold text-gray-800">$ {{ number_format($item->total_price, 2) }}</div>
