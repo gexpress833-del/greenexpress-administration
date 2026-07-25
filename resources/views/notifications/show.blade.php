@@ -29,6 +29,74 @@
             <div class="p-6">
                 <p class="whitespace-pre-line text-sm leading-7 text-gray-600 dark:text-gray-300">{{ $message }}</p>
 
+                @if($entity)
+                    <div class="mt-6 rounded-xl border border-gray-100 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-900/50">
+                        <h3 class="mb-4 text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Détails associés</h3>
+
+                        @if($entity instanceof \App\Models\Order)
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Code commande</p>
+                                    <p class="font-mono font-semibold text-gray-800 dark:text-gray-100">{{ $entity->code }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Statut</p>
+                                    <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $entity->status_color_class }}">{{ $entity->status }}</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Client</p>
+                                    <p class="font-semibold text-gray-800 dark:text-gray-100">{{ $entity->client_name }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Téléphone</p>
+                                    <p class="font-semibold text-gray-800 dark:text-gray-100">{{ $entity->client_phone }}</p>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Adresse de livraison</p>
+                                    <p class="font-semibold text-gray-800 dark:text-gray-100">{{ $entity->delivery_address }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Date de livraison</p>
+                                    <p class="font-semibold text-gray-800 dark:text-gray-100">{{ $entity->delivery_date?->format('d/m/Y') }} {{ $entity->delivery_time }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Total</p>
+                                    <p class="font-semibold text-green-700 dark:text-green-400">{{ number_format($entity->total_amount_fc, 0, ',', '.') }} FC</p>
+                                    <p class="text-xs text-gray-400">$ {{ number_format($entity->total_amount, 2) }}</p>
+                                </div>
+                                @if($entity->agent)
+                                    <div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Agent</p>
+                                        <p class="font-semibold text-gray-800 dark:text-gray-100">{{ $entity->agent->name }}</p>
+                                    </div>
+                                @endif
+                                @if($entity->delivery?->livreur)
+                                    <div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Livreur</p>
+                                        <p class="font-semibold text-gray-800 dark:text-gray-100">{{ $entity->delivery->livreur->name }}</p>
+                                    </div>
+                                @endif
+                            </div>
+
+                            @if($entity->items->isNotEmpty())
+                                <div class="mt-4">
+                                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Repas commandés</p>
+                                    <ul class="divide-y divide-gray-200 rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700">
+                                        @foreach($entity->items as $item)
+                                            <li class="flex items-center justify-between px-3 py-2 text-sm">
+                                                <span class="text-gray-800 dark:text-gray-100">{{ $item->meal?->name ?? 'Repas' }} x{{ $item->quantity }}</span>
+                                                <span class="font-medium text-gray-600 dark:text-gray-300">{{ number_format($item->total_price_fc, 0, ',', '.') }} FC</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        @else
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Informations complémentaires disponibles via le bouton ci-dessous.</p>
+                        @endif
+                    </div>
+                @endif
+
                 @if($url)
                     <div class="mt-6">
                         <a href="{{ $url }}" class="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
@@ -99,6 +100,8 @@ class NotificationController extends Controller
             $data = $notification->data;
             $notification->markAsRead();
 
+            $entity = $this->resolveEntity(data_get($data, 'url'), data_get($data, 'message'));
+
             return view('notifications.show', [
                 'title' => data_get($data, 'title', 'Notification'),
                 'message' => data_get($data, 'message', data_get($data, 'body', '')),
@@ -107,11 +110,14 @@ class NotificationController extends Controller
                 'typeColor' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
                 'createdAt' => $notification->created_at,
                 'url' => data_get($data, 'url'),
+                'entity' => $entity,
             ]);
         }
 
-        $notification = $request->user()->appNotifications()->findOrFail($id);
+        $notification = $request->user()->appNotifications()->with('notifiable')->findOrFail($id);
         $notification->markAsRead();
+
+        $entity = $notification->notifiable ?? $this->resolveEntity($notification->url, $notification->message);
 
         return view('notifications.show', [
             'title' => $notification->title,
@@ -121,7 +127,33 @@ class NotificationController extends Controller
             'typeColor' => $notification->type_color,
             'createdAt' => $notification->created_at,
             'url' => $notification->url,
+            'entity' => $entity,
         ]);
+    }
+
+    private function resolveEntity(?string $url, ?string $text): ?object
+    {
+        if (empty($text)) {
+            return null;
+        }
+
+        // Try to extract an order code (GX-XXXXXXXXXXXX or similar) from the text
+        if (preg_match('/\b([A-Z0-9]{2,}-[A-Z0-9]{6,})\b/', $text, $matches)) {
+            $order = Order::with(['items.meal', 'agent', 'delivery.livreur'])->where('code', $matches[1])->first();
+            if ($order) {
+                return $order;
+            }
+        }
+
+        // Fallback: try to find any order code-like uppercase alphanumeric sequence
+        if (preg_match('/\b([A-Z]{2}[0-9A-Z]+)\b/', $text, $matches)) {
+            $order = Order::with(['items.meal', 'agent', 'delivery.livreur'])->where('code', $matches[1])->first();
+            if ($order) {
+                return $order;
+            }
+        }
+
+        return null;
     }
 
     public function markAsRead(Request $request, string $id)
