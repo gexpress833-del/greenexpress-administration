@@ -38,12 +38,14 @@ class AiDescriptionService
                 ]);
 
             if (! $response->successful()) {
+                $apiMessage = $response->json('error.message') ?? $response->body();
+
                 Log::error('OpenAI API error', [
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
 
-                throw new RuntimeException('Erreur lors de la génération de la description. Vérifiez votre clé API OpenAI.');
+                throw new RuntimeException('Erreur OpenAI ('.$response->status().') : '.$apiMessage);
             }
 
             $description = trim($response->json('choices.0.message.content') ?? '');
