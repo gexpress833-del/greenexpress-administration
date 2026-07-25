@@ -7,8 +7,10 @@ use App\Models\Order;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Models\Withdrawal;
+use App\Services\AiService;
 use App\Services\StatisticsService;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -54,5 +56,26 @@ class DashboardController extends Controller
             'start',
             'end'
         ));
+    }
+
+    public function aiReport(Request $request, StatisticsService $statisticsService, AiService $ai): JsonResponse
+    {
+        $filters = $request->validate([
+            'start' => ['nullable', 'date'],
+            'end' => ['nullable', 'date', 'after_or_equal:start'],
+        ]);
+
+        $start = isset($filters['start']) ? Carbon::parse($filters['start'])->startOfDay() : today()->subDays(30);
+        $end = isset($filters['end']) ? Carbon::parse($filters['end'])->endOfDay() : today()->endOfDay();
+
+        $kpi = $statisticsService->getDashboardKpi($start, $end);
+
+        try {
+            $report = $ai->generateDashboardReport($kpi);
+
+            return response()->json(['report' => $report]);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
     }
 }

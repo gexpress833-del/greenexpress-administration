@@ -12,8 +12,8 @@
                 <input type="text" name="name" required value="{{ old('name') }}" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">
             </div>
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-                <textarea name="description" rows="2" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">{{ old('description') }}</textarea>
+                <x-ai-generate-button routeName="admin.categories.generate-description" label="Description" />
+                <textarea name="description" id="description" rows="2" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">{{ old('description') }}</textarea>
             </div>
             <div class="mb-6 flex items-center">
                 <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500">

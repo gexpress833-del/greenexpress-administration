@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Agent;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\AiService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use chillerlan\QRCode\Output\QRGdImagePNG;
 use chillerlan\QRCode\Output\QRMarkupSVG;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -153,5 +155,28 @@ class ReceiptController extends Controller
         $pdf = Pdf::loadView('pdf.receipt', compact('order', 'qrCode', 'logoData', 'mealImageData'));
 
         return $pdf->download('recu-'.$order->code.'.pdf');
+    }
+
+    public function whatsappMessage(Request $request, Order $order, AiService $ai): JsonResponse
+    {
+        $this->authorizeReceipt($request->user(), $order);
+
+        $order->load(['items.meal']);
+
+        $itemsSummary = $order->items->map(fn ($item) => "{$item->meal->name} x{$item->quantity}")->implode(', ');
+        $totalAmount = '$ '.number_format($order->total_amount, 2);
+
+        try {
+            $message = $ai->generateWhatsAppMessage(
+                $order->client_name,
+                $order->code,
+                $itemsSummary,
+                $totalAmount
+            );
+
+            return response()->json(['message' => $message]);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
     }
 }

@@ -99,8 +99,10 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
     // Admin routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::post('/dashboard/ai-report', [App\Http\Controllers\Admin\DashboardController::class, 'aiReport'])->name('dashboard.ai-report');
         Route::resource('users', UserController::class);
         Route::resource('categories', CategoryController::class)->except(['show']);
+        Route::post('/categories/generate-description', [CategoryController::class, 'generateDescription'])->name('categories.generate-description');
         Route::resource('meals', MealController::class)->except(['show']);
         Route::post('/meals/{meal}/toggle-status', [MealController::class, 'toggleStatus'])->name('meals.toggle-status');
         Route::post('/meals/generate-description', [MealController::class, 'generateDescription'])->name('meals.generate-description');
@@ -109,6 +111,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::get('/orders/{order}/print', [OrderController::class, 'print'])->name('orders.print');
         Route::get('/receipt/{order}', [ReceiptController::class, 'show'])->name('receipt.show');
         Route::get('/receipt/{order}/pdf', [ReceiptController::class, 'pdf'])->name('receipt.pdf');
+        Route::post('/receipt/{order}/whatsapp-message', [ReceiptController::class, 'whatsappMessage'])->name('receipt.whatsapp-message');
         Route::get('/subscriptions/expiring', [SubscriptionController::class, 'expiring'])->name('subscriptions.expiring');
         Route::resource('subscriptions', SubscriptionController::class)->only(['index', 'show', 'update', 'destroy']);
         Route::post('/subscriptions/{subscription}/reject', [SubscriptionController::class, 'reject'])->name('subscriptions.reject');
@@ -139,6 +142,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::post('/subscriptions/{subscription}/update-client-info', [App\Http\Controllers\Agent\SubscriptionController::class, 'updateClientInfo'])->name('subscriptions.update-client-info');
         Route::get('/receipt/{order}', [ReceiptController::class, 'show'])->name('receipt.show');
         Route::get('/receipt/{order}/pdf', [ReceiptController::class, 'pdf'])->name('receipt.pdf');
+        Route::post('/receipt/{order}/whatsapp-message', [ReceiptController::class, 'whatsappMessage'])->name('receipt.whatsapp-message');
         Route::get('/points', [PointsController::class, 'index'])->name('points.index');
         Route::get('/withdrawals', [App\Http\Controllers\Agent\WithdrawalController::class, 'index'])->name('withdrawals.index');
         Route::post('/withdrawals', [App\Http\Controllers\Agent\WithdrawalController::class, 'store'])->name('withdrawals.store');

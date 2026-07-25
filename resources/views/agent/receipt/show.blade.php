@@ -102,9 +102,52 @@
             <a href="{{ route($receiptPdfRoute, $order) }}" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white text-center font-semibold py-3 px-4 rounded-lg transition shadow-sm">
                 Télécharger PDF
             </a>
-            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $order->client_phone) }}?text={{ urlencode("Bonjour " . $order->client_name . " 👋\nVotre commande Green Express a été enregistrée avec succès.\n\nCode de livraison : " . $order->code . "\n\nMerci pour votre confiance.") }}" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center font-semibold py-3 px-4 rounded-lg transition shadow-sm">
-                Envoyer via WhatsApp
-            </a>
+            <button type="button" id="btn-ai-whatsapp"
+                data-route="{{ route($receiptPdfRoute === 'admin.receipt.pdf' ? 'admin.receipt.whatsapp-message' : 'agent.receipt.whatsapp-message', $order) }}"
+                data-phone="{{ preg_replace('/[^0-9]/', '', $order->client_phone) }}"
+                class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center font-semibold py-3 px-4 rounded-lg transition shadow-sm disabled:opacity-50">
+                <span id="ai-wa-label">Envoyer via WhatsApp (IA)</span>
+            </button>
         </div>
+        <p id="ai-wa-error" class="mt-2 hidden text-xs text-red-600 dark:text-red-400 text-center"></p>
     </div>
+
+    <script>
+        document.getElementById('btn-ai-whatsapp')?.addEventListener('click', async function () {
+            const btn = this;
+            const label = document.getElementById('ai-wa-label');
+            const errorEl = document.getElementById('ai-wa-error');
+            const phone = btn.dataset.phone;
+
+            errorEl.classList.add('hidden');
+            btn.disabled = true;
+            label.textContent = 'Génération du message...';
+
+            try {
+                const res = await fetch(btn.dataset.route, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Erreur lors de la génération.');
+                }
+
+                const url = `https://wa.me/${phone}?text=${encodeURIComponent(data.message)}`;
+                window.open(url, '_blank');
+            } catch (e) {
+                errorEl.textContent = e.message;
+                errorEl.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                label.textContent = 'Envoyer via WhatsApp (IA)';
+            }
+        });
+    </script>
 </x-app-layout>

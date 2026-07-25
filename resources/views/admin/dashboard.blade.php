@@ -50,7 +50,23 @@
            class="inline-flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-semibold py-2 px-4 rounded-lg transition">
             📦 Rapport Ventes (PDF)
         </a>
+        <button type="button" id="btn-ai-report"
+            class="inline-flex items-center gap-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-xs sm:text-sm font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span id="ai-report-label">🤖 Rapport IA</span>
+        </button>
     </div>
+
+    <div id="ai-report-box" class="hidden mb-6 rounded-2xl border border-purple-500/30 bg-purple-500/[0.07] p-6 shadow-2xl shadow-black/20 backdrop-blur-2xl">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                <svg class="h-5 w-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                Analyse IA de la période
+            </h2>
+        </div>
+        <p id="ai-report-content" class="text-sm text-slate-200 leading-relaxed"></p>
+    </div>
+    <p id="ai-report-error" class="hidden mb-6 text-xs text-red-400"></p>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
@@ -271,5 +287,49 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('btn-ai-report')?.addEventListener('click', async function () {
+            const btn = this;
+            const label = document.getElementById('ai-report-label');
+            const box = document.getElementById('ai-report-box');
+            const content = document.getElementById('ai-report-content');
+            const errorEl = document.getElementById('ai-report-error');
+            const startDate = document.querySelector('input[name="start"]')?.value;
+            const endDate = document.querySelector('input[name="end"]')?.value;
+
+            errorEl.classList.add('hidden');
+            box.classList.add('hidden');
+            btn.disabled = true;
+            label.textContent = 'Génération...';
+
+            try {
+                const res = await fetch('{{ route("admin.dashboard.ai-report") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ start: startDate, end: endDate }),
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Erreur lors de la génération.');
+                }
+
+                content.textContent = data.report;
+                box.classList.remove('hidden');
+            } catch (e) {
+                errorEl.textContent = e.message;
+                errorEl.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                label.textContent = '🤖 Rapport IA';
+            }
+        });
+    </script>
 </x-app-layout>
 

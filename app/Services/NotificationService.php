@@ -12,13 +12,24 @@ use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
+/** @phpstan-import-type NotificationData from Notification */
 class NotificationService
 {
+    public function __construct(private AiService $ai) {}
+
     /**
-     * Create an app notification for a specific user.
+     * Create an app notification for a specific user, optionally enhanced by AI.
      */
     public function notify(User $user, string $category, string $title, string $message, string $type = 'custom', ?string $url = null, ?string $whatsappLink = null): void
     {
+        if ($this->ai->isConfigured()) {
+            try {
+                $message = $this->ai->generateNotificationMessage($category, $message);
+            } catch (\Throwable $e) {
+                Log::debug('AI notification enhancement failed, using default message.', ['error' => $e->getMessage()]);
+            }
+        }
+
         $notification = Notification::create([
             'user_id' => $user->id,
             'title' => $title,
