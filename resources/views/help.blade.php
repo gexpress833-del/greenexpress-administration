@@ -9,6 +9,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-up { animation: fade-up 0.5s ease-out forwards; }
+[x-cloak] { display: none !important; }
 </style>
 
 <div class="max-w-2xl mx-auto px-4 py-6 lg:py-10" x-data="helpChat()" x-init="init()">
@@ -56,7 +57,7 @@
             </template>
 
             {{-- Indicateur de saisie --}}
-            <div x-show="loading" class="flex gap-3">
+            <div x-show="loading" x-cloak class="flex gap-3">
                 <div class="flex-shrink-0 w-9 h-9 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xs font-bold">GE</div>
                 <div class="bg-slate-100 dark:bg-slate-800 rounded-2xl rounded-tl-sm px-4 py-3">
                     <div class="flex gap-1.5 items-center">
@@ -68,7 +69,7 @@
             </div>
 
             {{-- Erreur --}}
-            <div x-show="error" class="flex gap-3">
+            <div x-show="error" x-cloak class="flex gap-3">
                 <div class="flex-shrink-0 w-9 h-9 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">!</div>
                 <div class="flex-1 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl rounded-tl-sm px-4 py-3">
                     <p class="text-sm text-red-700 dark:text-red-300" x-text="error"></p>
@@ -144,7 +145,11 @@ function helpChat() {
         loading: false,
         error: '',
 
-        init() {},
+        init() {
+            window.helpChatResetLoading = () => {
+                this.loading = false;
+            };
+        },
 
         quickAsk(question) {
             this.input = question;
@@ -161,27 +166,47 @@ function helpChat() {
             this.loading = true;
             this.$nextTick(() => this.scrollToBottom());
 
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 25000);
+
             try {
                 const res = await fetch('{{ route("help.ask") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
                         'Accept': 'application/json',
                     },
                     body: JSON.stringify({ question }),
+                    signal: controller.signal,
                 });
 
-                const data = await res.json();
+                clearTimeout(timeoutId);
+
+                let data = {};
+                try {
+                    data = await res.json();
+                } catch (jsonErr) {
+                    throw new Error('La réponse du service est invalide. Veuillez réessayer.');
+                }
 
                 if (!res.ok) {
                     throw new Error(data.error || 'Une erreur est survenue. Veuillez réessayer.');
                 }
 
+                if (!data.response) {
+                    throw new Error('Réponse vide du Service Client. Veuillez réessayer.');
+                }
+
                 this.messages.push({ role: 'bot', content: data.response });
             } catch (e) {
-                this.error = e.message;
+                if (e.name === 'AbortError') {
+                    this.error = 'Le Service Client met trop de temps à répondre. Veuillez réessayer.';
+                } else {
+                    this.error = e.message || 'Impossible de contacter le Service Client. Veuillez réessayer.';
+                }
             } finally {
+                clearTimeout(timeoutId);
                 this.loading = false;
                 this.$nextTick(() => this.scrollToBottom());
             }
