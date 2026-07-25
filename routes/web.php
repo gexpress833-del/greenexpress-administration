@@ -103,6 +103,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('meals', MealController::class)->except(['show']);
         Route::post('/meals/{meal}/toggle-status', [MealController::class, 'toggleStatus'])->name('meals.toggle-status');
+        Route::post('/meals/generate-description', [MealController::class, 'generateDescription'])->name('meals.generate-description');
         Route::resource('orders', OrderController::class)->only(['index', 'show']);
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::get('/orders/{order}/print', [OrderController::class, 'print'])->name('orders.print');

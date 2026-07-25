@@ -49,6 +49,10 @@ return [
         'secret' => env('SCHEDULE_SECRET'),
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+    ],
+
     'firebase' => [
         'project_id' => env('FIREBASE_PROJECT_ID'),
         'service_account' => env('FIREBASE_SERVICE_ACCOUNT'),

@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Meal;
+use App\Services\AiDescriptionService;
 use App\Services\CloudinaryService;
 use App\Services\CurrencyService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MealController extends Controller
@@ -124,5 +126,26 @@ class MealController extends Controller
 
         return redirect()->route('admin.meals.index')
             ->with('success', 'Statut du repas mis à jour.');
+    }
+
+    public function generateDescription(Request $request, AiDescriptionService $ai): JsonResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'category_id' => ['nullable', 'exists:categories,id'],
+        ]);
+
+        $categoryName = null;
+        if (! empty($data['category_id'])) {
+            $categoryName = Category::find($data['category_id'])?->name;
+        }
+
+        try {
+            $description = $ai->generateDescription($data['name'], $categoryName);
+
+            return response()->json(['description' => $description]);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
     }
 }
