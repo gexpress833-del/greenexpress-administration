@@ -50,17 +50,21 @@ class AiService
         );
     }
 
-    public function generateWhatsAppMessage(string $clientName, string $orderCode, string $itemsSummary, string $totalAmount, string $totalAmountFc, string $currency = 'usd'): string
+    public function generateWhatsAppMessage(string $clientName, string $orderCode, string $itemsSummary, string $totalAmount, string $totalAmountFc, string $validationCode, string $deliveryDate, string $currency = 'usd'): string
     {
-        $primaryAmount = $currency === 'fc' ? $totalAmountFc : $totalAmountFc;
-        $secondaryAmount = $totalAmount;
-
-        $prompt = "Rédige un message WhatsApp court et chaleureux (maximum 300 caractères) pour informer un client que sa commande a été enregistrée. Client : {$clientName}. Code de commande : {$orderCode}. Repas commandés : {$itemsSummary}. Montant total : {$primaryAmount} (soit {$secondaryAmount}). Date de livraison prévue. Le message doit mettre en avant le montant en Francs Congolais (FC) comme devise principale, inclure un emoji, mentionner le code de commande. Ne pas inclure de guillemets.";
+        $prompt = "Rédige un message WhatsApp de confirmation de commande pour un client. Voici les informations OBLIGATOIRES à inclure dans le message :\n"
+            ."- Nom du client : {$clientName}\n"
+            ."- Code de commande : {$orderCode}\n"
+            ."- Repas commandés : {$itemsSummary}\n"
+            ."- Montant total : {$totalAmountFc} (soit {$totalAmount})\n"
+            ."- Date de livraison prévue : {$deliveryDate}\n"
+            ."- Code de validation client : {$validationCode}\n\n"
+            ."Le message DOIT obligatoirement contenir TOUTES ces informations, en particulier le code de validation et la date de livraison. Mets en avant le montant en Francs Congolais (FC). Ajoute un avertissement de ne pas communiquer le code de validation au livreur avant d'avoir reçu la commande. Sois chaleureux, inclus un emoji. Maximum 400 caractères. Ne pas inclure de guillemets.";
 
         return $this->chat(
-            'Tu es un assistant clientèle pour Green Express, un service de livraison de repas à Kolwezi (Congo). Tu rédiges des messages WhatsApp courts, chaleureux et professionnels. Le Franc Congolais (FC) est la devise principale. Réponds uniquement avec le message, sans guillemets ni préfixe.',
+            'Tu es un assistant clientèle pour Green Express, un service de livraison de repas à Kolwezi (Congo). Tu rédiges des messages WhatsApp clairs, chaleureux et professionnels. Le Franc Congolais (FC) est la devise principale. Tu dois TOUJOURS inclure toutes les informations fournies, surtout le code de validation client et la date de livraison. Réponds uniquement avec le message, sans guillemets ni préfixe.',
             $prompt,
-            200
+            300
         );
     }
 

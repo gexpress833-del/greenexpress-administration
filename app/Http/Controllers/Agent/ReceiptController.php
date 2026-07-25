@@ -166,6 +166,7 @@ class ReceiptController extends Controller
         $itemsSummary = $order->items->map(fn ($item) => "{$item->meal->name} x{$item->quantity}")->implode(', ');
         $totalAmount = '$ '.number_format($order->total_amount, 2);
         $totalAmountFc = number_format($order->total_amount_fc, 0, ',', '.').' FC';
+        $deliveryDate = $order->delivery_date?->format('d/m/Y') ?? '—';
 
         try {
             $message = $ai->generateWhatsAppMessage(
@@ -174,6 +175,8 @@ class ReceiptController extends Controller
                 $itemsSummary,
                 $totalAmount,
                 $totalAmountFc,
+                $order->client_validation_code,
+                $deliveryDate,
                 $order->currency ?? 'usd',
             );
 
