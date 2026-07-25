@@ -19,6 +19,8 @@
                     <p class="mt-2 max-w-2xl text-sm text-slate-300 sm:text-base">Convertissez vos points en argent et recevez votre retrait sur n’importe quel opérateur Mobile Money.</p>
                 </div>
 
+                <img src="{{ asset('image/payment-methods-banner.png') }}" alt="Moyens de paiement Mobile Money" class="mb-6 w-full rounded-[2rem] border border-white/10 shadow-xl">
+
                 <section class="relative mb-6 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.07] p-6 shadow-2xl shadow-black/30 backdrop-blur-2xl sm:p-8 lg:p-10">
                     <div class="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-emerald-400/20 blur-3xl"></div>
                     <div class="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl"></div>

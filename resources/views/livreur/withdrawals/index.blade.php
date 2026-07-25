@@ -9,6 +9,8 @@
             <h1 class="mt-2 text-3xl font-black text-gray-900 dark:text-white">Retrait de mes points</h1>
             <p class="mt-2 text-gray-600 dark:text-gray-300">Vous gagnez 13 points par commande validée. Convertissez-les sur n’importe quel opérateur Mobile Money.</p>
         </div>
+        <img src="{{ asset('image/payment-methods-banner.png') }}" alt="Moyens de paiement Mobile Money" class="mb-6 w-full rounded-3xl shadow-xl">
+
         <div class="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
             <section class="rounded-3xl bg-green-900 p-6 text-white shadow-xl">
                 <p class="text-sm font-bold uppercase tracking-wider text-green-200">Solde disponible</p>
