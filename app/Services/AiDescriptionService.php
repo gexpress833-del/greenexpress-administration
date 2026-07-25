@@ -10,10 +10,10 @@ class AiDescriptionService
 {
     public function generateDescription(string $mealName, ?string $category = null): string
     {
-        $apiKey = config('services.openai.api_key');
+        $apiKey = config('services.groq.api_key');
 
         if (! $apiKey) {
-            throw new RuntimeException('Clé API OpenAI non configurée. Définissez OPENAI_API_KEY dans le fichier .env.');
+            throw new RuntimeException('Clé API Groq non configurée. Définissez GROQ_API_KEY dans le fichier .env.');
         }
 
         $prompt = $this->buildPrompt($mealName, $category);
@@ -21,8 +21,8 @@ class AiDescriptionService
         try {
             $response = Http::withToken($apiKey)
                 ->timeout(30)
-                ->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => 'gpt-4o-mini',
+                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                    'model' => 'llama-3.3-70b-versatile',
                     'messages' => [
                         [
                             'role' => 'system',
@@ -40,12 +40,12 @@ class AiDescriptionService
             if (! $response->successful()) {
                 $apiMessage = $response->json('error.message') ?? $response->body();
 
-                Log::error('OpenAI API error', [
+                Log::error('Groq API error', [
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
 
-                throw new RuntimeException('Erreur OpenAI ('.$response->status().') : '.$apiMessage);
+                throw new RuntimeException('Erreur Groq ('.$response->status().') : '.$apiMessage);
             }
 
             $description = trim($response->json('choices.0.message.content') ?? '');

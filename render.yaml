@@ -84,7 +84,7 @@ services:
         value: "1:1041390496451:web:034824dbe5592e138c5076"
       - key: FIREBASE_WEB_VAPID_KEY
         sync: false
-      - key: OPENAI_API_KEY
+      - key: GROQ_API_KEY
         sync: false
       - key: SCHEDULE_SECRET
         sync: false
