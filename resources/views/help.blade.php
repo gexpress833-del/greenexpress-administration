@@ -156,14 +156,13 @@
                 <input
                     type="text"
                     x-model="input"
-                    :disabled="loading"
                     placeholder="Écrivez votre message..."
                     class="flex-1 bg-transparent text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 px-3 py-2.5 focus:outline-none rounded-xl"
                     maxlength="1000"
                 >
                 <button
                     type="submit"
-                    :disabled="loading || !input.trim()"
+                    :disabled="!input.trim()"
                     class="flex-shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white transition shadow-lg shadow-emerald-600/25 disabled:shadow-none">
                     <svg class="w-5 h-5 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
@@ -196,7 +195,7 @@ function helpChat() {
 
         async send() {
             const question = this.input.trim();
-            if (!question || this.loading) return;
+            if (!question) return;
 
             this.error = '';
             this.messages.push({ role: 'user', content: question });
@@ -206,6 +205,7 @@ function helpChat() {
 
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 25000);
+            const safetyId = setTimeout(() => { this.loading = false; }, 28000);
 
             try {
                 const res = await fetch('{{ route("help.ask") }}', {
@@ -221,9 +221,11 @@ function helpChat() {
 
                 clearTimeout(timeoutId);
 
-                let data = {};
+                const text = await res.text();
+
+                let data;
                 try {
-                    data = await res.json();
+                    data = JSON.parse(text);
                 } catch (jsonErr) {
                     throw new Error('La réponse du service est invalide. Veuillez réessayer.');
                 }
@@ -245,6 +247,7 @@ function helpChat() {
                 }
             } finally {
                 clearTimeout(timeoutId);
+                clearTimeout(safetyId);
                 this.loading = false;
                 this.$nextTick(() => this.scrollToBottom());
             }
