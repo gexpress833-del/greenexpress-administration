@@ -91,6 +91,7 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/history', [NotificationController::class, 'history'])->name('notifications.history');
+    Route::get('/notifications/{id}', [NotificationController::class, 'show'])->whereNumber('id')->name('notifications.show');
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');

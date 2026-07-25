@@ -64,6 +64,7 @@
                                     {{ $notification->message }}
                                 </p>
                                 <div class="mt-2 flex items-center gap-3">
+                                    <a href="{{ route('notifications.show', ['id' => $notification->id, 'source' => 'app']) }}" class="text-xs font-medium text-green-600 hover:underline dark:text-green-400">Voir le détail</a>
                                     @if(!$notification->is_read)
                                         <form method="POST" action="{{ route('notifications.read', $notification->id) }}" class="inline">
                                             @csrf

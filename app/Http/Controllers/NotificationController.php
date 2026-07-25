@@ -19,6 +19,7 @@ class NotificationController extends Controller
                 'read_at' => $n->read_at,
                 'created_at' => $n->created_at,
                 'data' => $n->data,
+                'detail_url' => route('notifications.show', ['id' => $n->id, 'source' => 'laravel']),
                 'source' => 'laravel',
             ]);
 
@@ -54,6 +55,7 @@ class NotificationController extends Controller
                     },
                     'url' => $n->url,
                 ],
+                'detail_url' => route('notifications.show', ['id' => $n->id, 'source' => 'app']),
                 'source' => 'app',
             ]);
 
@@ -86,6 +88,40 @@ class NotificationController extends Controller
             ->paginate(25);
 
         return view('notifications.history', ['notifications' => $appNotifications]);
+    }
+
+    public function show(Request $request, string $id)
+    {
+        $source = $request->string('source')->toString() ?: 'app';
+
+        if ($source === 'laravel') {
+            $notification = $request->user()->notifications()->findOrFail($id);
+            $data = $notification->data;
+            $notification->markAsRead();
+
+            return view('notifications.show', [
+                'title' => data_get($data, 'title', 'Notification'),
+                'message' => data_get($data, 'message', data_get($data, 'body', '')),
+                'category' => 'Information',
+                'icon' => '🔔',
+                'typeColor' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+                'createdAt' => $notification->created_at,
+                'url' => data_get($data, 'url'),
+            ]);
+        }
+
+        $notification = $request->user()->appNotifications()->findOrFail($id);
+        $notification->markAsRead();
+
+        return view('notifications.show', [
+            'title' => $notification->title,
+            'message' => $notification->message,
+            'category' => $notification->category_label,
+            'icon' => $notification->icon,
+            'typeColor' => $notification->type_color,
+            'createdAt' => $notification->created_at,
+            'url' => $notification->url,
+        ]);
     }
 
     public function markAsRead(Request $request, string $id)

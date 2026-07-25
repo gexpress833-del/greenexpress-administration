@@ -78,7 +78,7 @@
             },
             async markAsRead(notif) {
                 if (notif.read_at) {
-                    if (notif.data.url) window.location.href = notif.data.url;
+                    window.location.href = notif.detail_url || notif.data.url || '{{ route('notifications.history') }}';
                     return;
                 }
                 try {
@@ -93,7 +93,7 @@
                     });
                     notif.read_at = new Date().toISOString();
                     this.unreadCount = Math.max(0, this.unreadCount - 1);
-                    if (notif.data.url) window.location.href = notif.data.url;
+                    window.location.href = notif.detail_url || notif.data.url || '{{ route('notifications.history') }}';
                 } catch (e) {
                     console.error(e);
                 }

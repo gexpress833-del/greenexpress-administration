@@ -38,6 +38,24 @@ class NotificationCategoryTest extends TestCase
             ->assertJsonFragment(['source' => 'app']);
     }
 
+    public function test_selected_app_notification_opens_detail_page_and_marks_it_as_read(): void
+    {
+        $user = User::factory()->client()->create();
+        app(NotificationService::class)->notify($user, 'information', 'Titre détaillé', 'Message détaillé');
+        $notification = Notification::where('user_id', $user->id)->firstOrFail();
+
+        $this->actingAs($user)
+            ->get(route('notifications.show', ['id' => $notification->id, 'source' => 'app']))
+            ->assertOk()
+            ->assertSee('Titre détaillé')
+            ->assertSee('Message détaillé');
+
+        $this->assertDatabaseHas('app_notifications', [
+            'id' => $notification->id,
+            'is_read' => true,
+        ]);
+    }
+
     public function test_agent_receives_subscription_created_notification(): void
     {
         $agent = User::factory()->agent()->create();
