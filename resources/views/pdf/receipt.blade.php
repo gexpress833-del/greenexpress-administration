@@ -46,7 +46,7 @@
         .item-qty { color: #9ca3af; font-size: 11px; }
         .item-desc { font-size: 10px; color: #6b7280; margin-top: 2px; line-height: 1.3; }
         .item-price { font-weight: 700; color: #1f2937; }
-        .item-fc { font-size: 10px; color: #6b7280; }
+        .item-usd { font-size: 10px; color: #6b7280; }
 
         .total-box {
             border-top: 2px solid #15803d;
@@ -57,8 +57,8 @@
         .total-table td { padding: 2px 0; }
         .total-table td:first-child { font-size: 14px; font-weight: 700; color: #1f2937; }
         .total-table td:last-child { text-align: right; }
-        .total-usd { font-size: 18px; font-weight: 800; color: #15803d; }
-        .total-fc { font-size: 11px; color: #4b5563; font-weight: 600; }
+        .total-fc { font-size: 18px; font-weight: 800; color: #15803d; }
+        .total-usd { font-size: 11px; color: #4b5563; font-weight: 600; }
 
         .qr-box {
             text-align: center;
@@ -129,8 +129,8 @@
                         @endif
                     </td>
                     <td>
-                        <div class="item-price">$ {{ number_format($item->total_price, 2) }}</div>
-                        <div class="item-fc">{{ number_format($item->total_price_fc, 0, ',', '.') }} FC</div>
+                        <div class="item-price">{{ number_format($item->total_price_fc, 0, ',', '.') }} FC</div>
+                        <div class="item-usd">$ {{ number_format($item->total_price, 2) }}</div>
                     </td>
                 </tr>
                 @endforeach
@@ -141,8 +141,8 @@
                     <tr>
                         <td>Total payé</td>
                         <td>
-                            <div class="total-usd">$ {{ number_format($order->total_amount, 2) }}</div>
                             <div class="total-fc">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</div>
+                            <div class="total-usd">$ {{ number_format($order->total_amount, 2) }}</div>
                         </td>
                     </tr>
                 </table>

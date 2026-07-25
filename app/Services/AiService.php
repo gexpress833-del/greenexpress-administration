@@ -50,12 +50,15 @@ class AiService
         );
     }
 
-    public function generateWhatsAppMessage(string $clientName, string $orderCode, string $itemsSummary, string $totalAmount): string
+    public function generateWhatsAppMessage(string $clientName, string $orderCode, string $itemsSummary, string $totalAmount, string $totalAmountFc, string $currency = 'usd'): string
     {
-        $prompt = "Rédige un message WhatsApp court et chaleureux (maximum 300 caractères) pour informer un client que sa commande a été enregistrée. Client : {$clientName}. Code de commande : {$orderCode}. Repas commandés : {$itemsSummary}. Total : {$totalAmount}. Le message doit être amical, inclure un emoji, et mentionner le code de commande. Ne pas inclure de guillemets.";
+        $primaryAmount = $currency === 'fc' ? $totalAmountFc : $totalAmountFc;
+        $secondaryAmount = $totalAmount;
+
+        $prompt = "Rédige un message WhatsApp court et chaleureux (maximum 300 caractères) pour informer un client que sa commande a été enregistrée. Client : {$clientName}. Code de commande : {$orderCode}. Repas commandés : {$itemsSummary}. Montant total : {$primaryAmount} (soit {$secondaryAmount}). Date de livraison prévue. Le message doit mettre en avant le montant en Francs Congolais (FC) comme devise principale, inclure un emoji, mentionner le code de commande. Ne pas inclure de guillemets.";
 
         return $this->chat(
-            'Tu es un assistant clientèle pour Green Express, un service de livraison de repas à Kolwezi (Congo). Tu rédiges des messages WhatsApp courts, chaleureux et professionnels. Réponds uniquement avec le message, sans guillemets ni préfixe.',
+            'Tu es un assistant clientèle pour Green Express, un service de livraison de repas à Kolwezi (Congo). Tu rédiges des messages WhatsApp courts, chaleureux et professionnels. Le Franc Congolais (FC) est la devise principale. Réponds uniquement avec le message, sans guillemets ni préfixe.',
             $prompt,
             200
         );

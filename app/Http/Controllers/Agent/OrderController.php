@@ -65,7 +65,9 @@ class OrderController extends Controller
             $order->code,
             (float) $order->total_amount,
             $order->delivery_date->format('d/m/Y'),
-            $order->client_validation_code
+            $order->client_validation_code,
+            (float) $order->total_amount_fc,
+            $order->currency ?? 'usd',
         );
 
         // Notifier tous les utilisateurs actifs (sauf clients) d'une nouvelle commande

@@ -42,11 +42,19 @@ class WhatsAppService
     /**
      * Message de confirmation de commande pour un client.
      */
-    public function orderConfirmationMessage(string $clientName, string $orderCode, float $total, string $deliveryDate, ?string $validationCode = null): string
+    public function orderConfirmationMessage(string $clientName, string $orderCode, float $total, string $deliveryDate, ?string $validationCode = null, ?float $totalFc = null, string $currency = 'usd'): string
     {
+        $fcAmount = $totalFc ?? 0;
+        $fcFormatted = number_format($fcAmount, 0, ',', '.').' FC';
+        $usdFormatted = '$'.number_format($total, 2);
+
+        $amountLine = $currency === 'fc'
+            ? "Montant total : {$fcFormatted} (soit {$usdFormatted})"
+            : "Montant total : {$fcFormatted} (soit {$usdFormatted})";
+
         $msg = "Bonjour {$clientName},\n\n"
             ."Votre commande {$orderCode} a bien été enregistrée par Green Express.\n"
-            .'Montant total : $'.number_format($total, 2)."\n"
+            .$amountLine."\n"
             ."Date de livraison prévue : {$deliveryDate}.\n\n";
 
         if ($validationCode) {
@@ -62,9 +70,9 @@ class WhatsAppService
     /**
      * Lien WhatsApp de confirmation de commande.
      */
-    public function orderConfirmationLink(string $phone, string $clientName, string $orderCode, float $total, string $deliveryDate, ?string $validationCode = null): string
+    public function orderConfirmationLink(string $phone, string $clientName, string $orderCode, float $total, string $deliveryDate, ?string $validationCode = null, ?float $totalFc = null, string $currency = 'usd'): string
     {
-        return $this->link($phone, $this->orderConfirmationMessage($clientName, $orderCode, $total, $deliveryDate, $validationCode));
+        return $this->link($phone, $this->orderConfirmationMessage($clientName, $orderCode, $total, $deliveryDate, $validationCode, $totalFc, $currency));
     }
 
     /**
