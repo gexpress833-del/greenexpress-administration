@@ -92,21 +92,87 @@ class AiService
         );
     }
 
-    public function generateHelpResponse(string $userQuestion, ?string $userName = null): string
+    public function generateHelpResponse(string $userQuestion, array $context = [], ?string $userName = null, ?string $userRole = null): string
     {
         $nameContext = $userName ? " L'utilisateur s'appelle {$userName}." : '';
+        $roleContext = $userRole ? " Son rôle dans l'application est : {$userRole}." : '';
+
+        $dynamicContext = $this->buildHelpContext($context);
 
         $prompt = "Question de l'utilisateur : {$userQuestion}";
 
         $system = 'Tu es le Service Client de Green Express, un service de livraison de repas basé à Kolwezi en République Démocratique du Congo.'
-            .' Tu réponds aux questions des utilisateurs (clients, agents, livreurs, cuisiniers, administrateurs) avec professionnalisme, clarté et courtoisie.'
-            .' Tu connais parfaitement le fonctionnement de la plateforme Green Express :'
-            .' création de commandes, abonnements (hebdomadaire et mensuel), livraisons, code de validation client,'
-            .' paiement en Francs Congolais (FC) et en USD, points de fidélité, retraits, taux de change, notifications.'
-            ." Réponds en français, de manière concise et utile. Si tu ne connais pas la réponse, oriente l'utilisateur vers le support WhatsApp."
-            ." Ne mentionne jamais que tu es une IA, un modèle de langage ou un robot. Tu es le Service Client Green Express.{$nameContext}";
+            .' Tu réponds aux questions des utilisateurs avec professionnalisme, clarté et courtoisie.'
+            .' Voici les règles et informations VÉRIFIÉES sur le fonctionnement réel de la plateforme Green Express. Tu DOIS te baser UNIQUEMENT sur ces informations pour répondre.'
+            ." Si une information n'est pas dans ce contexte, oriente l'utilisateur vers le support WhatsApp sans inventer."
+            .' Ne mentionne jamais que tu es une IA, un modèle de langage ou un robot. Tu es un conseiller du Service Client Green Express.'
+            ." Réponds en français, de manière concise, utile et structurée.{$nameContext}{$roleContext}\n\n"
+            ."--- CONTEXTE MÉTIER GREEN EXPRESS ---\n"
+            ."{$dynamicContext}\n"
+            .'--- FIN DU CONTEXTE ---';
 
-        return $this->chat($system, $prompt, 500);
+        return $this->chat($system, $prompt, 600);
+    }
+
+    private function buildHelpContext(array $context): string
+    {
+        $exchangeRate = $context['exchange_rate'] ?? 'non disponible';
+        $subscriptionTypes = $context['subscription_types'] ?? [];
+        $userRole = $context['user_role'] ?? 'utilisateur';
+
+        $typesText = empty($subscriptionTypes)
+            ? 'Les formules d\'abonnement disponibles sont définies par l\'administrateur.'
+            : "Formules d'abonnement actives :\n".collect($subscriptionTypes)
+                ->map(static function (array $type): string {
+                    $name = $type['name'] ?? 'Formule';
+                    $description = $type['description'] ?? 'Abonnement Green Express';
+                    $price = $type['price'] ?? 0;
+                    $priceFc = $type['price_fc'] ?? 0;
+                    $duration = $type['duration_days'] ?? 0;
+                    $mealsPerDay = $type['meals_per_day'] ?? 0;
+
+                    return "- {$name} : {$description} | prix USD {$price} | prix FC {$priceFc} | durée {$duration} jours | repas par jour : {$mealsPerDay}";
+                })
+                ->implode("\n");
+
+        return "RÔLES UTILISATEURS :\n"
+            ."- admin : gère les utilisateurs, repas, catégories, commandes, abonnements, livraisons, taux de change, notifications et logs.\n"
+            ."- agent : crée des commandes et des abonnements pour les clients, gagne des points et commissions, peut faire des retraits.\n"
+            ."- livreur : récupère et livre les commandes, utilise le code de validation client.\n"
+            ."- cuisinier : voit les commandes à préparer.\n"
+            ."- client : passe des commandes, consulte ses abonnements et son historique.\n\n"
+            ."COMMANDES :\n"
+            ."- Une commande est créée par un agent avec les informations client (nom, téléphone, adresse, date et heure de livraison).\n"
+            ."- Le code de commande commence par GX- (ex: GX-6A64A0397CAF2).\n"
+            ."- Le code de validation client est un code alphanumérique de 6 caractères en majuscules.\n"
+            ."- Le client ne doit communiquer son code de validation au livreur qu'après avoir reçu sa commande en main propre.\n"
+            ."- Statuts d'une commande : pending (en attente), confirmed (confirmée), preparing (en préparation), delivering (en livraison), delivered (livrée), cancelled (annulée).\n"
+            ."- Le montant total est stocké en USD (total_amount) et en Francs Congolais (total_amount_fc). La devise affichée principale est le FC.\n"
+            ."- Le client peut payer en USD ou en FC selon la devise choisie par l'agent lors de la création.\n"
+            ."- Les prix des repas sont définis par l'administrateur avec un prix FC calculé automatiquement via le taux de change.\n\n"
+            ."LIVRAISONS :\n"
+            ."- Une livraison est créée automatiquement pour chaque commande avec un code DLV-.\n"
+            ."- Statuts de livraison : assigned (assignée), picked_up (récupérée), in_transit (en cours), delivered (livrée).\n"
+            ."- Le livreur doit valider la livraison avec le code de validation du client.\n\n"
+            ."TAUX DE CHANGE :\n"
+            ."- Taux actuel : 1 USD = {$exchangeRate} FC.\n"
+            ."- Ce taux est mis à jour par l'administrateur et sert à calculer les montants en FC.\n\n"
+            ."ABONNEMENTS :\n"
+            ."{$typesText}\n"
+            ."- Statuts d'abonnement : pending (en attente de validation admin), active (actif), suspended (suspendu), expired (expiré), rejected (rejeté).\n"
+            ."- Un abonnement doit être validé par un administrateur pour devenir actif.\n"
+            ."- Les repas livrés dans le cadre d'un abonnement suivent le menu défini pour chaque jour de semaine (lundi au vendredi).\n"
+            ."- Les suspensions peuvent être demandées pour ajuster les dates de livraison.\n\n"
+            ."POINTS ET RÉCOMPENSES (AGENTS) :\n"
+            ."- Les agents gagnent des points sur les commandes validées par les clients et les abonnements.\n"
+            ."- Les points ont une valeur en USD et peuvent être convertis en retraits (mobile money).\n"
+            ."- Statuts de retrait : pending (en attente), approved (approuvé), paid (payé), rejected (rejeté).\n"
+            ."- L'opérateur mobile money et le numéro sont demandés lors du retrait.\n\n"
+            ."DEVISES :\n"
+            ."- Franc Congolais (FC) est la devise principale affichée. Le dollar USD est affiché comme équivalent secondaire.\n"
+            ."- Les agents choisissent la devise (USD ou FC) lors de la création de la commande.\n\n"
+            ."UTILISATEUR ACTUEL :\n"
+            ."- Rôle : {$userRole}. Adapte ta réponse à ce rôle si la question concerne des fonctionnalités spécifiques.";
     }
 
     public function chat(string $systemPrompt, string $userPrompt, int $maxTokens = 150): string
