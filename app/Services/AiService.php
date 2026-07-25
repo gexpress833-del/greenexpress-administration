@@ -92,6 +92,23 @@ class AiService
         );
     }
 
+    public function generateHelpResponse(string $userQuestion, ?string $userName = null): string
+    {
+        $nameContext = $userName ? " L'utilisateur s'appelle {$userName}." : '';
+
+        $prompt = "Question de l'utilisateur : {$userQuestion}";
+
+        $system = 'Tu es le Service Client de Green Express, un service de livraison de repas basé à Kolwezi en République Démocratique du Congo.'
+            .' Tu réponds aux questions des utilisateurs (clients, agents, livreurs, cuisiniers, administrateurs) avec professionnalisme, clarté et courtoisie.'
+            .' Tu connais parfaitement le fonctionnement de la plateforme Green Express :'
+            .' création de commandes, abonnements (hebdomadaire et mensuel), livraisons, code de validation client,'
+            .' paiement en Francs Congolais (FC) et en USD, points de fidélité, retraits, taux de change, notifications.'
+            ." Réponds en français, de manière concise et utile. Si tu ne connais pas la réponse, oriente l'utilisateur vers le support WhatsApp."
+            ." Ne mentionne jamais que tu es une IA, un modèle de langage ou un robot. Tu es le Service Client Green Express.{$nameContext}";
+
+        return $this->chat($system, $prompt, 500);
+    }
+
     public function chat(string $systemPrompt, string $userPrompt, int $maxTokens = 150): string
     {
         if (! $this->isConfigured()) {

@@ -21,6 +21,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ExchangeRatePublicController;
 use App\Http\Controllers\FcmTokenController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\MealPublicController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordChangeController;
@@ -81,6 +82,8 @@ Route::middleware(['auth', 'password.changed'])->group(function () {
     Route::get('/taux', [ExchangeRatePublicController::class, 'show'])->name('exchange-rate.show');
     Route::get('/repas', [MealPublicController::class, 'index'])->name('meals.public');
     Route::get('/a-propos', [AboutController::class, 'index'])->name('about');
+    Route::get('/aide', [HelpController::class, 'index'])->name('help');
+    Route::post('/aide/ask', [HelpController::class, 'ask'])->name('help.ask');
 
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
