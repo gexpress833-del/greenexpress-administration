@@ -105,23 +105,25 @@
 
         {{-- Zone de saisie --}}
         <div class="border-t border-slate-200 dark:border-slate-800 p-3">
-            <form @submit.prevent="send()" class="flex gap-2">
+            <div class="flex gap-2">
                 <input
                     type="text"
                     x-model="input"
+                    @keydown.enter.prevent="send()"
                     placeholder="Écrivez votre question..."
                     class="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     maxlength="1000"
                 >
                 <button
-                    type="submit"
+                    type="button"
+                    @click="send()"
                     :disabled="!input.trim()"
                     class="flex-shrink-0 inline-flex items-center justify-center w-11 h-11 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white transition shadow-md disabled:shadow-none">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                     </svg>
                 </button>
-            </form>
+            </div>
         </div>
     </div>
 
