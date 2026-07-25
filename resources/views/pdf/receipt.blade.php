@@ -44,6 +44,7 @@
         .item-image-placeholder { display: inline-block; width: 48px; height: 48px; margin-right: 8px; border-radius: 6px; background: #f3f4f6; color: #9ca3af; font-size: 7px; text-align: center; line-height: 48px; vertical-align: middle; }
         .item-name { font-weight: 600; color: #1f2937; }
         .item-qty { color: #9ca3af; font-size: 11px; }
+        .item-desc { font-size: 10px; color: #6b7280; margin-top: 2px; line-height: 1.3; }
         .item-price { font-weight: 700; color: #1f2937; }
         .item-fc { font-size: 10px; color: #6b7280; }
 
@@ -123,6 +124,9 @@
                         @endif
                         <span class="item-name">{{ $item->meal->name }}</span>
                         <span class="item-qty">x{{ $item->quantity }}</span>
+                        @if($item->meal->description)
+                        <div class="item-desc">{{ $item->meal->description }}</div>
+                        @endif
                     </td>
                     <td>
                         <div class="item-price">$ {{ number_format($item->total_price, 2) }}</div>

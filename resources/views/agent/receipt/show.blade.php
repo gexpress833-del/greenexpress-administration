@@ -59,6 +59,9 @@
                             <div>
                                 <span class="text-gray-800 font-medium">{{ $item->meal->name }}</span>
                                 <span class="text-gray-400 text-sm ml-1">x{{ $item->quantity }}</span>
+                                @if($item->meal->description)
+                                <p class="text-xs text-gray-500 mt-0.5 leading-snug">{{ $item->meal->description }}</p>
+                                @endif
                             </div>
                         </div>
                         <div class="text-right">
