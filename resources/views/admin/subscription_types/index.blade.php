@@ -16,8 +16,8 @@
                         </th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Nom</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Description</th>
-                        <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Prix (USD)</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Prix (FC)</th>
+                        <th class="px-6 py-3 text-left font-medium text-gray-400 dark:text-gray-500">USD</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Durée</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Repas/jour</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Statut</th>
@@ -30,8 +30,8 @@
                             <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ $type->display_order }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100 font-medium">{{ $type->name }}</td>
                             <td class="px-6 py-3 text-gray-600 dark:text-gray-300 max-w-xs truncate">{{ $type->description ?? '-' }}</td>
-                            <td class="px-6 py-3 text-gray-800 dark:text-gray-100">$ {{ number_format($type->price, 2) }}</td>
-                            <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ number_format($type->price_fc, 0, ',', '.') }} FC</td>
+                            <td class="px-6 py-3 font-bold text-gray-700 dark:text-gray-200">{{ number_format($type->price_fc, 0, ',', '.') }} FC</td>
+                            <td class="px-6 py-3 text-xs text-gray-400 dark:text-gray-500">$ {{ number_format($type->price, 2) }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $type->duration_days }} jours</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $type->meals_per_day }}</td>
                             <td class="px-6 py-3">

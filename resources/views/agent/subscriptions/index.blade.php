@@ -15,8 +15,8 @@
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Type</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Début</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Fin</th>
-                        <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Prix USD</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Prix FC</th>
+                        <th class="px-6 py-3 text-left font-medium text-gray-400 dark:text-gray-500">USD</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Statut</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Action</th>
                     </tr>
@@ -35,8 +35,8 @@
                             <td class="px-6 py-3">{{ $sub->type_label }}</td>
                             <td class="px-6 py-3">{{ $sub->start_date?->format('d/m/Y') }}</td>
                             <td class="px-6 py-3">{{ $sub->end_date?->format('d/m/Y') }}</td>
-                            <td class="px-6 py-3">$ {{ number_format($sub->price, 2) }}</td>
-                            <td class="px-6 py-3">{{ number_format($sub->price_fc, 0, ',', '.') }} FC</td>
+                            <td class="px-6 py-3 font-bold text-gray-700 dark:text-gray-200">{{ number_format($sub->price_fc, 0, ',', '.') }} FC</td>
+                            <td class="px-6 py-3 text-xs text-gray-400 dark:text-gray-500">$ {{ number_format($sub->price, 2) }}</td>
                             <td class="px-6 py-3">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $sub->status_color_class }}">
                                     {{ ucfirst($sub->status) }}

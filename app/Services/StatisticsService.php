@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class StatisticsService
 {
+    public function __construct(private readonly CurrencyService $currencyService) {}
+
     public function getDashboardKpi(?Carbon $start = null, ?Carbon $end = null): array
     {
         $start = $start ?? today()->subDays(30);
@@ -39,6 +41,8 @@ class StatisticsService
             ->sum('amount_usd');
 
         $profitEstimate = round($totalRevenue * 0.25 - $withdrawalsPaid, 2);
+        $profitEstimateFc = $this->currencyService->usdToFc($profitEstimate);
+        $withdrawalsPaidFc = $this->currencyService->usdToFc($withdrawalsPaid);
 
         $topAgents = User::where('role', 'agent')
             ->where('is_active', true)
@@ -50,7 +54,7 @@ class StatisticsService
         $profitableZones = Order::where('status', 'delivered')
             ->whereNotNull('client_validated_at')
             ->whereBetween('client_validated_at', [$start, $end])
-            ->selectRaw('delivery_address, count(*) as orders_count, sum(total_amount) as total_revenue')
+            ->selectRaw('delivery_address, count(*) as orders_count, sum(total_amount) as total_revenue, sum(total_amount_fc) as total_revenue_fc')
             ->groupBy('delivery_address')
             ->orderByDesc('total_revenue')
             ->take(10)
@@ -113,9 +117,12 @@ class StatisticsService
             ],
             'financial' => [
                 'total_revenue_usd' => $totalRevenue,
+                'total_revenue_fc' => $totalRevenueFc,
                 'avg_delivery_cost' => $avgDeliveryCost,
                 'withdrawals_paid' => $withdrawalsPaid,
+                'withdrawals_paid_fc' => $withdrawalsPaidFc,
                 'profit_estimate' => $profitEstimate,
+                'profit_estimate_fc' => $profitEstimateFc,
             ],
             'subscriptions' => [
                 'active' => $activeSubscriptions,

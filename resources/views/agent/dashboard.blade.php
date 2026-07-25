@@ -32,8 +32,8 @@
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Solde disponible</p>
-            <p class="text-2xl font-bold text-purple-700">$ {{ number_format($availableBalance, 2) }}</p>
-            <p class="text-xs text-slate-400 mt-1">{{ number_format($availablePoints) }} points · minimum $ 5.00</p>
+            <p class="text-2xl font-bold text-purple-700">{{ number_format($availableBalanceFc, 0, ',', '.') }} FC</p>
+            <p class="text-xs text-slate-400 mt-1">$ {{ number_format($availableBalance, 2) }} · {{ number_format($availablePoints) }} points · min. $ 5.00</p>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Bonus repas aujourd'hui</p>
@@ -94,7 +94,7 @@
                             <tr>
                                 <td class="px-4 py-2 font-medium">{{ $order->code }}</td>
                                 <td class="px-4 py-2">{{ $order->client_name }}</td>
-                                <td class="px-4 py-2">$ {{ number_format($order->total_amount, 2) }}<br><span class="text-xs text-slate-500">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</span></td>
+                                <td class="px-4 py-2">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC<br><span class="text-xs text-slate-500">$ {{ number_format($order->total_amount, 2) }}</span></td>
                                 <td class="px-4 py-2"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $order->status_color_class }}">{{ $order->status }}</span></td>
                             </tr>
                         @empty
@@ -117,7 +117,7 @@
                             <tr>
                                 <td class="px-4 py-2 font-medium">{{ $client->client_name }}</td>
                                 <td class="px-4 py-2">{{ $client->orders_count }}</td>
-                                <td class="px-4 py-2">$ {{ number_format($client->total_spent, 2) }}<br><span class="text-xs text-slate-500">{{ number_format($client->total_spent_fc, 0, ',', '.') }} FC</span></td>
+                                <td class="px-4 py-2">{{ number_format($client->total_spent_fc, 0, ',', '.') }} FC<br><span class="text-xs text-slate-500">$ {{ number_format($client->total_spent, 2) }}</span></td>
                             </tr>
                         @empty
                             <tr><td class="px-4 py-2 text-slate-400" colspan="3">Aucun client</td></tr>

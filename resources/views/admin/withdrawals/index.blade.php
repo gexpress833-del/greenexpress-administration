@@ -23,8 +23,8 @@
                                     <p class="text-xs text-slate-400">{{ ($w->user ?? $w->agent)?->role }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">USD</p>
-                                    <p class="mt-1 text-lg font-black text-white">$ {{ number_format($w->amount_usd, 2) }}</p>
+                                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">FC</p>
+                                    <p class="mt-1 text-lg font-black text-emerald-300">{{ number_format($w->amount_fc, 0) }} FC</p>
                                 </div>
                                 <div>
                                     <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Points</p>
@@ -36,8 +36,8 @@
                                     <p class="text-xs text-slate-400">{{ $w->mobile_money_number }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">FC</p>
-                                    <p class="mt-1 text-lg font-black text-emerald-300">{{ number_format($w->amount_fc, 0) }} FC</p>
+                                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">USD</p>
+                                    <p class="mt-1 text-sm font-bold text-slate-300">$ {{ number_format($w->amount_usd, 2) }}</p>
                                 </div>
                                 <div><span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold {{ $w->status_color_class }}">{{ $w->status }}</span><p class="mt-2 text-xs text-slate-500">{{ $w->created_at?->format('d/m/Y') }}</p></div>
                                 <div class="flex flex-wrap gap-2 lg:justify-end">

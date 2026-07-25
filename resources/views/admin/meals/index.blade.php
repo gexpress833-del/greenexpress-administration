@@ -24,8 +24,8 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">{{ Str::limit($meal->description, 80) }}</p>
                     <div class="flex items-center justify-between">
                         <div>
-                            <span class="text-lg font-bold text-green-700 dark:text-green-400">$ {{ number_format($meal->price, 2) }}</span>
-                            <span class="text-sm text-gray-600 dark:text-gray-400 ml-2">{{ number_format($meal->price_fc, 0, ',', '.') }} FC</span>
+                            <span class="text-lg font-bold text-green-700 dark:text-green-400">{{ number_format($meal->price_fc, 0, ',', '.') }} FC</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">$ {{ number_format($meal->price, 2) }}</span>
                         </div>
                         <div class="flex items-center gap-3">
                             <form method="POST" action="{{ route('admin.meals.toggle-status', $meal) }}" class="inline">

@@ -28,8 +28,8 @@
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Total commandes</p>
-            <p class="text-2xl font-bold text-white">$ {{ number_format($totalSpent, 2) }}</p>
-            <p class="text-xs text-slate-400 mt-1">{{ number_format($totalSpentFc, 0, ',', '.') }} FC</p>
+            <p class="text-2xl font-bold text-white">{{ number_format($totalSpentFc, 0, ',', '.') }} FC</p>
+            <p class="text-xs text-slate-400 mt-1">$ {{ number_format($totalSpent, 2) }}</p>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Commandes</p>
@@ -150,8 +150,8 @@
                         </div>
                         <p class="text-xs text-amber-100 uppercase tracking-wide font-medium">Prix payé</p>
                     </div>
-                    <p class="text-3xl font-bold text-white">$ {{ number_format($activeSubscription->price, 2) }}</p>
-                    <p class="text-sm text-yellow-200 font-medium">{{ number_format($activeSubscription->price_fc, 0, ',', '.') }} FC</p>
+                    <p class="text-3xl font-bold text-white">{{ number_format($activeSubscription->price_fc, 0, ',', '.') }} FC</p>
+                    <p class="text-sm text-yellow-200 font-medium">$ {{ number_format($activeSubscription->price, 2) }}</p>
                 </div>
 
                 {{-- Date de début --}}
@@ -312,7 +312,7 @@
                         <tr>
                             <td class="px-4 py-2 font-medium text-white">{{ $order->code }}</td>
                             <td class="px-4 py-2 text-slate-300">{{ $order->delivery_date?->format('d/m/Y') }}</td>
-                            <td class="px-4 py-2 text-slate-300">$ {{ number_format($order->total_amount, 2) }}<br><span class="text-xs text-slate-500">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</span></td>
+                            <td class="px-4 py-2 text-slate-300">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC<br><span class="text-xs text-slate-500">$ {{ number_format($order->total_amount, 2) }}</span></td>
                             <td class="px-4 py-2"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $order->status_color_class }}">{{ $order->status }}</span></td>
                         </tr>
                     @empty
@@ -363,8 +363,8 @@
                         <div class="grid grid-cols-3 gap-4 pt-3 border-t border-gray-700">
                             <div>
                                 <p class="text-xs text-gray-500 uppercase tracking-wide">Prix payé</p>
-                                <p class="text-lg font-bold text-white">$ {{ number_format($subscription->price, 2) }}</p>
-                                <p class="text-xs text-gray-400">{{ number_format($subscription->price_fc, 0, ',', '.') }} FC</p>
+                                <p class="text-lg font-bold text-white">{{ number_format($subscription->price_fc, 0, ',', '.') }} FC</p>
+                                <p class="text-xs text-gray-400">$ {{ number_format($subscription->price, 2) }}</p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500 uppercase tracking-wide">Durée</p>

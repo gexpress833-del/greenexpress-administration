@@ -9,8 +9,8 @@
                 <thead class="bg-gray-50 dark:bg-gray-800/50">
                     <tr>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Code</th>
-                        <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Total USD</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Total FC</th>
+                        <th class="px-6 py-3 text-left font-medium text-gray-400 dark:text-gray-500">USD</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Statut</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Date livraison</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Action</th>
@@ -20,8 +20,8 @@
                     @forelse($orders as $order)
                         <tr>
                             <td class="px-6 py-3 font-medium text-gray-800 dark:text-gray-100">{{ $order->code }}</td>
-                            <td class="px-6 py-3 text-gray-600 dark:text-gray-300">$ {{ number_format($order->total_amount, 2) }}</td>
-                            <td class="px-6 py-3 text-gray-600 dark:text-gray-300">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</td>
+                            <td class="px-6 py-3 font-bold text-gray-700 dark:text-gray-200">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</td>
+                            <td class="px-6 py-3 text-xs text-gray-400 dark:text-gray-500">$ {{ number_format($order->total_amount, 2) }}</td>
                             <td class="px-6 py-3">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $order->status_color_class }}">
                                     {{ $order->status }}

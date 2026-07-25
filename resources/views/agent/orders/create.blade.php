@@ -38,8 +38,8 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Devise</label>
                     <select name="currency" id="currency-select" required class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500">
-                        <option value="usd" {{ old('currency') === 'fc' ? '' : 'selected' }}>USD ($)</option>
-                        <option value="fc" {{ old('currency') === 'fc' ? 'selected' : '' }}>Francs congolais (FC)</option>
+                        <option value="usd" {{ old('currency') === 'usd' ? 'selected' : '' }}>USD ($)</option>
+                        <option value="fc" {{ old('currency') === 'usd' ? '' : 'selected' }}>Francs congolais (FC)</option>
                     </select>
                 </div>
                 <div>
@@ -56,7 +56,7 @@
                             <select name="items[INDEX][meal_id]" required class="flex-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 meal-select">
                                 <option value="">Choisir un repas</option>
                                 @foreach($meals as $meal)
-                                    <option value="{{ $meal->id }}" data-price="{{ $meal->price }}" data-price-fc="{{ $meal->price_fc }}" data-label-usd="{{ $meal->name }} - ${{ number_format($meal->price, 2) }}" data-label-fc="{{ $meal->name }} - {{ number_format($meal->price_fc, 0, ',', '.') }} FC">{{ $meal->name }} - ${{ number_format($meal->price, 2) }}</option>
+                                    <option value="{{ $meal->id }}" data-price="{{ $meal->price }}" data-price-fc="{{ $meal->price_fc }}" data-label-usd="{{ $meal->name }} - ${{ number_format($meal->price, 2) }}" data-label-fc="{{ $meal->name }} - {{ number_format($meal->price_fc, 0, ',', '.') }} FC">{{ $meal->name }} - {{ number_format($meal->price_fc, 0, ',', '.') }} FC</option>
                                 @endforeach
                             </select>
                             <input type="number" name="items[INDEX][quantity]" min="1" value="1" required class="w-24 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 shadow-sm focus:border-green-500 focus:ring-green-500 qty-input">
@@ -69,7 +69,7 @@
 
             <div class="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 gap-4">
                 <div>
-                    <p class="text-lg font-bold text-gray-800 dark:text-gray-100">Total : <span id="total-display">$ 0.00</span></p>
+                    <p class="text-lg font-bold text-gray-800 dark:text-gray-100">Total : <span id="total-display">0 FC</span></p>
                 </div>
                 <button type="submit" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-6 rounded-lg transition">
                     Enregistrer

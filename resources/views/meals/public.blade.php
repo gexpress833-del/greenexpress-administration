@@ -75,9 +75,9 @@
                                 <div class="mt-5 flex items-end justify-between border-t border-white/10 pt-4">
                                     <div>
                                         <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Prix</p>
-                                        <p class="mt-1 text-2xl font-black text-emerald-300">${{ number_format($meal->price, 2) }}</p>
+                                        <p class="mt-1 text-2xl font-black text-yellow-300">{{ number_format($meal->price_fc, 0, ',', '.') }} FC</p>
                                     </div>
-                                    <p class="text-sm font-bold text-yellow-300">{{ number_format($meal->price_fc, 0, ',', '.') }} FC</p>
+                                    <p class="text-sm font-medium text-emerald-300">${{ number_format($meal->price, 2) }}</p>
                                 </div>
                             </div>
                         </article>

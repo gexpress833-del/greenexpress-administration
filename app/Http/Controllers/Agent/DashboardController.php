@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Agent;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Withdrawal;
+use App\Services\CurrencyService;
 use App\Services\PointService;
 use App\Services\PointWithdrawalService;
 use App\Services\RewardService;
@@ -12,7 +13,7 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request, PointService $pointService, PointWithdrawalService $withdrawalService, RewardService $rewardService)
+    public function index(Request $request, PointService $pointService, PointWithdrawalService $withdrawalService, RewardService $rewardService, CurrencyService $currencyService)
     {
         $user = $request->user();
 
@@ -28,6 +29,7 @@ class DashboardController extends Controller
         $todayPoints = $pointService->getTodayPoints($user->id);
         $availablePoints = $withdrawalService->availablePoints($user);
         $availableBalance = round($availablePoints * PointService::VALUE_PER_POINT_USD, 2);
+        $availableBalanceFc = $currencyService->usdToFc($availableBalance);
         $pendingWithdrawals = Withdrawal::where('user_id', $user->id)->where('status', 'pending')->count();
 
         $weeklyOrders = [];
@@ -60,7 +62,7 @@ class DashboardController extends Controller
         $todayRewards = $rewardService->getTodayRewardCount($user->id);
 
         return view('agent.dashboard', compact(
-            'todayOrders', 'totalOrders', 'totalPoints', 'todayPoints', 'availableBalance',
+            'todayOrders', 'totalOrders', 'totalPoints', 'todayPoints', 'availableBalance', 'availableBalanceFc',
             'availablePoints', 'pendingWithdrawals', 'weeklyOrders',
             'recentOrders', 'topClients',
             'badges', 'todayRewards'

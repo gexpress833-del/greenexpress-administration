@@ -71,8 +71,8 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Chiffre d'affaires validé</p>
-            <p class="text-2xl font-bold text-green-700">$ {{ number_format($kpi['financial']['total_revenue_usd'], 2) }}</p>
-            <p class="text-xs text-slate-400 mt-1">Période : {{ $kpi['period']['start'] }} - {{ $kpi['period']['end'] }}</p>
+            <p class="text-2xl font-bold text-green-700">{{ number_format($kpi['financial']['total_revenue_fc'], 0, ',', '.') }} FC</p>
+            <p class="text-xs text-slate-400 mt-1">$ {{ number_format($kpi['financial']['total_revenue_usd'], 2) }} · Période : {{ $kpi['period']['start'] }} - {{ $kpi['period']['end'] }}</p>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Commandes validées</p>
@@ -81,12 +81,13 @@
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Profit estimé</p>
-            <p class="text-2xl font-bold text-blue-700">$ {{ number_format($kpi['financial']['profit_estimate'], 2) }}</p>
-            <p class="text-xs text-slate-400 mt-1">Marge 25% — retraits de points déduits</p>
+            <p class="text-2xl font-bold text-blue-700">{{ number_format($kpi['financial']['profit_estimate_fc'], 0, ',', '.') }} FC</p>
+            <p class="text-xs text-slate-400 mt-1">$ {{ number_format($kpi['financial']['profit_estimate'], 2) }} · Marge 25% — retraits déduits</p>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
             <p class="text-sm text-slate-400">Retraits de points</p>
-            <p class="text-2xl font-bold text-purple-700">$ {{ number_format($kpi['financial']['withdrawals_paid'], 2) }}</p>
+            <p class="text-2xl font-bold text-purple-700">{{ number_format($kpi['financial']['withdrawals_paid_fc'], 0, ',', '.') }} FC</p>
+            <p class="text-xs text-slate-400 mt-1">$ {{ number_format($kpi['financial']['withdrawals_paid'], 2) }}</p>
             <p class="text-xs text-slate-400 mt-1">Paiements Mobile Money : $ {{ number_format($kpi['financial']['withdrawals_paid'], 2) }}</p>
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl">
@@ -159,7 +160,7 @@
                             <tr>
                                 <td class="px-4 py-2 font-medium">{{ Str::limit($zone->delivery_address, 40) }}</td>
                                 <td class="px-4 py-2">{{ $zone->orders_count }}</td>
-                                <td class="px-4 py-2">$ {{ number_format($zone->total_revenue, 2) }}</td>
+                                <td class="px-4 py-2">{{ number_format($zone->total_revenue_fc, 0, ',', '.') }} FC</td>
                             </tr>
                         @empty
                             <tr><td class="px-4 py-2 text-slate-400" colspan="3">Aucune donnée</td></tr>
@@ -205,7 +206,7 @@
                             <tr>
                                 <td class="px-4 py-2 font-medium">{{ $order->code }}</td>
                                 <td class="px-4 py-2">{{ $order->agent->name ?? '-' }}</td>
-                                <td class="px-4 py-2">$ {{ number_format($order->total_amount, 2) }}<br><span class="text-xs text-slate-500">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</span></td>
+                                <td class="px-4 py-2">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC<br><span class="text-xs text-slate-500">$ {{ number_format($order->total_amount, 2) }}</span></td>
                                 <td class="px-4 py-2"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $order->status_color_class }}">{{ $order->status }}</span></td>
                             </tr>
                         @empty
