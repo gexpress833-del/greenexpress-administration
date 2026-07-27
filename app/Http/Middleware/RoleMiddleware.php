@@ -32,6 +32,11 @@ class RoleMiddleware
         $allowedRoles = array_map(static fn (string $role): string => strtolower(trim($role)), $roles);
 
         if (! in_array($userRole, $allowedRoles, true)) {
+            if ($userRole === 'admin' && $request->is('agent/withdrawals') && in_array('agent', $allowedRoles, true)) {
+                return redirect()->route('admin.withdrawals.index')
+                    ->with('info', 'Vous avez été redirigé vers la gestion administrative des retraits.');
+            }
+
             Log::warning('Role authorization denied.', [
                 'user_id' => $user->id,
                 'email' => $user->email,

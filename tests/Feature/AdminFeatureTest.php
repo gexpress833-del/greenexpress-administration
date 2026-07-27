@@ -194,6 +194,16 @@ class AdminFeatureTest extends TestCase
         $this->actingAs($admin)->get(route('admin.withdrawals.index'))->assertStatus(200);
     }
 
+    public function test_admin_is_redirected_from_agent_withdrawals_to_admin_withdrawals(): void
+    {
+        $admin = $this->admin();
+
+        $this->actingAs($admin)
+            ->get(route('agent.withdrawals.index'))
+            ->assertRedirect(route('admin.withdrawals.index'))
+            ->assertSessionHas('info', 'Vous avez été redirigé vers la gestion administrative des retraits.');
+    }
+
     public function test_non_admin_cannot_access_admin_routes(): void
     {
         $agent = User::factory()->agent()->create();
