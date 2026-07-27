@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
@@ -27,7 +28,18 @@ class RoleMiddleware
             return redirect()->route('login')->withErrors(['email' => 'Votre compte est désactivé.']);
         }
 
-        if (! in_array($user->role, $roles)) {
+        $userRole = strtolower(trim((string) $user->role));
+        $allowedRoles = array_map(static fn (string $role): string => strtolower(trim($role)), $roles);
+
+        if (! in_array($userRole, $allowedRoles, true)) {
+            Log::warning('Role authorization denied.', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'role' => $user->role,
+                'required_roles' => $roles,
+                'path' => $request->path(),
+            ]);
+
             abort(403, 'Accès non autorisé.');
         }
 
