@@ -40,6 +40,7 @@ class StatisticsService
             ->whereBetween('created_at', [$start, $end])
             ->sum('amount_usd');
 
+        $totalRevenueFc = $this->currencyService->usdToFc($totalRevenue);
         $profitEstimate = round($totalRevenue * 0.25 - $withdrawalsPaid, 2);
         $profitEstimateFc = $this->currencyService->usdToFc($profitEstimate);
         $withdrawalsPaidFc = $this->currencyService->usdToFc($withdrawalsPaid);
