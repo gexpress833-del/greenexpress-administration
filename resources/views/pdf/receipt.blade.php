@@ -4,16 +4,18 @@
     <meta charset="utf-8">
     <title>Reçu {{ $order->code }}</title>
     <style>
+        @page { margin: 22px; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DejaVu Sans', Arial, sans-serif; font-size: 13px; color: #333; line-height: 1.4; }
+        body { font-family: 'DejaVu Sans', Arial, sans-serif; font-size: 12px; color: #172033; line-height: 1.45; background: #f8fbf9; }
 
-        .receipt { max-width: 500px; margin: 0 auto; border: 1px solid #d1d5db; border-radius: 8px; overflow: hidden; }
+        .receipt { max-width: 500px; margin: 0 auto; border: 1px solid #cfe0d5; overflow: hidden; background: #fff; }
 
         .header {
-            background: #15803d;
+            background: #073b2a;
             color: #fff;
             text-align: center;
-            padding: 20px;
+            padding: 22px 20px 18px;
+            border-bottom: 4px solid #d4af37;
         }
         .header img { height: 50px; margin-bottom: 6px; }
         .header h1 { font-size: 26px; font-weight: 800; letter-spacing: 1px; margin-bottom: 4px; }
@@ -49,9 +51,13 @@
         .item-usd { font-size: 10px; color: #6b7280; }
 
         .total-box {
-            border-top: 2px solid #15803d;
-            padding-top: 10px;
-            margin-top: 10px;
+            border-top: 2px solid #168a58;
+            padding-top: 12px;
+            margin-top: 12px;
+            background: #f0f9f3;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-bottom: 8px;
         }
         .total-table { width: 100%; }
         .total-table td { padding: 2px 0; }
@@ -73,10 +79,10 @@
         .qr-label { font-size: 10px; color: #9ca3af; margin-top: 6px; }
 
         .footer {
-            background: #f9fafb;
+            background: #f4f8f5;
             text-align: center;
-            padding: 12px;
-            border-top: 1px solid #e5e7eb;
+            padding: 13px;
+            border-top: 1px solid #d8e5dd;
         }
         .footer p { font-size: 10px; color: #6b7280; }
         .footer .brand { color: #15803d; font-weight: 700; margin-top: 2px; }

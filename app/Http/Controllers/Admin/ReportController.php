@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Models\Withdrawal;
+use App\Services\CurrencyService;
 use App\Services\StatisticsService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -49,6 +50,7 @@ class ReportController extends Controller
             ->get();
 
         $totalSales = $orders->sum(fn ($o) => (float) $o->total_amount);
+        $totalSalesFc = $orders->sum(fn ($o) => (float) $o->total_amount_fc);
         $ordersCount = $orders->count();
 
         $data = [
@@ -56,6 +58,7 @@ class ReportController extends Controller
             'end' => $end,
             'label' => $label,
             'totalSales' => $totalSales,
+            'totalSalesFc' => $totalSalesFc,
             'ordersCount' => $ordersCount,
             'orders' => $orders,
             'generatedAt' => $now,
@@ -103,7 +106,7 @@ class ReportController extends Controller
         return $pdf->download(sprintf('statistiques_%s_%s.pdf', $start->format('Ymd'), $end->format('Ymd')));
     }
 
-    public function exportFinancial(Request $request)
+    public function exportFinancial(Request $request, CurrencyService $currencyService)
     {
         $start = $request->filled('start')
             ? Carbon::parse($request->query('start'))->startOfDay()
@@ -137,6 +140,10 @@ class ReportController extends Controller
         $totalIncome = $totalRevenue + $subscriptionsRevenue;
         $totalExpenses = $withdrawalsPaid;
         $netProfit = $totalIncome - $totalExpenses;
+        $subscriptionsRevenueFc = $currencyService->usdToFc($subscriptionsRevenue);
+        $totalIncomeFc = $totalRevenueFc + $subscriptionsRevenueFc;
+        $totalExpensesFc = $currencyService->usdToFc($totalExpenses);
+        $netProfitFc = $totalIncomeFc - $totalExpensesFc;
 
         $data = [
             'start' => $start,
@@ -144,6 +151,10 @@ class ReportController extends Controller
             'validatedOrders' => $validatedOrders,
             'totalRevenue' => $totalRevenue,
             'totalRevenueFc' => $totalRevenueFc,
+            'subscriptionsRevenueFc' => $subscriptionsRevenueFc,
+            'totalIncomeFc' => $totalIncomeFc,
+            'totalExpensesFc' => $totalExpensesFc,
+            'netProfitFc' => $netProfitFc,
             'withdrawals' => $withdrawals,
             'withdrawalsPaid' => $withdrawalsPaid,
             'withdrawalsPending' => $withdrawalsPending,

@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <title>Bon de preparation - {{ $order->code }}</title>
     <style>
+        @page { margin: 26px 30px; }
         * { margin: 0; padding: 0; }
-        body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #333; line-height: 1.4; }
-        .page { padding: 30px; }
+        body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 11px; color: #172033; line-height: 1.45; }
+        .page { padding: 0; }
 
         /* Header */
-        .header { border-bottom: 3px solid #16a34a; padding-bottom: 15px; margin-bottom: 20px; }
+        .header { background: #073b2a; border-bottom: 4px solid #d4af37; padding: 18px 20px 16px; margin-bottom: 20px; }
         .header-table { width: 100%; border-collapse: collapse; }
         .header-table td { vertical-align: middle; padding: 0; }
         .logo-cell { width: 60px; }
@@ -19,11 +20,11 @@
             border-radius: 8px; font-weight: bold;
         }
         .brand-cell { padding-left: 12px; }
-        .brand-name { font-size: 22px; font-weight: bold; color: #16a34a; margin: 0; }
-        .brand-tagline { font-size: 11px; color: #666; margin: 2px 0 0; }
+        .brand-name { font-size: 22px; font-weight: bold; color: #fff; margin: 0; }
+        .brand-tagline { font-size: 10px; color: #bde8d0; margin: 2px 0 0; }
         .doc-info { text-align: right; }
-        .doc-title { font-size: 14px; font-weight: bold; color: #111; margin: 0; }
-        .doc-code { font-size: 12px; color: #666; margin: 3px 0 0; }
+        .doc-title { font-size: 13px; font-weight: bold; color: #fff; margin: 0; }
+        .doc-code { font-size: 11px; color: #bde8d0; margin: 3px 0 0; }
 
         /* Status badge */
         .status-row { margin: 10px 0 20px; text-align: right; }
@@ -44,18 +45,18 @@
         .info-sub { font-size: 12px; color: #555; margin-top: 2px; }
 
         /* Items table */
-        .items-title { font-size: 14px; font-weight: bold; color: #111; margin: 20px 0 8px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .items-title { font-size: 13px; font-weight: bold; color: #073b2a; margin: 20px 0 8px; border-bottom: 2px solid #168a58; padding-bottom: 6px; text-transform: uppercase; letter-spacing: .8px; }
         .items-table { width: 100%; border-collapse: collapse; }
-        .items-table th { background: #f3f4f6; padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; color: #666; border-bottom: 1px solid #ddd; }
+        .items-table th { background: #073b2a; color: #fff; padding: 8px 10px; text-align: left; font-size: 9px; text-transform: uppercase; letter-spacing: .6px; border-bottom: 1px solid #d4af37; }
         .items-table td { padding: 8px 10px; border-bottom: 1px solid #eee; font-size: 12px; }
         .items-table td strong { color: #111; }
         .items-table .text-right { text-align: right; }
         .items-table .text-center { text-align: center; }
 
         /* Total */
-        .total-row { margin-top: 10px; text-align: right; padding: 10px 0; border-top: 2px solid #16a34a; }
-        .total-label { font-size: 12px; color: #666; }
-        .total-amount { font-size: 18px; font-weight: bold; color: #16a34a; }
+        .total-row { margin-top: 10px; text-align: right; padding: 12px 10px; border-top: 2px solid #168a58; background: #f0f9f3; }
+        .total-label { font-size: 12px; color: #607267; }
+        .total-amount { font-size: 18px; font-weight: bold; color: #087443; }
 
         /* QR section */
         .qr-section { text-align: center; margin: 25px auto; padding: 15px; border: 2px solid #16a34a; max-width: 260px; background: #f0fdf4; }

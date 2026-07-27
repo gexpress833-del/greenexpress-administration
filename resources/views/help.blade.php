@@ -23,7 +23,7 @@
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 shadow-lg mb-3 p-1.5">
             <img src="{{ asset('logo-192.png') }}" alt="Green Express" class="w-full h-full rounded-xl object-cover">
         </div>
-        <h1 class="text-xl font-bold text-slate-800 dark:text-white">Service Client Green Express</h1>
+        <h1 class="text-xl font-bold text-slate-800 dark:text-white">Direction Green Express</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Posez vos questions sur les commandes, abonnements, livraisons, paiements et plus encore.
         </p>
@@ -36,7 +36,7 @@
         <div class="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500">
             <img src="{{ asset('logo-192.png') }}" alt="GE" class="w-10 h-10 rounded-full bg-white p-0.5 shadow">
             <div class="flex-1">
-                <p class="text-white font-semibold text-sm">Service Client Green Express</p>
+                <p class="text-white font-semibold text-sm">Direction Green Express</p>
                 <p class="text-emerald-50 text-xs flex items-center gap-1.5">
                     <span class="w-2 h-2 bg-green-300 rounded-full"></span> En ligne
                 </p>
@@ -54,9 +54,9 @@
                 <img src="{{ asset('logo-192.png') }}" alt="GE" class="flex-shrink-0 w-9 h-9 rounded-full bg-white p-0.5 shadow-sm">
                 <div class="max-w-[80%]">
                     <div class="bubble-bot bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
-                        Bonjour 👋 Je suis le Service Client Green Express. Comment puis-je vous aider aujourd'hui ?
+                        Bonjour 👋 Je suis la Direction Green Express. Comment puis-je vous aider aujourd'hui ?
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-1 ml-1">Service Client • maintenant</p>
+                    <p class="text-[10px] text-slate-400 mt-1 ml-1">Direction Green Express • maintenant</p>
                 </div>
             </div>
 
@@ -71,7 +71,7 @@
                                 ? 'bubble-user bg-emerald-600 text-white'
                                 : 'bubble-bot bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-100 dark:border-slate-700'"
                              x-text="msg.content"></div>
-                        <p x-show="msg.role === 'bot'" class="text-[10px] text-slate-400 mt-1 ml-1">Service Client Green Express</p>
+                        <p x-show="msg.role === 'bot'" class="text-[10px] text-slate-400 mt-1 ml-1">Direction Green Express</p>
                     </div>
                 </div>
             </template>
@@ -201,15 +201,15 @@ function helpChat() {
                 }
 
                 if (!data.response) {
-                    throw new Error('Réponse vide du Service Client. Veuillez réessayer.');
+                    throw new Error('Réponse vide de la Direction Green Express. Veuillez réessayer.');
                 }
 
                 this.messages.push({ role: 'bot', content: data.response });
             } catch (e) {
                 if (e.name === 'AbortError') {
-                    this.error = 'Le Service Client met trop de temps à répondre. Veuillez réessayer.';
+                    this.error = 'La Direction Green Express met trop de temps à répondre. Veuillez réessayer.';
                 } else {
-                    this.error = e.message || 'Impossible de contacter le Service Client. Veuillez réessayer.';
+                    this.error = e.message || 'Impossible de contacter la Direction Green Express. Veuillez réessayer.';
                 }
             } finally {
                 clearTimeout(timeoutId);

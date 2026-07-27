@@ -24,7 +24,7 @@
             <div
                 x-data
                 @click="
-                    window.dispatchEvent(new CustomEvent('notify', { detail: { type: 'info', message: 'Redirection vers le Service Client Green Express...' } }));
+                    window.dispatchEvent(new CustomEvent('notify', { detail: { type: 'info', message: 'Redirection vers le Direction Green Express...' } }));
                     setTimeout(() => window.open('https://chat.whatsapp.com/K411WvfkA9HH9k2IKqbImb', '_blank'), 800);
                 "
                 class="flex items-center gap-3 pl-4 pr-5 py-3.5 rounded-lg mb-1 transition border-l-4 border-transparent hover:bg-green-800 cursor-pointer"
@@ -63,7 +63,7 @@
             <div
                 x-data
                 @click="
-                    window.dispatchEvent(new CustomEvent('notify', { detail: { type: 'info', message: 'Redirection vers le Service Client Green Express...' } }));
+                    window.dispatchEvent(new CustomEvent('notify', { detail: { type: 'info', message: 'Redirection vers le Direction Green Express...' } }));
                     setTimeout(() => window.open('https://chat.whatsapp.com/K411WvfkA9HH9k2IKqbImb', '_blank'), 800);
                 "
                 class="flex items-center gap-3 pl-4 pr-5 py-3.5 rounded-lg mb-1 transition border-l-4 border-transparent hover:bg-green-800 cursor-pointer"

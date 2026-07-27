@@ -4,39 +4,38 @@
     <meta charset="utf-8">
     <title>États financiers Green Express</title>
     <style>
+        @page { margin: 28px 30px 34px; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: DejaVu Sans, sans-serif; color: #0f172a; font-size: 11px; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h1 { color: #052e16; font-size: 22px; margin-bottom: 4px; }
-        .header .period { color: #64748b; font-size: 11px; }
-        .section-title { color: #14532d; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; margin: 18px 0 8px; border-bottom: 2px solid #dcfce7; padding-bottom: 4px; }
-
-        .summary { width: 100%; margin-bottom: 14px; border-collapse: collapse; }
-        .summary td { width: 33%; padding: 14px 12px; border: 1px solid #dbe7df; background: #f8faf9; text-align: center; }
-        .summary .label { color: #64748b; font-size: 9px; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; }
+        body { font-family: DejaVu Sans, sans-serif; color: #172033; font-size: 10px; line-height: 1.45; }
+        .header { background: #073b2a; color: #fff; padding: 20px 22px 18px; margin-bottom: 22px; border-bottom: 4px solid #d4af37; }
+        .header h1 { color: #fff; font-size: 21px; font-weight: 800; letter-spacing: .4px; margin-bottom: 5px; }
+        .header .period { color: #bde8d0; font-size: 10px; }
+        .section-title { color: #073b2a; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; margin: 19px 0 9px; border-bottom: 1px solid #bddbc9; padding-bottom: 6px; }
+        .summary { width: 100%; margin-bottom: 16px; border-collapse: separate; border-spacing: 6px 0; }
+        .summary td { width: 33%; padding: 14px 12px; border: 1px solid #d8e5dd; border-top: 3px solid #168a58; background: #f7fbf8; text-align: center; }
+        .summary .label { color: #607267; font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 5px; }
         .summary .value { font-size: 16px; font-weight: 800; }
-        .summary .value.green { color: #15803d; }
-        .summary .value.red { color: #dc2626; }
-        .summary .value.blue { color: #2563eb; }
-
-        .balance-sheet { width: 100%; border-collapse: collapse; border: 1px solid #dbe7df; margin-bottom: 14px; }
-        .balance-sheet th { background: #f0fdf4; color: #14532d; padding: 8px 12px; font-size: 10px; text-align: left; }
-        .balance-sheet td { padding: 8px 12px; border-bottom: 1px solid #edf4ef; }
+        .summary .value.green { color: #087443; }
+        .summary .value.red { color: #bd2e35; }
+        .summary .value.blue { color: #1769aa; }
+        .balance-sheet { width: 100%; border-collapse: collapse; border: 1px solid #d8e5dd; margin-bottom: 16px; }
+        .balance-sheet th { background: #073b2a; color: #fff; padding: 8px 12px; font-size: 9px; text-align: left; }
+        .balance-sheet td { padding: 8px 12px; border-bottom: 1px solid #e8f0eb; }
         .balance-sheet td.amount { text-align: right; font-weight: 600; }
-        .balance-sheet tr.total td { background: #f0fdf4; font-weight: 800; font-size: 12px; border-top: 2px solid #15803d; }
-        .balance-sheet tr.total td.amount { color: #15803d; }
-
-        table.data { width: 100%; border-collapse: collapse; border: 1px solid #dbe7df; margin-bottom: 14px; }
-        table.data th { background: #f0fdf4; color: #14532d; padding: 7px 10px; font-size: 9px; text-align: left; text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid #dbe7df; }
-        table.data td { padding: 6px 10px; border-bottom: 1px solid #edf4ef; }
+        .balance-sheet tr:nth-child(even) td { background: #fbfdfb; }
+        .balance-sheet tr.total td { background: #edf8f1; color: #073b2a; font-weight: 800; font-size: 11px; border-top: 2px solid #168a58; }
+        .balance-sheet tr.total td.amount { color: #087443; }
+        table.data { width: 100%; border-collapse: collapse; border: 1px solid #d8e5dd; margin-bottom: 16px; }
+        table.data th { background: #073b2a; color: #fff; padding: 8px 10px; font-size: 8px; text-align: left; text-transform: uppercase; letter-spacing: .7px; }
+        table.data td { padding: 7px 10px; border-bottom: 1px solid #e8f0eb; }
+        table.data tr:nth-child(even) td { background: #fbfdfb; }
         table.data tr:last-child td { border-bottom: none; }
-        .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 8px; font-weight: 700; text-transform: uppercase; }
-        .badge.green { background: #dcfce7; color: #166534; }
-        .badge.red { background: #fef2f2; color: #991b1b; }
-        .badge.amber { background: #fef3c7; color: #92400e; }
-        .badge.blue { background: #dbeafe; color: #1e40af; }
-
-        .footer { margin-top: 20px; text-align: center; font-size: 9px; color: #64748b; border-top: 1px solid #dbe7df; padding-top: 10px; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 10px; font-size: 8px; font-weight: 700; text-transform: uppercase; }
+        .badge.green { background: #d9f4e4; color: #086b3e; }
+        .badge.red { background: #fde3e5; color: #9c2028; }
+        .badge.amber { background: #fff0c7; color: #805d08; }
+        .badge.blue { background: #dcecf9; color: #145685; }
+        .footer { margin-top: 22px; text-align: center; font-size: 8px; color: #718277; border-top: 1px solid #d8e5dd; padding-top: 10px; }
     </style>
 </head>
 <body>
@@ -50,15 +49,18 @@
         <tr>
             <td>
                 <div class="label">Revenus totaux</div>
-                <div class="value green">$ {{ number_format($totalIncome, 2) }}</div>
+                <div class="value green">{{ number_format($totalIncomeFc, 0, ',', '.') }} FC</div>
+                <div style="font-size:8px;color:#718277;margin-top:3px;">$ {{ number_format($totalIncome, 2) }}</div>
             </td>
             <td>
                 <div class="label">Dépenses totales</div>
-                <div class="value red">$ {{ number_format($totalExpenses, 2) }}</div>
+                <div class="value red">{{ number_format($totalExpensesFc, 0, ',', '.') }} FC</div>
+                <div style="font-size:8px;color:#718277;margin-top:3px;">$ {{ number_format($totalExpenses, 2) }}</div>
             </td>
             <td>
                 <div class="label">Profit net</div>
-                <div class="value {{ $netProfit >= 0 ? 'green' : 'red' }}">$ {{ number_format($netProfit, 2) }}</div>
+                <div class="value {{ $netProfit >= 0 ? 'green' : 'red' }}">{{ number_format($netProfitFc, 0, ',', '.') }} FC</div>
+                <div style="font-size:8px;color:#718277;margin-top:3px;">$ {{ number_format($netProfit, 2) }}</div>
             </td>
         </tr>
     </table>
@@ -67,31 +69,31 @@
     <table class="balance-sheet">
         <tr>
             <td>Revenus des commandes livrées</td>
-            <td class="amount">$ {{ number_format($totalRevenue, 2) }}</td>
+            <td class="amount">{{ number_format($totalRevenueFc, 0, ',', '.') }} FC<br><span style="font-size:8px;color:#718277;">$ {{ number_format($totalRevenue, 2) }}</span></td>
         </tr>
         <tr>
             <td>Revenus des abonnements actifs</td>
-            <td class="amount">$ {{ number_format($subscriptionsRevenue, 2) }}</td>
+            <td class="amount">{{ number_format($subscriptionsRevenueFc, 0, ',', '.') }} FC<br><span style="font-size:8px;color:#718277;">$ {{ number_format($subscriptionsRevenue, 2) }}</span></td>
         </tr>
         <tr class="total">
             <td>Total des revenus</td>
-            <td class="amount">$ {{ number_format($totalIncome, 2) }}</td>
+            <td class="amount">{{ number_format($totalIncomeFc, 0, ',', '.') }} FC<br><span style="font-size:8px;color:#718277;">$ {{ number_format($totalIncome, 2) }}</span></td>
         </tr>
         <tr>
             <td>Retraits de points payés</td>
-            <td class="amount">$ {{ number_format($withdrawalsPaid, 2) }}</td>
+            <td class="amount">{{ number_format($totalExpensesFc, 0, ',', '.') }} FC<br><span style="font-size:8px;color:#718277;">$ {{ number_format($withdrawalsPaid, 2) }}</span></td>
         </tr>
         <tr>
             <td>Retraits en attente</td>
-            <td class="amount">$ {{ number_format($withdrawalsPending, 2) }}</td>
+            <td class="amount">{{ number_format($withdrawalsPending * ($totalExpenses > 0 ? $totalExpensesFc / $totalExpenses : 0), 0, ',', '.') }} FC<br><span style="font-size:8px;color:#718277;">$ {{ number_format($withdrawalsPending, 2) }}</span></td>
         </tr>
         <tr class="total">
             <td>Total des dépenses</td>
-            <td class="amount">$ {{ number_format($totalExpenses, 2) }}</td>
+            <td class="amount">{{ number_format($totalExpensesFc, 0, ',', '.') }} FC<br><span style="font-size:8px;color:#718277;">$ {{ number_format($totalExpenses, 2) }}</span></td>
         </tr>
         <tr class="total">
             <td>Résultat net</td>
-            <td class="amount" style="color: {{ $netProfit >= 0 ? '#15803d' : '#dc2626' }};">$ {{ number_format($netProfit, 2) }}</td>
+            <td class="amount" style="color: {{ $netProfit >= 0 ? '#087443' : '#bd2e35' }};">{{ number_format($netProfitFc, 0, ',', '.') }} FC<br><span style="font-size:8px;color:#718277;">$ {{ number_format($netProfit, 2) }}</span></td>
         </tr>
     </table>
 
