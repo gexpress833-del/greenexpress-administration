@@ -18,7 +18,7 @@ class SubscriptionDeliveriesAvailable extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): DatabaseMessage
@@ -31,10 +31,11 @@ class SubscriptionDeliveriesAvailable extends Notification
         return new DatabaseMessage([
             'title' => 'Nouvelles livraisons disponibles',
             'message' => $message,
+            'type' => 'subscription_deliveries_available',
+            'category' => 'delivery',
             'url' => route('livreur.deliveries.index'),
             'icon' => 'truck',
             'color' => 'green',
-            'type' => 'subscription_deliveries_available',
         ]);
     }
 }

@@ -107,6 +107,15 @@
                         </a>
                     </div>
                 @endif
+
+                @if(!empty($whatsappLink))
+                    <div class="mt-3">
+                        <a href="{{ $whatsappLink }}" target="_blank" rel="noopener"
+                           class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700">
+                            Ouvrir WhatsApp
+                        </a>
+                    </div>
+                @endif
             </div>
         </article>
     </div>

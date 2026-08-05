@@ -84,32 +84,44 @@ class FcmService
                 'tag' => self::NOTIFICATION_TAG,
             ], $extraData);
 
-            try {
-                Http::withToken($accessToken)->post($endpoint, [
-                    'message' => [
-                        'token' => $token->token,
-                        'data' => $data,
-                        'android' => [
-                            'notification' => [
-                                'icon' => self::NOTIFICATION_ICON,
-                                'color' => '#16a34a',
-                                'tag' => self::NOTIFICATION_TAG,
-                                'click_action' => $url,
-                            ],
-                        ],
-                        'apns' => [
-                            'payload' => [
-                                'aps' => [
-                                    'sound' => 'default',
-                                    'badge' => 1,
-                                ],
-                            ],
-                        ],
-                        'fcm_options' => [
-                            'analytics_label' => $extraData['type'] ?? 'custom',
+            $payload = [
+                'message' => [
+                    'token' => $token->token,
+                    'notification' => [
+                        'title' => $title,
+                        'body' => $body,
+                    ],
+                    'data' => array_map('strval', $data),
+                    'android' => [
+                        'priority' => 'high',
+                        'notification' => [
+                            'icon' => self::NOTIFICATION_ICON,
+                            'color' => '#16a34a',
+                            'tag' => self::NOTIFICATION_TAG,
+                            'click_action' => $url,
                         ],
                     ],
-                ])->throw();
+                    'apns' => [
+                        'payload' => [
+                            'aps' => [
+                                'sound' => 'default',
+                                'badge' => 1,
+                            ],
+                        ],
+                    ],
+                    'webpush' => [
+                        'fcm_options' => [
+                            'link' => $url,
+                        ],
+                    ],
+                    'fcm_options' => [
+                        'analytics_label' => $extraData['type'] ?? 'custom',
+                    ],
+                ],
+            ];
+
+            try {
+                Http::withToken($accessToken)->post($endpoint, $payload)->throw();
 
                 $token->update(['last_used_at' => now()]);
             } catch (RequestException $exception) {

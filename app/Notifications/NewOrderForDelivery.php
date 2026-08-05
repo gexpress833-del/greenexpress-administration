@@ -15,7 +15,7 @@ class NewOrderForDelivery extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): DatabaseMessage
@@ -23,12 +23,13 @@ class NewOrderForDelivery extends Notification
         return new DatabaseMessage([
             'title' => 'Nouvelle livraison disponible',
             'message' => "La commande {$this->order->code} a été validée par l'administration. Vous pouvez la prendre en charge si elle est encore disponible.",
+            'type' => 'new_order_for_delivery',
+            'category' => 'delivery',
             'order_id' => $this->order->id,
             'code' => $this->order->code,
             'url' => route('livreur.deliveries.index'),
             'icon' => 'truck',
             'color' => 'green',
-            'type' => 'new_order_for_delivery',
         ]);
     }
 }

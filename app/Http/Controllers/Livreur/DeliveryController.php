@@ -329,6 +329,13 @@ class DeliveryController extends Controller
             $order->code
         );
 
+        if ($order->client_id) {
+            $client = User::find($order->client_id);
+            if ($client) {
+                app(NotificationService::class)->clientDeliveryOnTheWay($client, $delivery);
+            }
+        }
+
         return redirect()->route('livreur.deliveries.show', $delivery)
             ->with('success', 'Message préparé pour le client.')
             ->with('whatsapp_link', $whatsappLink);

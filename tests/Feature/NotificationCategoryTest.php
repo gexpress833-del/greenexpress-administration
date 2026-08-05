@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\SendFcmNotification;
 use App\Models\Delivery;
 use App\Models\Notification;
 use App\Models\Order;
@@ -10,6 +11,7 @@ use App\Models\User;
 use App\Notifications\OrderCreated;
 use App\Services\NotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class NotificationCategoryTest extends TestCase
@@ -22,6 +24,7 @@ class NotificationCategoryTest extends TestCase
         $agent = User::factory()->agent()->create();
         $order = Order::factory()->create(['agent_id' => $agent->id]);
 
+        // Laravel notify now persists via the app channel (+ FCM job)
         $admin->notify(new OrderCreated($order));
         app(NotificationService::class)->notify(
             $admin,
@@ -34,8 +37,31 @@ class NotificationCategoryTest extends TestCase
             ->getJson(route('notifications.index'))
             ->assertOk()
             ->assertJsonCount(2)
-            ->assertJsonFragment(['source' => 'laravel'])
-            ->assertJsonFragment(['source' => 'app']);
+            ->assertJsonFragment(['source' => 'app'])
+            ->assertJsonFragment(['title' => 'Nouvelle commande'])
+            ->assertJsonFragment(['title' => 'Notification application']);
+
+        $this->assertDatabaseCount('app_notifications', 2);
+        $this->assertDatabaseCount('notifications', 0);
+    }
+
+    public function test_laravel_notification_dispatches_fcm_via_app_channel(): void
+    {
+        Queue::fake();
+
+        $admin = User::factory()->admin()->create();
+        $agent = User::factory()->agent()->create();
+        $order = Order::factory()->create(['agent_id' => $agent->id]);
+
+        $admin->notify(new OrderCreated($order));
+
+        $this->assertDatabaseHas('app_notifications', [
+            'user_id' => $admin->id,
+            'type' => 'order_created',
+            'category' => 'order',
+        ]);
+
+        Queue::assertPushed(SendFcmNotification::class);
     }
 
     public function test_selected_app_notification_opens_detail_page_and_marks_it_as_read(): void

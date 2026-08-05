@@ -15,7 +15,7 @@ class SubscriptionPending extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        return ['mail', 'app'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -27,7 +27,7 @@ class SubscriptionPending extends Notification
             ->line('**Type :** '.$this->subscription->type)
             ->line('**Client :** '.$this->subscription->client_name.' — '.$this->subscription->client_phone)
             ->line('**Période :** '.$this->subscription->start_date->format('d/m/Y').' au '.$this->subscription->end_date->format('d/m/Y'))
-            ->line('**Prix :** '.number_format((float) $this->subscription->price, 2).' USD')
+            ->line('**Prix :** '.number_format((float) $this->subscription->price_fc, 0, ',', '.').' FC ('.number_format((float) $this->subscription->price, 2).' USD)')
             ->line('Cet abonnement est en attente de validation par l\'administrateur.')
             ->action('Voir l\'abonnement', url('/admin/subscriptions/'.$this->subscription->id))
             ->salutation('L\'équipe Green Express');
@@ -38,6 +38,8 @@ class SubscriptionPending extends Notification
         return [
             'title' => 'Nouvel abonnement en attente',
             'message' => "Un nouvel abonnement pour {$this->subscription->client_name} a été créé par {$this->subscription->agent->name} et est en attente de validation.",
+            'type' => 'subscription_pending',
+            'category' => 'subscription',
             'subscription_id' => $this->subscription->id,
             'url' => route('admin.subscriptions.show', ['subscription' => $this->subscription->id]),
             'icon' => 'clipboard-list',

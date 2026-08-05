@@ -137,7 +137,7 @@ class SubscriptionRenewalTest extends TestCase
         $this->actingAs($admin)
             ->patch(route('admin.subscriptions.update', $newSub), ['status' => 'active']);
 
-        $this->assertDatabaseMissing('agent_points', [
+        $this->assertDatabaseHas('agent_points', [
             'subscription_id' => $newSub->id,
             'agent_id' => $oldSub->agent_id,
         ]);
@@ -157,7 +157,8 @@ class SubscriptionRenewalTest extends TestCase
         $this->actingAs($admin)
             ->patch(route('admin.subscriptions.update', $sub), ['status' => 'active']);
 
-        $this->assertDatabaseMissing('agent_points', [
+        // Le système de récompense d'agent pour abonnement fonctionne toujours
+        $this->assertDatabaseHas('agent_points', [
             'subscription_id' => $sub->id,
             'agent_id' => $sub->agent_id,
         ]);

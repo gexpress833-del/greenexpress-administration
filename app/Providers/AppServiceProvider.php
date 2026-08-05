@@ -8,11 +8,13 @@ use App\Mail\BrevoApiTransport;
 use App\Models\ExchangeRate;
 use App\Models\Meal;
 use App\Models\SubscriptionType;
+use App\Notifications\Channels\AppDatabaseChannel;
 use App\Observers\ExchangeRateObserver;
 use App\Observers\MealObserver;
 use App\Observers\SubscriptionTypeObserver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -34,6 +36,8 @@ class AppServiceProvider extends ServiceProvider
         Mail::extend('brevo', function (array $config) {
             return new BrevoApiTransport($config['key'] ?? env('BREVO_API_KEY'));
         });
+
+        Notification::extend('app', fn () => new AppDatabaseChannel);
 
         if ($this->app->environment('production')) {
             URL::forceScheme('https');

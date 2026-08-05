@@ -151,8 +151,8 @@
                 <tr>
                     <td><strong>{{ $item->meal->name }}</strong></td>
                     <td class="text-center">{{ $item->quantity }}</td>
-                    <td class="text-right">$ {{ number_format($item->unit_price, 2) }}</td>
-                    <td class="text-right"><strong>$ {{ number_format($item->total_price, 2) }}</strong></td>
+                    <td class="text-right">{{ number_format($item->unit_price_fc, 0, ',', '.') }} FC<br><small>$ {{ number_format($item->unit_price, 2) }}</small></td>
+                    <td class="text-right"><strong>{{ number_format($item->total_price_fc, 0, ',', '.') }} FC</strong><br><small>$ {{ number_format($item->total_price, 2) }}</small></td>
                 </tr>
                 @endforeach
             </tbody>
@@ -161,7 +161,7 @@
         <!-- Total -->
         <div class="total-row">
             <span class="total-label">Total : </span>
-            <span class="total-amount">$ {{ number_format($order->total_amount, 2) }}</span>
+            <span class="total-amount">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC<br><small>$ {{ number_format($order->total_amount, 2) }}</small></span>
         </div>
 
         <!-- QR Section -->
@@ -169,7 +169,7 @@
             <div class="qr-logo-text">Green Express</div>
             <div class="qr-subtitle">Bon de preparation</div>
             <div class="qr-image">
-                <img src="{{ $qrCodePng }}" alt="QR Code" width="128" height="128" />
+                <img src="{{ $qrCodePng }}" alt="QR Code" style="width:128px;height:128px;" />
             </div>
             <div class="qr-code-text">{{ $order->code }}</div>
             <div class="qr-verify">Scannez pour verifier l'authenticite — green-express.cd</div>

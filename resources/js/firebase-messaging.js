@@ -50,54 +50,7 @@ function setButtonState(button, text, disabled = false) {
     }
 }
 
-async function startNotifications() {
-    const button = document.querySelector('[data-fcm-enable]');
-    const panel = button?.closest('[data-fcm-permission-panel]');
-
-    if (!button || !('serviceWorker' in navigator)) {
-        panel?.remove();
-        return;
-    }
-
-    if (detectPlatform() === 'ios' && !isIosPwa()) {
-        setButtonState(button, 'Installer la PWA pour activer les notifications', true);
-        return;
-    }
-
-    if (!('Notification' in window)) {
-        panel?.remove();
-        return;
-    }
-
-    if (Notification.permission === 'denied') {
-        setButtonState(button, 'Notifications bloquées dans le navigateur', true);
-        return;
-    }
-
-    if (Notification.permission === 'granted') {
-        panel?.remove();
-        return;
-    }
-
-    setButtonState(button, 'Activer');
-    button.addEventListener('click', async () => {
-        setButtonState(button, 'Activation...');
-        try {
-            await enableNotifications(button, panel);
-        } catch (error) {
-            console.warn('FCM enable failed:', error);
-            setButtonState(button, 'Échec — Réessayer');
-        }
-    }, { once: true });
-}
-
-async function enableNotifications(button, panel) {
-    const permission = await Notification.requestPermission();
-    if (permission !== 'granted') {
-        setButtonState(button, 'Notifications refusées', true);
-        return;
-    }
-
+async function loadFirebaseMessaging() {
     const [{ initializeApp }, { getMessaging, getToken, onMessage }] = await Promise.all([
         import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-app.js`),
         import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-messaging.js`),
@@ -105,8 +58,7 @@ async function enableNotifications(button, panel) {
 
     const config = await fetch('/firebase-config').then((response) => response.json());
     if (!config.enabled) {
-        panel?.remove();
-        return;
+        return null;
     }
 
     const app = initializeApp(config.firebase);
@@ -125,9 +77,6 @@ async function enableNotifications(button, panel) {
     if (!token) throw new Error('Firebase n\'a pas fourni de token.');
     await registerToken(token);
 
-    setButtonState(button, 'Notifications activées', true);
-    setTimeout(() => panel?.remove(), 2000);
-
     onMessage(messaging, (payload) => {
         window.dispatchEvent(new CustomEvent('fcm-message', { detail: payload }));
 
@@ -143,10 +92,88 @@ async function enableNotifications(button, panel) {
         });
 
         notification.onclick = () => {
-            window.location.assign(data.url || '/notifications');
+            window.location.assign(data.url || '/notifications/history');
             notification.close();
         };
     });
+
+    return true;
+}
+
+async function startNotifications() {
+    const button = document.querySelector('[data-fcm-enable]');
+    const panel = button?.closest('[data-fcm-permission-panel]');
+
+    if (!('serviceWorker' in navigator) || !('Notification' in window)) {
+        panel?.remove();
+        return;
+    }
+
+    if (detectPlatform() === 'ios' && !isIosPwa()) {
+        if (button) {
+            setButtonState(button, 'Installer la PWA pour activer les notifications', true);
+        }
+        return;
+    }
+
+    if (Notification.permission === 'denied') {
+        if (button) {
+            setButtonState(button, 'Notifications bloquées dans le navigateur', true);
+        }
+        return;
+    }
+
+    // Permission déjà accordée : enregistrer le token silencieusement
+    if (Notification.permission === 'granted') {
+        try {
+            await loadFirebaseMessaging();
+        } catch (error) {
+            console.warn('FCM token refresh failed:', error);
+        }
+        panel?.remove();
+        return;
+    }
+
+    if (!button) {
+        return;
+    }
+
+    setButtonState(button, 'Activer');
+    button.addEventListener('click', async () => {
+        setButtonState(button, 'Activation...');
+        try {
+            await enableNotifications(button, panel);
+        } catch (error) {
+            console.warn('FCM enable failed:', error);
+            setButtonState(button, 'Échec — Réessayer');
+            button.addEventListener('click', async () => {
+                setButtonState(button, 'Activation...');
+                try {
+                    await enableNotifications(button, panel);
+                } catch (retryError) {
+                    console.warn('FCM enable failed:', retryError);
+                    setButtonState(button, 'Échec — Réessayer');
+                }
+            }, { once: true });
+        }
+    }, { once: true });
+}
+
+async function enableNotifications(button, panel) {
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+        setButtonState(button, 'Notifications refusées', true);
+        return;
+    }
+
+    const enabled = await loadFirebaseMessaging();
+    if (!enabled) {
+        panel?.remove();
+        return;
+    }
+
+    setButtonState(button, 'Notifications activées', true);
+    setTimeout(() => panel?.remove(), 2000);
 }
 
 if (document.readyState === 'loading') {

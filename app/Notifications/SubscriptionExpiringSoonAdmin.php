@@ -14,7 +14,7 @@ class SubscriptionExpiringSoonAdmin extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -25,6 +25,8 @@ class SubscriptionExpiringSoonAdmin extends Notification
         return [
             'title' => 'Abonnement client bientôt terminé',
             'message' => "L'abonnement de {$clientName} expire dans {$days} jour".($days > 1 ? 's' : '').'.',
+            'type' => 'subscription_expiring_soon',
+            'category' => 'subscription',
             'subscription_id' => $this->subscription->id,
             'url' => route('admin.subscriptions.expiring'),
             'icon' => 'calendar-alert',

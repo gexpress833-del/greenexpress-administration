@@ -14,7 +14,7 @@ class WithdrawalRequested extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -27,6 +27,8 @@ class WithdrawalRequested extends Notification
             return [
                 'title' => 'Nouvelle demande de retrait',
                 'message' => "{$userName} a demandé un retrait de \${$amount}.",
+                'type' => 'withdrawal_requested',
+                'category' => 'information',
                 'withdrawal_id' => $this->withdrawal->id,
                 'url' => route('admin.withdrawals.index'),
                 'icon' => 'banknote',
@@ -37,6 +39,8 @@ class WithdrawalRequested extends Notification
         return [
             'title' => 'Demande de retrait envoyée',
             'message' => "Votre demande de retrait de \${$amount} a été envoyée et est en attente de validation.",
+            'type' => 'withdrawal_requested',
+            'category' => 'information',
             'withdrawal_id' => $this->withdrawal->id,
             'url' => $user?->isLivreur() ? route('livreur.withdrawals.index') : route('agent.withdrawals.index'),
             'icon' => 'banknote',

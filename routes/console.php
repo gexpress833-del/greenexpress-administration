@@ -2,7 +2,6 @@
 
 use App\Models\Subscription;
 use App\Models\User;
-use App\Notifications\SubscriptionExpiringSoon;
 use App\Notifications\SubscriptionExpiringSoonAdmin;
 use App\Services\NotificationService;
 use Illuminate\Foundation\Inspiring;
@@ -30,19 +29,21 @@ Schedule::call(function () {
     $notificationService = app(NotificationService::class);
 
     foreach ($expiring as $subscription) {
-        $subscription->client?->notify(new SubscriptionExpiringSoon($subscription));
         User::where('role', 'admin')->get()->each(fn ($admin) => $admin->notify(new SubscriptionExpiringSoonAdmin($subscription)));
 
-        // Notification catégorisée au client
         if ($subscription->client) {
-            $daysRemaining = $subscription->daysRemaining();
-            $notificationService->clientSubscriptionExpiring($subscription->client, $subscription, $daysRemaining);
+            $notificationService->clientSubscriptionExpiring(
+                $subscription->client,
+                $subscription,
+                $subscription->daysRemaining(),
+            );
         }
 
         $subscription->update(['expiration_notified_at' => $now]);
     }
 })->daily();
 
-Schedule::command('app:award-recovery-bonus')
-    ->cron('0 */5 * * *')
-    ->withoutOverlapping();
+// Système de compensation désactivé - la période de compensation est terminée
+// Schedule::command('app:award-recovery-bonus')
+//     ->cron('0 */5 * * *')
+//     ->withoutOverlapping();

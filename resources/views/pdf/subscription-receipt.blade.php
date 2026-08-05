@@ -78,16 +78,17 @@
         <table class="summary">
             <tr>
                 <td>
-                    <div class="summary-label">Montant USD</div>
-                    <div class="summary-value">$ {{ number_format((float) $subscription->price, 2) }}</div>
-                </td>
-                <td>
                     <div class="summary-label">Montant FC</div>
                     <div class="summary-value">{{ number_format((float) $subscription->price_fc, 0, ',', '.') }} FC</div>
+                    <div style="font-size:9px;color:#64748b;margin-top:3px;">$ {{ number_format((float) $subscription->price, 2) }}</div>
                 </td>
                 <td>
                     <div class="summary-label">Durée abonnement</div>
                     <div class="summary-value">{{ $subscription->total_days }} jours</div>
+                </td>
+                <td>
+                    <div class="summary-label">Jours livrables</div>
+                    <div class="summary-value">{{ \App\Helpers\DateHelper::subscriptionDeliveryDays($subscription->total_days ?? 0) }} jours</div>
                 </td>
                 <td>
                     <div class="summary-label">Statut</div>
@@ -115,7 +116,7 @@
                             <td>{{ $subscription->start_date?->format('d/m/Y') }}</td>
                             <td>{{ $subscription->end_date?->format('d/m/Y') }}</td>
                             <td>{{ \App\Helpers\DateHelper::subscriptionDeliveryDays($subscription->total_days ?? 0) }} jours ouvrables</td>
-                            <td><span class="amount">$ {{ number_format((float) $subscription->price, 2) }}</span><br>{{ number_format((float) $subscription->price_fc, 0, ',', '.') }} FC</td>
+                            <td><span class="amount">{{ number_format((float) $subscription->price_fc, 0, ',', '.') }} FC</span><br><span style="font-size:9px;color:#64748b;">$ {{ number_format((float) $subscription->price, 2) }}</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -128,9 +129,9 @@
                             <div class="section-title">Client</div>
                             <div class="card">
                                 <table class="row">
-                                    <tr><td class="label">Nom complet</td><td class="value">{{ $client->name }}</td></tr>
-                                    <tr><td class="label">Téléphone</td><td class="value">{{ $client->phone }}</td></tr>
-                                    <tr><td class="label">Email</td><td class="value">{{ $client->email }}</td></tr>
+                                    <tr><td class="label">Nom complet</td><td class="value">{{ $client?->name ?? $subscription->client_name }}</td></tr>
+                                    <tr><td class="label">Téléphone</td><td class="value">{{ $client?->phone ?? $subscription->client_phone }}</td></tr>
+                                    <tr><td class="label">Email</td><td class="value">{{ $client?->email ?? $subscription->client_email }}</td></tr>
                                 </table>
                             </div>
                         </td>
@@ -154,7 +155,7 @@
                     <table class="credential-table">
                         <tr>
                             <td class="label">Identifiant de connexion</td>
-                            <td class="value">{{ $client->email }}</td>
+                            <td class="value">{{ $client?->email ?? $subscription->client_email }}</td>
                         </tr>
                         <tr>
                             <td class="label">Mot de passe temporaire</td>

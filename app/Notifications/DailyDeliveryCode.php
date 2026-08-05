@@ -15,7 +15,7 @@ class DailyDeliveryCode extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): DatabaseMessage
@@ -26,12 +26,13 @@ class DailyDeliveryCode extends Notification
         return new DatabaseMessage([
             'title' => 'Code de validation pour votre repas du jour',
             'message' => "Votre repas du {$deliveryDate} est : {$meal}. Code de validation : {$this->order->client_validation_code}. Remettez ce code au livreur uniquement après réception.",
+            'type' => 'daily_delivery_code',
+            'category' => 'delivery',
             'order_id' => $this->order->id,
             'code' => $this->order->client_validation_code,
             'url' => route('client.dashboard'),
             'icon' => 'check-circle',
             'color' => 'green',
-            'type' => 'daily_delivery_code',
         ]);
     }
 }

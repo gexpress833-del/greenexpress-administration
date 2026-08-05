@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Notifications\SubscriptionReactivated;
 use App\Notifications\SubscriptionRenewed;
 use App\Notifications\SubscriptionSuspended;
-use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -136,9 +135,6 @@ class SubscriptionController extends Controller
             ]);
         }
 
-        // Notification catégorisée au client
-        app(NotificationService::class)->clientSubscriptionRenewalSent($request->user(), $newSubscription);
-
         return redirect()->route('client.subscriptions.index')->with('success', 'Demande de renouvellement envoyée avec succès. Vous serez notifié dès validation par l\'administrateur.');
     }
 
@@ -170,9 +166,6 @@ class SubscriptionController extends Controller
             ]);
         }
 
-        // Notification catégorisée au client
-        app(NotificationService::class)->clientSubscriptionSuspended($request->user(), $subscription, $data['reason'], $data['duration_days']);
-
         return redirect()->route('client.subscriptions.index')->with('success', 'Demande de suspension envoyée avec succès.');
     }
 
@@ -195,9 +188,6 @@ class SubscriptionController extends Controller
                 'error' => $e->getMessage(),
             ]);
         }
-
-        // Notification catégorisée au client
-        app(NotificationService::class)->clientSubscriptionReactivated($request->user(), $subscription);
 
         return redirect()->route('client.subscriptions.index')->with('success', 'Demande de réactivation envoyée avec succès.');
     }

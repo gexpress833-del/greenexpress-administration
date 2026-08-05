@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
-use App\Notifications\SubscriptionActivated;
 use App\Services\ActivityLogService;
 use App\Services\NotificationService;
 use App\Services\SubscriptionDeliveryService;
@@ -97,17 +96,6 @@ class SubscriptionController extends Controller
         // Notification au client
         if ($subscription->client) {
             app(NotificationService::class)->clientSubscriptionValidated($subscription->client, $subscription);
-        }
-
-        if ($subscription->agent) {
-            try {
-                $subscription->agent->notify(new SubscriptionActivated($subscription));
-            } catch (\Throwable $e) {
-                Log::error('SubscriptionActivated notification failed', [
-                    'subscription_id' => $subscription->id,
-                    'error' => $e->getMessage(),
-                ]);
-            }
         }
 
         app(ActivityLogService::class)->logFromRequest($request, 'subscription_validated', Subscription::class, $subscription->id, 'Admin validated subscription for client '.($subscription->client?->name ?? $subscription->client_name));

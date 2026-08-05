@@ -14,7 +14,7 @@ class CredentialsGenerated extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -26,6 +26,8 @@ class CredentialsGenerated extends Notification
             return [
                 'title' => 'Identifiants générés',
                 'message' => "{$agentName} a généré les identifiants pour {$clientName}.",
+                'type' => 'credentials_generated',
+                'category' => 'information',
                 'subscription_id' => $this->subscription->id,
                 'url' => route('admin.subscriptions.show', ['subscription' => $this->subscription->id]),
                 'icon' => 'user-check',
@@ -36,6 +38,8 @@ class CredentialsGenerated extends Notification
         return [
             'title' => 'Vos identifiants sont prêts',
             'message' => 'Votre compte Green Express a été créé. Vous pouvez maintenant vous connecter pour suivre votre abonnement.',
+            'type' => 'credentials_generated',
+            'category' => 'information',
             'subscription_id' => $this->subscription->id,
             'url' => route('client.dashboard'),
             'icon' => 'user-check',

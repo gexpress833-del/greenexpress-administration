@@ -109,7 +109,7 @@
                 <tr><td>Client</td><td>{{ $order->client_name }}</td></tr>
                 <tr><td>Téléphone</td><td>{{ $order->client_phone }}</td></tr>
                 <tr><td>Adresse</td><td style="font-size:11px;">{{ $order->delivery_address }}</td></tr>
-                <tr><td>Agent</td><td>{{ $order->agent->name }}</td></tr>
+                <tr><td>Agent</td><td>{{ $order->agent?->name ?? '-' }}</td></tr>
                 @if($order->subscription_id)
                 <tr><td>Abonnement</td><td>{{ $order->subscription?->subscriptionType?->name ?? $order->subscription?->type_label ?? 'N/A' }}</td></tr>
                 @endif
@@ -156,7 +156,7 @@
 
             <div style="text-align:center;">
                 <div class="qr-box">
-                    <img src="{{ $qrCode }}" alt="QR Code" width="110" height="110">
+                    <img src="{{ $qrCode }}" alt="QR Code" style="width:110px;height:110px;">
                     <div class="qr-label">Scannez pour valider la livraison</div>
                 </div>
             </div>

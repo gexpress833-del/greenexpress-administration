@@ -14,7 +14,7 @@ class SubscriptionSuspended extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -27,6 +27,8 @@ class SubscriptionSuspended extends Notification
             return [
                 'title' => 'Demande de suspension',
                 'message' => "{$clientName} demande une suspension de {$days} jour(s). Motif : {$reason}",
+                'type' => 'subscription_suspended',
+                'category' => 'subscription',
                 'suspension_id' => $this->suspension->id,
                 'url' => route('admin.suspensions.index'),
                 'icon' => 'pause-circle',
@@ -38,6 +40,8 @@ class SubscriptionSuspended extends Notification
             return [
                 'title' => 'Demande de suspension',
                 'message' => "{$clientName} demande une suspension de {$days} jour(s). Motif : {$reason}",
+                'type' => 'subscription_suspended',
+                'category' => 'subscription',
                 'suspension_id' => $this->suspension->id,
                 'url' => route('agent.subscriptions.index'),
                 'icon' => 'pause-circle',
@@ -48,6 +52,8 @@ class SubscriptionSuspended extends Notification
         return [
             'title' => 'Suspension demandée',
             'message' => "Votre demande de suspension de {$days} jour(s) a été envoyée. Motif : {$reason}",
+            'type' => 'subscription_suspended',
+            'category' => 'subscription',
             'suspension_id' => $this->suspension->id,
             'url' => route('client.subscriptions.index'),
             'icon' => 'pause-circle',

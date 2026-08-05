@@ -14,7 +14,7 @@ class SubscriptionExpiringSoon extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -24,6 +24,8 @@ class SubscriptionExpiringSoon extends Notification
         return [
             'title' => 'Votre abonnement expire bientôt',
             'message' => "Votre abonnement se termine dans {$days} jour".($days > 1 ? 's' : '').'. Renouvelez-le pour ne pas interrompre vos repas.',
+            'type' => 'subscription_expiring_soon',
+            'category' => 'subscription',
             'subscription_id' => $this->subscription->id,
             'url' => route('client.subscriptions.index'),
             'icon' => 'calendar',

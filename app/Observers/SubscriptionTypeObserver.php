@@ -11,7 +11,7 @@ class SubscriptionTypeObserver
     {
         NotificationService::notifyAllUsers(
             'Nouveau type d\'abonnement',
-            "L'abonnement '{$type->name}' est maintenant disponible au prix de \${$type->price} ({$type->duration_days} jours)",
+            "L'abonnement '{$type->name}' est maintenant disponible au prix de ".number_format((float) $type->price_fc, 0, ',', '.').' FC ($'.number_format((float) $type->price, 2).') ('.$type->duration_days.' jours)',
             'subscription_type',
             SubscriptionType::class,
             $type->id
@@ -23,7 +23,7 @@ class SubscriptionTypeObserver
         if ($type->wasChanged('price') || $type->wasChanged('price_fc') || $type->wasChanged('name') || $type->wasChanged('duration_days')) {
             NotificationService::notifyAllUsers(
                 'Type d\'abonnement modifié',
-                "L'abonnement '{$type->name}' a été mis à jour. Nouveau prix: \${$type->price} pour {$type->duration_days} jours",
+                "L'abonnement '{$type->name}' a été mis à jour. Nouveau prix : ".number_format((float) $type->price_fc, 0, ',', '.').' FC ($'.number_format((float) $type->price, 2).') pour '.$type->duration_days.' jours',
                 'subscription_type',
                 SubscriptionType::class,
                 $type->id

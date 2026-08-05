@@ -14,8 +14,9 @@
         <div class="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
             <section class="rounded-3xl bg-green-900 p-6 text-white shadow-xl">
                 <p class="text-sm font-bold uppercase tracking-wider text-green-200">Solde disponible</p>
-                <p class="mt-3 text-5xl font-black">$ {{ number_format($available, 2) }}</p>
-                <p class="mt-3 text-green-100">{{ number_format($availablePoints) }} points · 1 point = $ 0,025</p>
+                <p class="mt-3 text-5xl font-black">{{ number_format($availableFc, 0, ',', '.') }} FC</p>
+                <p class="mt-3 text-green-100">{{ number_format($availablePoints) }} points disponibles</p>
+                <p class="mt-1 text-sm text-green-200">Équivalent : $ {{ number_format($available, 2) }}</p>
             </section>
             <section class="rounded-3xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800">
                 @if($canWithdraw)
@@ -29,7 +30,7 @@
                     </form>
                 @else
                     <p class="font-bold text-gray-900 dark:text-white">Solde insuffisant</p>
-                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Le retrait est disponible dès 200 points, soit $ 5.00.</p>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Le retrait est disponible dès 200 points, soit environ {{ number_format(app(\App\Services\CurrencyService::class)->usdToFc(5), 0, ',', '.') }} FC.</p>
                 @endif
             </section>
         </div>
@@ -38,7 +39,7 @@
             <div class="divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse($withdrawals as $withdrawal)
                     <div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 text-sm">
-                        <span class="font-bold text-gray-900 dark:text-white">{{ number_format($withdrawal->points) }} points · $ {{ number_format($withdrawal->amount_usd, 2) }}</span>
+                        <span class="font-bold text-gray-900 dark:text-white">{{ number_format($withdrawal->points) }} points · {{ number_format(app(\App\Services\CurrencyService::class)->usdToFc((float) $withdrawal->amount_usd), 0, ',', '.') }} FC <span class="font-normal text-gray-500">($ {{ number_format($withdrawal->amount_usd, 2) }})</span></span>
                         <span class="text-gray-500">{{ $withdrawal->mobile_money_operator }} · {{ $withdrawal->mobile_money_number }} · {{ $withdrawal->status }}</span>
                     </div>
                 @empty

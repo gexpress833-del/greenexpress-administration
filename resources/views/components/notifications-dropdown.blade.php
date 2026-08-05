@@ -29,7 +29,7 @@
                     Aucune notification
                 </div>
             </template>
-            <template x-for="notif in notifications" :key="notif.id">
+            <template x-for="notif in notifications" :key="notif.source + '-' + notif.id">
                 <div @click="markAsRead(notif)" class="cursor-pointer px-4 py-3 border-b border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
                      :class="{ 'bg-blue-50/50 dark:bg-blue-900/10': !notif.read_at }">
                     <div class="flex items-start gap-3">
@@ -64,14 +64,29 @@
             unreadCount: 0,
             initNotifications() {
                 this.fetchNotifications();
-                setInterval(() => this.fetchNotifications(), 30000);
+                this.fetchUnreadCount();
+                setInterval(() => {
+                    this.fetchNotifications();
+                    this.fetchUnreadCount();
+                }, 30000);
+            },
+            async fetchUnreadCount() {
+                try {
+                    const res = await fetch('{{ route('notifications.unread-count') }}', {
+                        headers: { 'Accept': 'application/json' },
+                    });
+                    const data = await res.json();
+                    this.unreadCount = data.count || 0;
+                } catch (e) {
+                    console.error(e);
+                }
             },
             async fetchNotifications() {
                 try {
-                    const res = await fetch('{{ route('notifications.index') }}');
-                    const data = await res.json();
-                    this.notifications = data;
-                    this.unreadCount = data.filter(n => !n.read_at).length;
+                    const res = await fetch('{{ route('notifications.index') }}', {
+                        headers: { 'Accept': 'application/json' },
+                    });
+                    this.notifications = await res.json();
                 } catch (e) {
                     console.error(e);
                 }
@@ -124,6 +139,8 @@
                     amber: 'bg-amber-100 dark:bg-amber-900/30',
                     purple: 'bg-purple-100 dark:bg-purple-900/30',
                     red: 'bg-red-100 dark:bg-red-900/30',
+                    gray: 'bg-gray-100 dark:bg-gray-700',
+                    orange: 'bg-orange-100 dark:bg-orange-900/30',
                 };
                 return map[color] || 'bg-gray-100 dark:bg-gray-700';
             },
@@ -134,6 +151,8 @@
                     amber: 'text-amber-600 dark:text-amber-300',
                     purple: 'text-purple-600 dark:text-purple-300',
                     red: 'text-red-600 dark:text-red-300',
+                    gray: 'text-gray-600 dark:text-gray-300',
+                    orange: 'text-orange-600 dark:text-orange-300',
                 };
                 return map[color] || 'text-gray-600 dark:text-gray-300';
             },

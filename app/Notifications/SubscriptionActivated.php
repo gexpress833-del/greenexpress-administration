@@ -14,7 +14,7 @@ class SubscriptionActivated extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -22,6 +22,8 @@ class SubscriptionActivated extends Notification
         return [
             'title' => 'Abonnement validé',
             'message' => "L'abonnement pour ".($this->subscription->client?->name ?? $this->subscription->client_name)." a été validé par l'administrateur. Vous pouvez générer les identifiants du client.",
+            'type' => 'subscription_activated',
+            'category' => 'subscription',
             'subscription_id' => $this->subscription->id,
             'url' => route('agent.subscriptions.index'),
             'icon' => 'check-circle',

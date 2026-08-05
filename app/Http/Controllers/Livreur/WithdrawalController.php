@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Withdrawal;
 use App\Notifications\WithdrawalRequested;
+use App\Services\CurrencyService;
 use App\Services\PointService;
 use App\Services\PointWithdrawalService;
 use Illuminate\Http\Request;
@@ -18,8 +19,9 @@ class WithdrawalController extends Controller
         $withdrawals = Withdrawal::where('user_id', $user->id)->latest()->paginate(15);
         $availablePoints = $withdrawalService->availablePoints($user);
         $available = round($availablePoints * PointService::VALUE_PER_POINT_USD, 2);
+        $availableFc = app(CurrencyService::class)->usdToFc($available);
 
-        return view('livreur.withdrawals.index', compact('withdrawals', 'availablePoints', 'available'));
+        return view('livreur.withdrawals.index', compact('withdrawals', 'availablePoints', 'available', 'availableFc'));
     }
 
     public function store(Request $request, PointWithdrawalService $withdrawalService)

@@ -14,7 +14,7 @@ class SubscriptionSuspensionProcessed extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -25,6 +25,8 @@ class SubscriptionSuspensionProcessed extends Notification
         return [
             'title' => 'Suspension '.$statusText,
             'message' => "Votre demande de suspension a été {$statusText} par l'administrateur.",
+            'type' => 'subscription_suspension_processed',
+            'category' => 'subscription',
             'subscription_id' => $this->suspension->subscription_id,
             'url' => route('client.subscriptions.show', $this->suspension->subscription_id),
             'icon' => $accepted ? 'check-circle' : 'x-circle',

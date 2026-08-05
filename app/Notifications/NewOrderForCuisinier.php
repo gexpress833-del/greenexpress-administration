@@ -14,7 +14,7 @@ class NewOrderForCuisinier extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -22,6 +22,8 @@ class NewOrderForCuisinier extends Notification
         return [
             'title' => 'Nouvelle commande à préparer',
             'message' => 'La commande '.$this->order->code.' de '.($this->order->client_name ?? 'un client').' a été validée et est à préparer.',
+            'type' => 'new_order_for_cuisinier',
+            'category' => 'order',
             'url' => route('cuisinier.orders.show', $this->order),
         ];
     }

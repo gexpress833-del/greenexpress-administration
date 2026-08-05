@@ -14,7 +14,7 @@ class DeliveryValidated extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -22,6 +22,8 @@ class DeliveryValidated extends Notification
         return [
             'title' => 'Livraison validée',
             'message' => "La commande {$this->order->code} a été validée par {$this->validatedBy}.",
+            'type' => 'delivery_validated',
+            'category' => 'delivery',
             'order_id' => $this->order->id,
             'url' => $notifiable->isAdmin()
                 ? route('admin.orders.show', $this->order)

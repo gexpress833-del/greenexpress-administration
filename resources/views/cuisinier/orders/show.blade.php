@@ -25,7 +25,7 @@
                     <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Adresse</span><span class="font-medium">{{ $order->delivery_address }}</span></div>
                     <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Date livraison</span><span class="font-medium">{{ $order->delivery_date?->format('d/m/Y') }}</span></div>
                     <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Agent</span><span class="font-medium">{{ $order->agent->name ?? '-' }}</span></div>
-                    <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Total</span><span class="font-bold text-green-700 dark:text-green-400">$ {{ number_format($order->total_amount, 2) }}</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Total</span><span class="text-right"><span class="block font-bold text-green-700 dark:text-green-400">{{ number_format($order->total_amount_fc, 0, ',', '.') }} FC</span><span class="text-xs text-gray-500">$ {{ number_format($order->total_amount, 2) }}</span></span></div>
                 </div>
             </div>
 
@@ -35,9 +35,9 @@
                     <div class="flex justify-between items-center py-3 border-b border-gray-50 dark:border-gray-700 last:border-0">
                         <div>
                             <p class="font-medium text-gray-800 dark:text-gray-100">{{ $item->meal->name }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Qté: {{ $item->quantity }} x $ {{ number_format($item->unit_price, 2) }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Qté: {{ $item->quantity }} x {{ number_format($item->unit_price_fc, 0, ',', '.') }} FC</p>
                         </div>
-                        <p class="font-semibold text-gray-800 dark:text-gray-100">$ {{ number_format($item->total_price, 2) }}</p>
+                        <p class="text-right font-semibold text-gray-800 dark:text-gray-100">{{ number_format($item->total_price_fc, 0, ',', '.') }} FC<span class="block text-xs font-normal text-gray-500">$ {{ number_format($item->total_price, 2) }}</span></p>
                     </div>
                 @endforeach
             </div>

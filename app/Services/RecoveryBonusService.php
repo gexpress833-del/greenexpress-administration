@@ -15,7 +15,8 @@ class RecoveryBonusService
 
     public function isActive(): bool
     {
-        return now()->lessThanOrEqualTo($this->endTime());
+        // Système de compensation désactivé - la période de compensation est terminée
+        return false;
     }
 
     public function endTime(): Carbon

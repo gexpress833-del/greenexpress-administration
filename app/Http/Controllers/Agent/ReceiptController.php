@@ -30,8 +30,8 @@ class ReceiptController extends Controller
         ]);
         $qrCode = (new QRCode($options))->render($qrData);
 
-        // Inject width/height so the SVG actually renders
-        $qrCode = preg_replace('/<svg/', '<svg width="150" height="150"', $qrCode, 1);
+        // Inject style for proper rendering in dompdf
+        $qrCode = preg_replace('/<svg/', '<svg style="width:150px;height:150px;"', $qrCode, 1);
 
         return $qrCode;
     }
@@ -45,11 +45,13 @@ class ReceiptController extends Controller
 
         $options = new QROptions([
             'outputInterface' => QRGdImagePNG::class,
-            'outputBase64' => true,
+            'outputBase64' => false,
             'scale' => 6,
         ]);
 
-        return (new QRCode($options))->render($qrData);
+        $qrCode = (new QRCode($options))->render($qrData);
+
+        return 'data:image/png;base64,'.base64_encode($qrCode);
     }
 
     private function mealImageUrls(Order $order): array

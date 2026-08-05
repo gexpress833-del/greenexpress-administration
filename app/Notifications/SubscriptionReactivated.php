@@ -14,7 +14,7 @@ class SubscriptionReactivated extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -25,6 +25,8 @@ class SubscriptionReactivated extends Notification
             return [
                 'title' => 'Abonnement réactivé',
                 'message' => "{$clientName} a réactivé son abonnement.",
+                'type' => 'subscription_reactivated',
+                'category' => 'subscription',
                 'subscription_id' => $this->subscription->id,
                 'url' => route('admin.subscriptions.show', $this->subscription),
                 'icon' => 'play-circle',
@@ -36,6 +38,8 @@ class SubscriptionReactivated extends Notification
             return [
                 'title' => 'Abonnement réactivé',
                 'message' => "{$clientName} a réactivé son abonnement.",
+                'type' => 'subscription_reactivated',
+                'category' => 'subscription',
                 'subscription_id' => $this->subscription->id,
                 'url' => route('agent.subscriptions.index'),
                 'icon' => 'play-circle',
@@ -46,6 +50,8 @@ class SubscriptionReactivated extends Notification
         return [
             'title' => 'Abonnement réactivé',
             'message' => 'Votre abonnement est de nouveau actif.',
+            'type' => 'subscription_reactivated',
+            'category' => 'subscription',
             'subscription_id' => $this->subscription->id,
             'url' => route('client.subscriptions.index'),
             'icon' => 'play-circle',

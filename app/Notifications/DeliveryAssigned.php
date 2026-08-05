@@ -14,7 +14,7 @@ class DeliveryAssigned extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -22,6 +22,8 @@ class DeliveryAssigned extends Notification
         return [
             'title' => 'Livraison en cours',
             'message' => "Le livreur {$this->delivery->livreur?->name} a pris en charge votre commande {$this->delivery->order->code}.",
+            'type' => 'delivery_assigned',
+            'category' => 'delivery',
             'order_id' => $this->delivery->order_id,
             'url' => route('agent.orders.show', $this->delivery->order),
             'icon' => 'truck',

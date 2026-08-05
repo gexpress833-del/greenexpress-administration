@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\DateHelper;
+use App\Models\AgentPoint;
 use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -15,7 +16,53 @@ use Illuminate\Support\Str;
 
 class SubscriptionDeliveryService
 {
-    public function rewardAgent(Subscription $subscription): void {}
+    public function rewardAgent(Subscription $subscription): void
+    {
+        if (! $subscription->agent_id) {
+            return;
+        }
+
+        $agent = User::find($subscription->agent_id);
+        if (! $agent || ! $agent->isAgent()) {
+            return;
+        }
+
+        // Calculate points based on subscription type and duration
+        $points = $this->calculateSubscriptionPoints($subscription);
+
+        if ($points <= 0) {
+            return;
+        }
+
+        $valueUsd = round($points * PointService::VALUE_PER_POINT_USD, 2);
+
+        AgentPoint::create([
+            'agent_id' => $agent->id,
+            'subscription_id' => $subscription->id,
+            'points' => $points,
+            'value_usd' => $valueUsd,
+            'description' => "Points pour abonnement {$subscription->id} - {$subscription->client_name}",
+            'earned_at' => now(),
+        ]);
+    }
+
+    private function calculateSubscriptionPoints(Subscription $subscription): int
+    {
+        // Base points for subscription creation
+        $basePoints = 20;
+
+        // Additional points based on subscription duration
+        $totalDays = $subscription->total_days ?? 0;
+        $durationBonus = min(floor($totalDays / 7) * 5, 50); // 5 points per week, max 50
+
+        // Additional points based on subscription value
+        $valueBonus = 0;
+        if ($subscription->price_fc > 0) {
+            $valueBonus = min(floor($subscription->price_fc / 10000) * 2, 30); // 2 points per 10,000 FC, max 30
+        }
+
+        return $basePoints + $durationBonus + $valueBonus;
+    }
 
     public function generateDailyOrders(Subscription $subscription): void
     {

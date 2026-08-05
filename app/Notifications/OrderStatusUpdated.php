@@ -14,7 +14,7 @@ class OrderStatusUpdated extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -33,6 +33,8 @@ class OrderStatusUpdated extends Notification
         return [
             'title' => 'Mise à jour de commande',
             'message' => "Votre commande {$this->order->code} est maintenant {$label}.",
+            'type' => 'order_status_updated',
+            'category' => 'order',
             'order_id' => $this->order->id,
             'url' => route('agent.orders.show', $this->order),
             'icon' => 'check-circle',

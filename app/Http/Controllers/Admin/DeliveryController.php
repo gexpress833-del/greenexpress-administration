@@ -7,7 +7,10 @@ use App\Models\Delivery;
 use App\Models\DeliveryPoint;
 use App\Models\Order;
 use App\Models\User;
+use App\Notifications\DeliveryAssigned;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DeliveryController extends Controller
 {
@@ -55,9 +58,37 @@ class DeliveryController extends Controller
         }
 
         $data['delivery_code'] = 'DLV-'.strtoupper(uniqid());
+        $data['status'] = 'assigned';
+        $data['picked_up_at'] = now();
 
-        Delivery::create($data);
+        $delivery = Delivery::create($data);
         $order->transitionTo('delivering');
+
+        $delivery->load(['order.agent', 'order.client', 'livreur']);
+        $notificationService = app(NotificationService::class);
+
+        try {
+            if ($delivery->livreur) {
+                if ($order->subscription_id) {
+                    $notificationService->livreurSubscriptionDeliveryAssigned($delivery->livreur, $delivery);
+                } else {
+                    $notificationService->livreurDeliveryAssigned($delivery->livreur, $delivery);
+                }
+            }
+
+            if ($order->agent) {
+                $order->agent->notify(new DeliveryAssigned($delivery));
+            }
+
+            if ($order->client_id && $order->client) {
+                $notificationService->clientDeliveryAssigned($order->client, $delivery);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Notification dispatch failed during admin delivery assignment.', [
+                'delivery_id' => $delivery->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('admin.deliveries.index')->with('success', 'Livraison assignée.');
     }

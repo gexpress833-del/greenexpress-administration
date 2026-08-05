@@ -86,7 +86,7 @@ class OrderController extends Controller
         $qrOptions->scale = 5;
 
         $qrCode = new QRCode($qrOptions);
-        $qrCodePng = $qrCode->render($qrData);
+        $qrCodePng = 'data:image/png;base64,'.base64_encode($qrCode->render($qrData));
 
         $pdf = Pdf::loadView('cuisinier.orders.print', compact('order', 'qrCodePng'));
 

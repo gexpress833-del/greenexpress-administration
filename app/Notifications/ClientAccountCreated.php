@@ -18,7 +18,7 @@ class ClientAccountCreated extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['mail', 'app'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -41,6 +41,8 @@ class ClientAccountCreated extends Notification
         return [
             'title' => 'Compte créé',
             'message' => 'Votre compte Green Express a été créé. Vous pouvez maintenant vous connecter.',
+            'type' => 'client_account_created',
+            'category' => 'information',
             'subscription_id' => $this->subscription->id,
             'url' => route('client.dashboard'),
             'icon' => 'user-plus',

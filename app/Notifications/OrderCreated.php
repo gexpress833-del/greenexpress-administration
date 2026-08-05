@@ -14,7 +14,7 @@ class OrderCreated extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -22,6 +22,8 @@ class OrderCreated extends Notification
         return [
             'title' => 'Nouvelle commande',
             'message' => "L'agent {$this->order->agent->name} a créé la commande {$this->order->code}.",
+            'type' => 'order_created',
+            'category' => 'order',
             'order_id' => $this->order->id,
             'url' => route('admin.orders.show', $this->order),
             'icon' => 'shopping-cart',

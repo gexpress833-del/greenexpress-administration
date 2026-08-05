@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Notifications\CredentialsGenerated;
 use App\Notifications\SubscriptionPending;
 use App\Services\CurrencyService;
+use App\Services\NotificationService;
 use App\Services\WhatsAppService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -178,13 +179,14 @@ class SubscriptionController extends Controller
 
         try {
             $recipients = User::where('is_active', true)
-                ->where(function ($q) use ($subscription) {
-                    $q->where('id', $subscription->agent_id)
-                        ->orWhereIn('role', ['admin', 'cuisinier']);
-                })
+                ->whereIn('role', ['admin', 'cuisinier'])
                 ->get();
             foreach ($recipients as $recipient) {
                 $recipient->notify(new SubscriptionPending($subscription));
+            }
+
+            if ($subscription->agent) {
+                app(NotificationService::class)->agentSubscriptionCreated($subscription->agent, $subscription);
             }
         } catch (\Throwable $e) {
             Log::error('SubscriptionPending notification failed', [

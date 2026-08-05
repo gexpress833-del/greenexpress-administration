@@ -30,10 +30,10 @@ class SendDailyDeliveryCodes implements ShouldQueue
                         continue;
                     }
 
-                    $alreadyNotified = $client->notifications()
-                        ->where('type', DailyDeliveryCode::class)
+                    $alreadyNotified = $client->appNotifications()
+                        ->where('type', 'daily_delivery_code')
                         ->whereDate('created_at', $today)
-                        ->whereJsonContains('data->order_id', $order->id)
+                        ->where('notifiable_id', $order->id)
                         ->exists();
 
                     if ($alreadyNotified) {

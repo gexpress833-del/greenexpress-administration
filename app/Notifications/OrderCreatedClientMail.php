@@ -21,10 +21,10 @@ class OrderCreatedClientMail extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $items = $this->order->items->map(function ($item) {
-            return $item->quantity.'x '.$item->meal->name.' — '.number_format((float) $item->total_price, 2).' USD';
+            return $item->quantity.'x '.$item->meal->name.' — '.number_format((float) $item->total_price_fc, 0, ',', '.').' FC ('.number_format((float) $item->total_price, 2).' USD)';
         })->implode("\n");
 
-        $total = number_format((float) $this->order->total_amount, 2);
+        $total = number_format((float) $this->order->total_amount_fc, 0, ',', '.').' FC ('.number_format((float) $this->order->total_amount, 2).' USD)';
 
         $deliveryInfo = $this->order->delivery_date->format('d/m/Y');
         if ($this->order->delivery_time) {
@@ -41,7 +41,7 @@ class OrderCreatedClientMail extends Notification
             ->line('**Adresse :** '.$this->order->delivery_address)
             ->line('**Détails :**')
             ->line($items)
-            ->line('**Total :** '.$total.' USD')
+            ->line('**Total :** '.$total)
             ->line('La commande est en attente de validation par l\'administrateur.')
             ->action('Voir la commande', url('/admin/orders/'.$this->order->id))
             ->salutation('L\'équipe Green Express');

@@ -14,7 +14,7 @@ class SubscriptionRenewed extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -30,6 +30,8 @@ class SubscriptionRenewed extends Notification
             return [
                 'title' => 'Renouvellement en attente de validation',
                 'message' => "{$clientName} a demandé le renouvellement de son abonnement ({$typeLabel}). En attente de validation.",
+                'type' => 'subscription_renewed',
+                'category' => 'subscription',
                 'subscription_id' => $this->subscription->id,
                 'url' => route('admin.subscriptions.show', $this->subscription),
                 'icon' => 'refresh',
@@ -41,6 +43,8 @@ class SubscriptionRenewed extends Notification
             return [
                 'title' => 'Renouvellement en attente de validation',
                 'message' => "{$clientName} a demandé le renouvellement de son abonnement ({$typeLabel}). En attente de validation.",
+                'type' => 'subscription_renewed',
+                'category' => 'subscription',
                 'subscription_id' => $this->subscription->id,
                 'url' => route('agent.subscriptions.index'),
                 'icon' => 'refresh',
@@ -51,6 +55,8 @@ class SubscriptionRenewed extends Notification
         return [
             'title' => 'Demande de renouvellement envoyée',
             'message' => "Votre demande de renouvellement ({$typeLabel}) est en attente de validation par l'administrateur.",
+            'type' => 'subscription_renewed',
+            'category' => 'subscription',
             'subscription_id' => $this->subscription->id,
             'url' => route('client.subscriptions.index'),
             'icon' => 'refresh',

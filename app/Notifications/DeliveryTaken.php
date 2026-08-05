@@ -14,7 +14,7 @@ class DeliveryTaken extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['app'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -25,6 +25,8 @@ class DeliveryTaken extends Notification
         return [
             'title' => 'Livraison prise en charge',
             'message' => "{$livreurName} a pris en charge la livraison de la commande {$orderCode}.",
+            'type' => 'delivery_taken',
+            'category' => 'delivery',
             'delivery_id' => $this->delivery->id,
             'url' => route('admin.orders.show', $this->delivery->order),
             'icon' => 'truck',

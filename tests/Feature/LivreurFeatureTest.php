@@ -325,12 +325,11 @@ class LivreurFeatureTest extends TestCase
         app(SendDailyDeliveryCodes::class)->handle();
         app(SendDailyDeliveryCodes::class)->handle();
 
-        $this->assertDatabaseCount('notifications', 1);
-        $this->assertDatabaseHas('notifications', [
-            'notifiable_id' => $client->id,
-            'notifiable_type' => User::class,
+        $this->assertDatabaseCount('app_notifications', 1);
+        $this->assertDatabaseHas('app_notifications', [
+            'user_id' => $client->id,
         ]);
-        $this->assertSame($order->id, $client->notifications()->first()->data['order_id']);
+        $this->assertSame($order->id, $client->appNotifications()->first()->notifiable_id);
     }
 
     public function test_livreur_points_page_shows_zero_when_no_points(): void
