@@ -31,6 +31,16 @@ function setPermissionGranted() {
     localStorage.setItem(key, 'true');
 }
 
+function hasTokenRegistered() {
+    const key = 'green-express-fcm-token-registered';
+    return localStorage.getItem(key) === 'true';
+}
+
+function setTokenRegistered() {
+    const key = 'green-express-fcm-token-registered';
+    localStorage.setItem(key, 'true');
+}
+
 async function registerToken(token) {
     const response = await fetch('/notifications/fcm-token', {
         method: 'POST',
@@ -47,6 +57,9 @@ async function registerToken(token) {
     });
 
     if (!response.ok) throw new Error('Le token FCM n\'a pas pu être enregistré.');
+    
+    // Succès : marquer que le token est enregistré
+    setTokenRegistered();
 }
 
 function setButtonState(button, text, disabled = false) {
@@ -86,6 +99,7 @@ async function loadFirebaseMessaging() {
 
     if (!token) throw new Error('Firebase n\'a pas fourni de token.');
     await registerToken(token);
+    setTokenRegistered();
 
     onMessage(messaging, (payload) => {
         window.dispatchEvent(new CustomEvent('fcm-message', { detail: payload }));
@@ -133,11 +147,13 @@ async function startNotifications() {
         return;
     }
 
-    // Permission déjà accordée : enregistrer le token silencieusement
-    if (Notification.permission === 'granted' || hasPermissionGranted()) {
+    // Permission déjà accordée ou token déjà enregistré : ne pas afficher le panel
+    if (Notification.permission === 'granted' || hasPermissionGranted() || hasTokenRegistered()) {
         try {
-            await loadFirebaseMessaging();
-            setPermissionGranted();
+            if (!hasTokenRegistered()) {
+                await loadFirebaseMessaging();
+                setPermissionGranted();
+            }
         } catch (error) {
             console.warn('FCM token refresh failed:', error);
         }
