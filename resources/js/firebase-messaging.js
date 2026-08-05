@@ -21,6 +21,16 @@ function getDeviceId() {
     return deviceId;
 }
 
+function hasPermissionGranted() {
+    const key = 'green-express-fcm-permission-granted';
+    return localStorage.getItem(key) === 'true';
+}
+
+function setPermissionGranted() {
+    const key = 'green-express-fcm-permission-granted';
+    localStorage.setItem(key, 'true');
+}
+
 async function registerToken(token) {
     const response = await fetch('/notifications/fcm-token', {
         method: 'POST',
@@ -124,9 +134,10 @@ async function startNotifications() {
     }
 
     // Permission déjà accordée : enregistrer le token silencieusement
-    if (Notification.permission === 'granted') {
+    if (Notification.permission === 'granted' || hasPermissionGranted()) {
         try {
             await loadFirebaseMessaging();
+            setPermissionGranted();
         } catch (error) {
             console.warn('FCM token refresh failed:', error);
         }
@@ -165,6 +176,8 @@ async function enableNotifications(button, panel) {
         setButtonState(button, 'Notifications refusées', true);
         return;
     }
+
+    setPermissionGranted();
 
     const enabled = await loadFirebaseMessaging();
     if (!enabled) {
