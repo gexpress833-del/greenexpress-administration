@@ -9,22 +9,20 @@ use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api')->group(function () {
-    // Authentification
+    // Authentification - Public
     Route::post('/login', [AuthController::class, 'login']);
 
-    // Menus (Plans alimentaires) - Public
-    Route::get('/menus', [MenuController::class, 'index']);
+    // Routes publiques (accessibles sans authentification)
+    Route::get('/menus', [MenuController::class, 'index']); // Liste des repas
+    Route::get('/plans', [PlanController::class, 'index']); // Liste des plans d'abonnement
 
-    // Plans (Types d'abonnement) - Public
-    Route::get('/plans', [PlanController::class, 'index']);
-
-    // Routes protégées par sanctum
+    // Routes protégées par sanctum (nécessitent authentification)
     Route::middleware('auth:sanctum')->group(function () {
         // Commandes
         Route::get('/orders', [OrderController::class, 'index']);
         Route::get('/orders/{id}', [OrderController::class, 'show']);
 
-        // Abonnements
+        // Abonnements (création et renouvellement)
         Route::post('/subscriptions', [SubscriptionController::class, 'store']);
         Route::post('/subscriptions/{id}/renew', [SubscriptionController::class, 'renew']);
 
