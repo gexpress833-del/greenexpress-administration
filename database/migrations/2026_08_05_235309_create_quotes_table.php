@@ -11,17 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('quotes', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email');
-            $table->string('phone');
-            $table->text('message');
-            $table->foreignId('subscription_type_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('status')->default('pending');
-            $table->timestamps();
-        });
+        if (! Schema::hasTable('quotes')) {
+            Schema::create('quotes', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email');
+                $table->string('phone');
+                $table->text('message');
+                $table->foreignId('subscription_type_id')->nullable()->constrained()->onDelete('set null');
+                $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+                $table->string('status')->default('pending');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
