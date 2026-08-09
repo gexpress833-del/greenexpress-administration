@@ -32,7 +32,7 @@ class SubscriptionControllerTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonStructure([
                 'message',
-                'subscription' => [
+                'data' => [
                     'id',
                     'status',
                     'start_date',
@@ -70,7 +70,7 @@ class SubscriptionControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'message',
-                'subscription' => [
+                'data' => [
                     'id',
                     'status',
                     'start_date',

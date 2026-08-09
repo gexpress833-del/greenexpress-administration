@@ -36,7 +36,7 @@ class QuoteController
 
             return response()->json([
                 'message' => 'Demande de devis envoyée avec succès',
-                'quote' => [
+                'data' => [
                     'id' => $quote->id,
                     'status' => $quote->status,
                 ],

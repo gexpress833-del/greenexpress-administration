@@ -40,7 +40,7 @@ class OrderController
                 ];
             });
 
-        return response()->json($orders);
+        return response()->json(['data' => $orders]);
     }
 
     public function show(Order $order): JsonResponse
@@ -52,26 +52,28 @@ class OrderController
         }
 
         return response()->json([
-            'id' => $order->id,
-            'code' => $order->code,
-            'status' => $order->status,
-            'total_amount' => (float) $order->total_amount,
-            'total_amount_fc' => (float) $order->total_amount_fc,
-            'delivery_address' => $order->delivery_address,
-            'delivery_date' => $order->delivery_date?->format('Y-m-d H:i'),
-            'client_validation_code' => $order->client_validation_code,
-            'created_at' => $order->created_at->format('Y-m-d H:i'),
-            'items' => $order->items->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'meal_name' => $item->meal->name,
-                    'quantity' => $item->quantity,
-                    'unit_price' => (float) $item->unit_price,
-                    'unit_price_fc' => (float) $item->unit_price_fc,
-                    'total_price' => (float) $item->total_price,
-                    'total_price_fc' => (float) $item->total_price_fc,
-                ];
-            }),
+            'data' => [
+                'id' => $order->id,
+                'code' => $order->code,
+                'status' => $order->status,
+                'total_amount' => (float) $order->total_amount,
+                'total_amount_fc' => (float) $order->total_amount_fc,
+                'delivery_address' => $order->delivery_address,
+                'delivery_date' => $order->delivery_date?->format('Y-m-d H:i'),
+                'client_validation_code' => $order->client_validation_code,
+                'created_at' => $order->created_at->format('Y-m-d H:i'),
+                'items' => $order->items->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'meal_name' => $item->meal->name,
+                        'quantity' => $item->quantity,
+                        'unit_price' => (float) $item->unit_price,
+                        'unit_price_fc' => (float) $item->unit_price_fc,
+                        'total_price' => (float) $item->total_price,
+                        'total_price_fc' => (float) $item->total_price_fc,
+                    ];
+                }),
+            ],
         ]);
     }
 }

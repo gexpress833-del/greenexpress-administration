@@ -49,18 +49,20 @@ Returns a list of active meals/menu items.
 
 **Response (200):**
 ```json
-[
-  {
-    "id": 1,
-    "name": "Grilled Chicken",
-    "description": "Delicious grilled chicken with vegetables",
-    "category": "Main Course",
-    "price": 15.50,
-    "price_fc": 31000.00,
-    "image": "https://example.com/storage/meals/chicken.jpg",
-    "is_available": true
-  }
-]
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Grilled Chicken",
+      "description": "Delicious grilled chicken with vegetables",
+      "category": "Main Course",
+      "price": 15.50,
+      "price_fc": 31000.00,
+      "image": "https://example.com/storage/meals/chicken.jpg",
+      "is_available": true
+    }
+  ]
+}
 ```
 
 ### GET /api/plans
@@ -68,19 +70,21 @@ Returns a list of active subscription plans.
 
 **Response (200):**
 ```json
-[
-  {
-    "id": 1,
-    "name": "Weekly Plan",
-    "description": "5 meals per week",
-    "type": "weekly",
-    "meals_per_day": 2,
-    "price": 100.00,
-    "price_fc": 200000.00,
-    "duration_days": 30,
-    "total_deliveries": 10
-  }
-]
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Weekly Plan",
+      "description": "5 meals per week",
+      "type": "weekly",
+      "meals_per_day": 2,
+      "price": 100.00,
+      "price_fc": 200000.00,
+      "duration_days": 30,
+      "total_deliveries": 10
+    }
+  ]
+}
 ```
 
 ## Protected Endpoints (Requires Authentication via Bearer Token)
@@ -95,28 +99,30 @@ Authorization: Bearer {token}
 
 **Response (200):**
 ```json
-[
-  {
-    "id": 1,
-    "code": "ORD-001",
-    "status": "delivered",
-    "total_amount": 45.50,
-    "total_amount_fc": 91000.00,
-    "delivery_date": "2024-01-15 12:00",
-    "created_at": "2024-01-15 10:00",
-    "items": [
-      {
-        "id": 1,
-        "meal_name": "Grilled Chicken",
-        "quantity": 2,
-        "unit_price": 15.50,
-        "unit_price_fc": 31000.00,
-        "total_price": 31.00,
-        "total_price_fc": 62000.00
-      }
-    ]
-  }
-]
+{
+  "data": [
+    {
+      "id": 1,
+      "code": "ORD-001",
+      "status": "delivered",
+      "total_amount": 45.50,
+      "total_amount_fc": 91000.00,
+      "delivery_date": "2024-01-15 12:00",
+      "created_at": "2024-01-15 10:00",
+      "items": [
+        {
+          "id": 1,
+          "meal_name": "Grilled Chicken",
+          "quantity": 2,
+          "unit_price": 15.50,
+          "unit_price_fc": 31000.00,
+          "total_price": 31.00,
+          "total_price_fc": 62000.00
+        }
+      ]
+    }
+  ]
+}
 ```
 
 ### GET /api/orders/{id}
@@ -130,16 +136,18 @@ Authorization: Bearer {token}
 **Response (200):**
 ```json
 {
-  "id": 1,
-  "code": "ORD-001",
-  "status": "delivered",
-  "total_amount": 45.50,
-  "total_amount_fc": 91000.00,
-  "delivery_address": "123 Main Street",
-  "delivery_date": "2024-01-15 12:00",
-  "client_validation_code": "ABC123",
-  "created_at": "2024-01-15 10:00",
-  "items": [...]
+  "data": {
+    "id": 1,
+    "code": "ORD-001",
+    "status": "delivered",
+    "total_amount": 45.50,
+    "total_amount_fc": 91000.00,
+    "delivery_address": "123 Main Street",
+    "delivery_date": "2024-01-15 12:00",
+    "client_validation_code": "ABC123",
+    "created_at": "2024-01-15 10:00",
+    "items": [...]
+  }
 }
 ```
 
@@ -171,7 +179,7 @@ Authorization: Bearer {token}
 ```json
 {
   "message": "Abonnement créé avec succès",
-  "subscription": {
+  "data": {
     "id": 1,
     "status": "pending",
     "start_date": "2024-01-15",
@@ -193,7 +201,7 @@ Authorization: Bearer {token}
 ```json
 {
   "message": "Abonnement renouvelé avec succès",
-  "subscription": {
+  "data": {
     "id": 1,
     "status": "active",
     "start_date": "2024-01-15",
@@ -226,7 +234,7 @@ Authorization: Bearer {token}
 ```json
 {
   "message": "Demande de devis envoyée avec succès",
-  "quote": {
+  "data": {
     "id": 1,
     "status": "pending"
   }
@@ -281,6 +289,10 @@ All endpoints may return standard error responses:
 - All monetary values are returned as floats
 - Dates are formatted as `Y-m-d H:i` for datetime fields and `Y-m-d` for date fields
 - Images include full URLs via `asset()` helper
-- Empty collections return empty arrays `[]`
+- Empty collections return empty arrays `[]` wrapped in `data` object
 - The `/api/menus` and `/api/plans` endpoints are public and don't require authentication
 - All other endpoints require a valid Sanctum token
+- Standardized response format:
+  - `/login`: `{ token, user }`
+  - `/menus`, `/plans`, `/orders`: `{ data: [...] }`
+  - `/subscriptions`, `/quotes`: `{ message, data: {...} }`

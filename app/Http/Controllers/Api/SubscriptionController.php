@@ -41,7 +41,7 @@ class SubscriptionController
 
             return response()->json([
                 'message' => 'Abonnement créé avec succès',
-                'subscription' => [
+                'data' => [
                     'id' => $subscription->id,
                     'status' => $subscription->status,
                     'start_date' => $subscription->start_date->format('Y-m-d'),
@@ -78,7 +78,7 @@ class SubscriptionController
 
             return response()->json([
                 'message' => 'Abonnement renouvelé avec succès',
-                'subscription' => [
+                'data' => [
                     'id' => $subscription->id,
                     'status' => $subscription->status,
                     'start_date' => $subscription->start_date->format('Y-m-d'),

@@ -26,6 +26,6 @@ class PlanController
                 ];
             });
 
-        return response()->json($plans);
+        return response()->json(['data' => $plans]);
     }
 }

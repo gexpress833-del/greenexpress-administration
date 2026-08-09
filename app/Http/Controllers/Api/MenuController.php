@@ -26,6 +26,6 @@ class MenuController
                 ];
             });
 
-        return response()->json($menus);
+        return response()->json(['data' => $menus]);
     }
 }

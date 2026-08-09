@@ -19,18 +19,19 @@ class PlanControllerTest extends TestCase
         $response = $this->getJson('/api/plans');
 
         $response->assertStatus(200)
-            ->assertJsonCount(2)
             ->assertJsonStructure([
-                '*' => [
-                    'id',
-                    'name',
-                    'description',
-                    'type',
-                    'meals_per_day',
-                    'price',
-                    'price_fc',
-                    'duration_days',
-                    'total_deliveries',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'description',
+                        'type',
+                        'meals_per_day',
+                        'price',
+                        'price_fc',
+                        'duration_days',
+                        'total_deliveries',
+                    ],
                 ],
             ]);
     }
@@ -42,6 +43,6 @@ class PlanControllerTest extends TestCase
         $response = $this->getJson('/api/plans');
 
         $response->assertStatus(200)
-            ->assertJsonCount(0);
+            ->assertJson(['data' => []]);
     }
 }

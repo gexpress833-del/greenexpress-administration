@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\Quote;
+use App\Models\SubscriptionType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -26,7 +26,7 @@ class QuoteControllerTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonStructure([
                 'message',
-                'quote' => [
+                'data' => [
                     'id',
                     'status',
                 ],
@@ -42,7 +42,7 @@ class QuoteControllerTest extends TestCase
     public function test_quote_store_with_subscription_type(): void
     {
         $user = User::factory()->create();
-        $subscriptionType = \App\Models\SubscriptionType::factory()->create();
+        $subscriptionType = SubscriptionType::factory()->create();
 
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/quotes', [

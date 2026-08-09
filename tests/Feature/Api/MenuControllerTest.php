@@ -19,17 +19,18 @@ class MenuControllerTest extends TestCase
         $response = $this->getJson('/api/menus');
 
         $response->assertStatus(200)
-            ->assertJsonCount(2)
             ->assertJsonStructure([
-                '*' => [
-                    'id',
-                    'name',
-                    'description',
-                    'category',
-                    'price',
-                    'price_fc',
-                    'image',
-                    'is_available',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'description',
+                        'category',
+                        'price',
+                        'price_fc',
+                        'image',
+                        'is_available',
+                    ],
                 ],
             ]);
     }
@@ -41,6 +42,6 @@ class MenuControllerTest extends TestCase
         $response = $this->getJson('/api/menus');
 
         $response->assertStatus(200)
-            ->assertJsonCount(0);
+            ->assertJson(['data' => []]);
     }
 }
