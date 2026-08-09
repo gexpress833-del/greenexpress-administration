@@ -24,13 +24,15 @@ class PlanControllerTest extends TestCase
                     '*' => [
                         'id',
                         'name',
+                        'slug',
                         'description',
-                        'type',
                         'meals_per_day',
                         'price',
                         'price_fc',
                         'duration_days',
                         'total_deliveries',
+                        'currency',
+                        'display_order',
                     ],
                 ],
             ]);

@@ -22,9 +22,9 @@ class SubscriptionTypeFactory extends Factory
             'price_fc' => fake()->randomFloat(2, 50000, 500000),
             'duration_days' => fake()->randomElement([7, 14, 30]),
             'meals_per_day' => fake()->randomElement([1, 2]),
-            'currency' => 'usd',
+            'currency' => 'USD',
             'is_active' => true,
-            'display_order' => 0,
+            'display_order' => fake()->randomNumber(1),
         ];
     }
 }

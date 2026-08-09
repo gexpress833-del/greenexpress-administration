@@ -9,8 +9,9 @@ class MenuController
 {
     public function index(): JsonResponse
     {
-        $menus = Meal::where('is_active', true)
-            ->orderBy('category')
+        $menus = Meal::with('category')
+            ->where('is_active', true)
+            ->orderBy('category_id')
             ->orderBy('name')
             ->get()
             ->map(function ($meal) {
@@ -18,7 +19,8 @@ class MenuController
                     'id' => $meal->id,
                     'name' => $meal->name,
                     'description' => $meal->description,
-                    'category' => $meal->category,
+                    'category' => $meal->category?->name,
+                    'category_id' => $meal->category_id,
                     'price' => (float) $meal->price,
                     'price_fc' => (float) $meal->price_fc,
                     'image' => $meal->image ? asset('storage/'.$meal->image) : null,
