@@ -34,6 +34,23 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// API routes temporarily added to web routes for testing
+Route::prefix('api')->group(function () {
+    // Route de test pour diagnostiquer l'API
+    Route::get('/test', function () {
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'API is working via web routes',
+            'timestamp' => now()->toIso8601String(),
+            'environment' => app()->environment(),
+        ]);
+    });
+
+    // Routes publiques (accessibles sans authentification)
+    Route::get('/menus', [App\Http\Controllers\Api\MenuController::class, 'index']);
+    Route::get('/plans', [App\Http\Controllers\Api\PlanController::class, 'index']);
+});
+
 Route::match(['get', 'post'], '/internal/schedule-run', function () {
     $configuredSecret = config('services.schedule.secret');
     $providedSecret = request()->bearerToken() ?? request()->query('token');

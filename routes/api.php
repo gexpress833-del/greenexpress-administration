@@ -9,6 +9,16 @@ use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api')->group(function () {
+    // Route de test pour diagnostiquer l'API
+    Route::get('/test', function () {
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'API is working',
+            'timestamp' => now()->toIso8601String(),
+            'environment' => app()->environment(),
+        ]);
+    });
+
     // Authentification - Public
     Route::post('/login', [AuthController::class, 'login']);
 
