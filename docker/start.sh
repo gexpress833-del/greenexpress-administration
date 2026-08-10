@@ -48,6 +48,9 @@ cd /var/www/html && php artisan storage:link --no-interaction || true
 
 # Cache config for production
 cd /var/www/html && php artisan optimize:clear --no-interaction
+cd /var/www/html && php artisan route:clear --no-interaction
+cd /var/www/html && php artisan cache:clear --no-interaction
+cd /var/www/html && php artisan config:clear --no-interaction
 cd /var/www/html && php artisan optimize --no-interaction
 
 # Start Apache and the queue worker
