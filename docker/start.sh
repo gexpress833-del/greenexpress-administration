@@ -46,11 +46,14 @@ cd /var/www/html && php artisan db:seed --class=AdminSeeder --force --no-interac
 # Storage link
 cd /var/www/html && php artisan storage:link --no-interaction || true
 
-# Cache config for production
+# Clear all caches to ensure fresh routes (fix API routes 404 issue)
 cd /var/www/html && php artisan optimize:clear --no-interaction
 cd /var/www/html && php artisan route:clear --no-interaction
 cd /var/www/html && php artisan cache:clear --no-interaction
 cd /var/www/html && php artisan config:clear --no-interaction
+cd /var/www/html && php artisan view:clear --no-interaction
+
+# Cache config for production
 cd /var/www/html && php artisan optimize --no-interaction
 
 # Start Apache and the queue worker

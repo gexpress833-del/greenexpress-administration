@@ -34,12 +34,6 @@ COPY . .
 # Build frontend assets
 RUN npm run build
 
-# Clear Laravel caches to ensure fresh routes and config
-RUN php artisan route:clear
-RUN php artisan cache:clear
-RUN php artisan config:clear
-RUN php artisan view:clear
-
 # Set permissions for Apache to serve static assets
 RUN chown -R www-data:www-data /var/www/html/public /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 755 /var/www/html/public
