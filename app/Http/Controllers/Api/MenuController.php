@@ -23,6 +23,7 @@ class MenuController
                     'category_id' => $meal->category_id,
                     'price' => (float) $meal->price,
                     'price_fc' => (float) $meal->price_fc,
+                    'currency' => 'USD',
                     'image' => $meal->image && str_starts_with($meal->image, 'http') ? $meal->image : ($meal->image ? asset('storage/'.$meal->image) : null),
                     'is_available' => $meal->is_active,
                 ];
