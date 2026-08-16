@@ -27,6 +27,8 @@ class OrderController
                     'delivery_date' => $order->delivery_date?->format('Y-m-d H:i'),
                     'created_at' => $order->created_at->format('Y-m-d H:i'),
                     'items' => $order->items->map(function ($item) {
+                        $image = $item->meal?->image;
+
                         return [
                             'id' => $item->id,
                             'meal_name' => $item->meal->name,
@@ -35,6 +37,7 @@ class OrderController
                             'unit_price_fc' => (float) $item->unit_price_fc,
                             'total_price' => (float) $item->total_price,
                             'total_price_fc' => (float) $item->total_price_fc,
+                            'image' => $image && str_starts_with($image, 'http') ? $image : ($image ? asset('storage/'.$image) : null),
                         ];
                     }),
                 ];
@@ -63,6 +66,8 @@ class OrderController
                 'client_validation_code' => $order->client_validation_code,
                 'created_at' => $order->created_at->format('Y-m-d H:i'),
                 'items' => $order->items->map(function ($item) {
+                    $image = $item->meal?->image;
+
                     return [
                         'id' => $item->id,
                         'meal_name' => $item->meal->name,
@@ -71,6 +76,7 @@ class OrderController
                         'unit_price_fc' => (float) $item->unit_price_fc,
                         'total_price' => (float) $item->total_price,
                         'total_price_fc' => (float) $item->total_price_fc,
+                        'image' => $image && str_starts_with($image, 'http') ? $image : ($image ? asset('storage/'.$image) : null),
                     ];
                 }),
             ],

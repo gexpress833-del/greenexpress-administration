@@ -26,6 +26,7 @@ class User extends Authenticatable
         'password_changed_at',
         'is_active',
         'avatar',
+        'avatar_url',
     ];
 
     protected $hidden = [
