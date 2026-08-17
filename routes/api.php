@@ -17,6 +17,11 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VerificateurController;
 use Illuminate\Support\Facades\Route;
 
+// Sanctum CSRF cookie endpoint (nécessaire pour SPA authentication)
+Route::get('/sanctum/csrf-cookie', function () {
+    return response()->json(['message' => 'CSRF cookie set'])->withCookie(cookie('XSRF-TOKEN', csrf_token(), 60, null, null, null, false, true));
+});
+
 // Route de test pour diagnostiquer l'API
 Route::get('/test', function () {
     return response()->json([

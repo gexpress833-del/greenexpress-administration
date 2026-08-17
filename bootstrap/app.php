@@ -30,6 +30,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'password.changed' => EnsurePasswordChanged::class,
         ]);
+
+        // Sanctum middleware for SPA authentication
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
