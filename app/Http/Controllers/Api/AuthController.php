@@ -45,11 +45,17 @@ class AuthController
     public function login(Request $request): JsonResponse
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|string',
             'password' => 'required|string',
+        ], [
+            'email.required' => 'L\'identifiant est requis.',
+            'email.string' => 'L\'identifiant doit être une chaîne de caractères.',
+            'password.required' => 'Le mot de passe est requis.',
+            'password.string' => 'Le mot de passe doit être une chaîne de caractères.',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $loginIdentifier = $request->email;
+        $user = User::where('email', $loginIdentifier)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
