@@ -93,4 +93,20 @@ class AuthController
             ],
         ]);
     }
+
+    public function googleAuth(Request $request): JsonResponse
+    {
+        $request->validate([
+            'id_token' => 'required|string',
+        ], [
+            'id_token.required' => 'Le token Google est requis.',
+        ]);
+
+        // Pour l'instant, on simule une réponse Google
+        // En production, il faudrait vérifier le token avec Google
+        // Pour l'instant, on retourne une erreur car cette fonctionnalité n'est pas complète
+        return response()->json([
+            'message' => 'Authentification Google non configurée côté backend.',
+        ], 501);
+    }
 }
