@@ -28,7 +28,7 @@ class AuthController
             'is_active' => true,
         ]);
 
-        $token = $user->createToken('api-token', ['name' => 'Next.js API Token', 'abilities' => ['*']])->plainTextToken;
+        $token = $user->createToken('Next.js API Token', ['*'])->plainTextToken;
 
         return response()->json([
             'token' => $token,
@@ -63,7 +63,7 @@ class AuthController
             ]);
         }
 
-        $token = $user->createToken('api-token', ['name' => 'Next.js API Token', 'abilities' => ['*']])->plainTextToken;
+        $token = $user->createToken('Next.js API Token', ['*'])->plainTextToken;
 
         return response()->json([
             'token' => $token,
