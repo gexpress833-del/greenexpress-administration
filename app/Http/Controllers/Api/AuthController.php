@@ -15,8 +15,18 @@ class AuthController
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8',
+            'password_confirmation' => 'required|string|min:8|same:password',
             'phone' => 'nullable|string|max:20',
+        ], [
+            'name.required' => 'Le nom est requis.',
+            'email.required' => 'L\'email est requis.',
+            'email.email' => 'L\'email doit être valide.',
+            'email.unique' => 'Cet email est déjà utilisé.',
+            'password.required' => 'Le mot de passe est requis.',
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password_confirmation.required' => 'La confirmation du mot de passe est requise.',
+            'password_confirmation.same' => 'Les mots de passe ne correspondent pas.',
         ]);
 
         $user = User::create([
