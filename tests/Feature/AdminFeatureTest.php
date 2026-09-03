@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\AgentPoint;
 use App\Models\Category;
+use App\Models\DeliveryPoint;
 use App\Models\Order;
 use App\Models\Subscription;
 use App\Models\SubscriptionSuspension;
@@ -185,6 +187,37 @@ class AdminFeatureTest extends TestCase
         ])->assertRedirect(route('admin.meals.index'));
 
         $this->assertDatabaseHas('meals', ['name' => 'Poulet rôti']);
+    }
+
+    public function test_admin_can_see_user_points_balance_in_users_index(): void
+    {
+        $admin = $this->admin();
+        $agent = User::factory()->agent()->create();
+        $livreur = User::factory()->livreur()->create();
+
+        AgentPoint::create([
+            'agent_id' => $agent->id,
+            'order_id' => null,
+            'subscription_id' => null,
+            'points' => 250,
+            'value_usd' => 0,
+            'description' => 'Points de test',
+            'earned_at' => now(),
+        ]);
+
+        DeliveryPoint::create([
+            'delivery_id' => null,
+            'livreur_id' => $livreur->id,
+            'points' => 180,
+            'description' => 'Points de livraison',
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.users.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Solde points');
+        $response->assertSee((string) $agent->pointsBalance());
+        $response->assertSee((string) $livreur->pointsBalance());
     }
 
     public function test_admin_can_view_points_withdrawals_index(): void

@@ -26,6 +26,7 @@
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Email</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Téléphone</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Rôle</th>
+                        <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Solde points</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Statut</th>
                         <th class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Actions</th>
                     </tr>
@@ -50,6 +51,13 @@
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $user->email }}</td>
                             <td class="px-6 py-3 text-gray-800 dark:text-gray-100">{{ $user->phone }}</td>
                             <td class="px-6 py-3 uppercase text-gray-800 dark:text-gray-100">{{ $user->role }}</td>
+                            <td class="px-6 py-3 text-gray-800 dark:text-gray-100">
+                                @if (in_array($user->role, ['agent', 'livreur'], true))
+                                    <span class="font-semibold text-green-600 dark:text-green-400">{{ $user->pointsBalance() }}</span>
+                                @else
+                                    <span class="text-gray-400">0</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-3">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->is_active ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' }}">
                                     {{ $user->is_active ? 'Actif' : 'Inactif' }}

@@ -69,6 +69,12 @@
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">ID</p>
                 <p class="text-sm text-gray-800 dark:text-gray-100 font-mono">#{{ $user->id }}</p>
             </div>
+            @if (in_array($user->role, ['agent', 'livreur'], true))
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Solde points</p>
+                    <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ $user->pointsBalance() }}</p>
+                </div>
+            @endif
         </div>
 
         {{-- Role-specific stats --}}

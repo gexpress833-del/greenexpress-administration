@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -154,5 +155,24 @@ class User extends Authenticatable
     public function unreadAppNotifications(): HasMany
     {
         return $this->hasMany(Notification::class)->where('is_read', false);
+    }
+
+    public function pointsBalance(): int
+    {
+        if (! in_array($this->role, ['agent', 'livreur'], true)) {
+            return 0;
+        }
+
+        $earned = match ($this->role) {
+            'agent' => (int) $this->agentPoints()->sum('points'),
+            'livreur' => (int) DeliveryPoint::where('livreur_id', $this->id)->sum('points'),
+            default => 0,
+        };
+
+        $reserved = (int) Withdrawal::where('user_id', $this->id)
+            ->whereIn('status', ['pending', 'approved', 'paid'])
+            ->sum('points');
+
+        return max(0, $earned - $reserved);
     }
 }
