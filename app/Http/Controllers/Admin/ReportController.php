@@ -19,29 +19,36 @@ class ReportController extends Controller
     {
         $period = $request->query('period', 'month');
 
+        // Prefer explicit start/end if provided
+        $start = $request->filled('start') ? Carbon::parse($request->query('start'))->startOfDay() : null;
+        $end = $request->filled('end') ? Carbon::parse($request->query('end'))->endOfDay() : null;
+
         $now = Carbon::now();
-        switch ($period) {
-            case 'day':
-                $start = $now->copy()->startOfDay();
-                $end = $now->copy()->endOfDay();
-                $label = 'Jour';
-                break;
-            case 'week':
-                $start = $now->copy()->startOfWeek();
-                $end = $now->copy()->endOfWeek();
-                $label = 'Semaine';
-                break;
-            case 'year':
-                $start = $now->copy()->startOfYear();
-                $end = $now->copy()->endOfYear();
-                $label = 'Année';
-                break;
-            case 'month':
-            default:
-                $start = $now->copy()->startOfMonth();
-                $end = $now->copy()->endOfMonth();
-                $label = 'Mois';
-                break;
+
+        if (!$start || !$end) {
+            switch ($period) {
+                case 'day':
+                    $start = $now->copy()->startOfDay();
+                    $end = $now->copy()->endOfDay();
+                    $label = 'Jour';
+                    break;
+                case 'week':
+                    $start = $now->copy()->startOfWeek();
+                    $end = $now->copy()->endOfWeek();
+                    $label = 'Semaine';
+                    break;
+                case 'year':
+                    $start = $now->copy()->startOfYear();
+                    $end = $now->copy()->endOfYear();
+                    $label = 'Année';
+                    break;
+                case 'month':
+                default:
+                    $start = $now->copy()->startOfMonth();
+                    $end = $now->copy()->endOfMonth();
+                    $label = 'Mois';
+                    break;
+            }
         }
 
         $orders = Order::with(['agent', 'client'])
@@ -56,7 +63,7 @@ class ReportController extends Controller
         $data = [
             'start' => $start,
             'end' => $end,
-            'label' => $label,
+            'label' => $label ?? ($start->format('Y-m-d') . ' - ' . $end->format('Y-m-d')),
             'totalSales' => $totalSales,
             'totalSalesFc' => $totalSalesFc,
             'ordersCount' => $ordersCount,
@@ -66,7 +73,7 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('admin.reports.sales_pdf', $data);
 
-        return $pdf->download(sprintf('rapport_ventes_%s_%s.pdf', $period, $now->format('Ymd_His')));
+        return $pdf->download(sprintf('rapport_ventes_%s_%s.pdf', $start->format('Ymd'), $end->format('Ymd')));
     }
 
     public function exportStatistics(Request $request)
