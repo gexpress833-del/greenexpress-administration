@@ -15,8 +15,9 @@ class StatisticsService
 
     public function getDashboardKpi(?Carbon $start = null, ?Carbon $end = null): array
     {
-        $start = $start ?? today()->subDays(30);
-        $end = $end ?? today();
+        // Normalize start/end to cover full days to avoid excluding data because of time components
+        $start = $start ? $start->copy()->startOfDay() : today()->subDays(30)->startOfDay();
+        $end = $end ? $end->copy()->endOfDay() : today()->endOfDay();
 
         $ordersQuery = Order::whereBetween('created_at', [$start, $end]);
         $validatedQuery = Order::where('status', 'delivered')
@@ -143,8 +144,8 @@ class StatisticsService
 
     public function getAgentPerformance(int $agentId, ?Carbon $start = null, ?Carbon $end = null): array
     {
-        $start = $start ?? today()->subDays(30);
-        $end = $end ?? today();
+        $start = $start ? $start->copy()->startOfDay() : today()->subDays(30)->startOfDay();
+        $end = $end ? $end->copy()->endOfDay() : today()->endOfDay();
 
         $validatedQuery = Order::where('agent_id', $agentId)
             ->where('status', 'delivered')
